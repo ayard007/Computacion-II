@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Computación II – Sistema de Inventarios en Python</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --bg2: #181c27;
+    --bg3: #1e2235;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.15);
+    --accent: #4f9cf9;
+    --accent2: #7ee8a2;
+    --accent3: #f9a84f;
+    --accent4: #f97171;
+    --text: #e8eaf6;
+    --text2: #9ba3c4;
+    --text3: #636882;
+    --code-bg: #0d1117;
+    --code-border: #30363d;
+    --phase1: #4f9cf9;
+    --phase2: #7ee8a2;
+    --reto: #f9a84f;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, #0d1117 0%, #162033 50%, #0d1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 2.5rem 2rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(79,156,249,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: 10%;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(126,232,162,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(79,156,249,0.12);
+    border: 1px solid rgba(79,156,249,0.3);
+    border-radius: 100px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 0.6rem;
+  }
+  header h1 span { color: var(--accent); }
+  .header-sub {
+    font-size: 1rem;
+    color: var(--text2);
+    max-width: 620px;
+    margin-bottom: 1.8rem;
+  }
+  .header-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .meta-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: var(--text2);
+  }
+  .meta-pill b { color: var(--text); font-weight: 500; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot-blue { background: var(--phase1); }
+  .dot-green { background: var(--phase2); }
+  .dot-orange { background: var(--reto); }
+
+  /* ── LAYOUT ── */
+  .main-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    position: sticky;
+    top: 1.5rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem;
+  }
+  .sidebar-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text3);
+    margin-bottom: 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .progress-bar-wrap {
+    margin-bottom: 1.2rem;
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 6px;
+  }
+  .progress-track {
+    height: 6px;
+    background: var(--bg3);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.4s ease;
+  }
+  .nav-section {
+    margin-bottom: 0.4rem;
+  }
+  .nav-section-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text3);
+    padding: 6px 8px 2px;
+    font-weight: 600;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text2);
+    transition: all 0.15s;
+    text-decoration: none;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { background: rgba(79,156,249,0.12); color: var(--accent); }
+  .nav-item.done { color: var(--accent2); }
+  .nav-item .check { font-size: 11px; margin-left: auto; }
+  .nav-num {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+    color: var(--text3);
+  }
+  .nav-item.active .nav-num { background: rgba(79,156,249,0.2); border-color: var(--accent); color: var(--accent); }
+  .nav-item.done .nav-num { background: rgba(126,232,162,0.15); border-color: var(--accent2); color: var(--accent2); }
+
+  /* ── CONTENT ── */
+  .content-area { min-width: 0; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Phase banner */
+  .phase-banner {
+    border-radius: 10px;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 2rem;
+    border-left: 4px solid;
+  }
+  .phase-banner.p1 { background: rgba(79,156,249,0.07); border-color: var(--phase1); }
+  .phase-banner.p2 { background: rgba(126,232,162,0.07); border-color: var(--phase2); }
+  .phase-banner.reto { background: rgba(249,168,79,0.07); border-color: var(--reto); }
+  .phase-banner h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    margin-bottom: 0.3rem;
+  }
+  .phase-banner.p1 h2 { color: var(--phase1); }
+  .phase-banner.p2 h2 { color: var(--phase2); }
+  .phase-banner.reto h2 { color: var(--reto); }
+  .phase-banner p { font-size: 14px; color: var(--text2); }
+  .phase-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 2px 10px;
+    border-radius: 100px;
+    margin-bottom: 0.5rem;
+  }
+  .tag-p1 { background: rgba(79,156,249,0.2); color: var(--phase1); }
+  .tag-p2 { background: rgba(126,232,162,0.2); color: var(--phase2); }
+  .tag-reto { background: rgba(249,168,79,0.2); color: var(--reto); }
+
+  /* Cards */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.4rem;
+    margin-bottom: 1.5rem;
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .icon {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  .icon-blue { background: rgba(79,156,249,0.2); }
+  .icon-green { background: rgba(126,232,162,0.2); }
+  .icon-orange { background: rgba(249,168,79,0.2); }
+  .icon-red { background: rgba(249,113,113,0.2); }
+
+  p { color: var(--text2); font-size: 14.5px; line-height: 1.75; margin-bottom: 0.8rem; }
+  p:last-child { margin-bottom: 0; }
+  strong { color: var(--text); font-weight: 600; }
+
+  /* Code blocks */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 8px;
+    margin: 1rem 0;
+    overflow: hidden;
+  }
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    background: #161b22;
+    border-bottom: 1px solid var(--code-border);
+  }
+  .code-lang {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .copy-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .code-block pre {
+    padding: 1rem 1.2rem;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #e6edf3;
+    white-space: pre;
+  }
+  /* Syntax highlight */
+  .kw { color: #ff7b72; }
+  .fn { color: #d2a8ff; }
+  .st { color: #a5d6ff; }
+  .cm { color: #6e7681; font-style: italic; }
+  .num { color: #79c0ff; }
+  .op { color: #ff7b72; }
+  .va { color: #ffa657; }
+
+  /* Explanation boxes */
+  .explain-box {
+    background: rgba(79,156,249,0.05);
+    border: 1px solid rgba(79,156,249,0.18);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin: 0.8rem 0;
+  }
+  .explain-box .explain-title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+  .explain-box p { font-size: 13.5px; }
+
+  .warn-box {
+    background: rgba(249,168,79,0.06);
+    border: 1px solid rgba(249,168,79,0.2);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin: 0.8rem 0;
+  }
+  .warn-box .warn-title {
+    font-size: 12px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--accent3); margin-bottom: 0.4rem;
+  }
+  .warn-box p { font-size: 13.5px; }
+
+  .success-box {
+    background: rgba(126,232,162,0.05);
+    border: 1px solid rgba(126,232,162,0.2);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin: 0.8rem 0;
+  }
+  .success-box .success-title {
+    font-size: 12px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--accent2); margin-bottom: 0.4rem;
+  }
+  .success-box p { font-size: 13.5px; }
+
+  /* Reflection questions */
+  .reflection-box {
+    background: linear-gradient(135deg, rgba(79,156,249,0.06), rgba(126,232,162,0.04));
+    border: 1px solid rgba(79,156,249,0.2);
+    border-radius: 10px;
+    padding: 1.4rem;
+    margin: 1.2rem 0;
+  }
+  .reflection-box h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .reflection-q {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 0.8rem;
+    align-items: flex-start;
+  }
+  .q-num {
+    width: 22px; height: 22px;
+    background: rgba(79,156,249,0.15);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600;
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .reflection-q p { font-size: 13.5px; margin: 0; }
+
+  /* Links */
+  .resource-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 7px;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: var(--accent);
+    text-decoration: none;
+    transition: all 0.15s;
+    margin: 4px 4px 4px 0;
+  }
+  .resource-link:hover {
+    background: rgba(79,156,249,0.12);
+    border-color: var(--accent);
+  }
+
+  /* Checklist */
+  .checklist { list-style: none; margin: 0.6rem 0; }
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 5px 0;
+    font-size: 14px;
+    color: var(--text2);
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+  .checklist li:hover { color: var(--text); }
+  .checklist li.checked { color: var(--accent2); text-decoration: line-through; text-decoration-color: rgba(126,232,162,0.4); }
+  .check-box {
+    width: 16px; height: 16px;
+    border: 1.5px solid var(--text3);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .checked .check-box { background: var(--accent2); border-color: var(--accent2); }
+  .check-mark { font-size: 10px; color: #0d1117; display: none; }
+  .checked .check-mark { display: block; }
+
+  /* Time indicators */
+  .time-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text3);
+    background: var(--bg3);
+    border-radius: 100px;
+    padding: 2px 10px;
+    margin-bottom: 1rem;
+  }
+  .time-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent3); }
+
+  /* Step numbers */
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+  .step-num {
+    width: 28px; height: 28px;
+    background: rgba(79,156,249,0.15);
+    border: 1px solid rgba(79,156,249,0.3);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .step-title { font-size: 16px; font-weight: 600; color: var(--text); }
+
+  /* Nav buttons */
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .btn {
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+  }
+  .btn-ghost {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text2);
+  }
+  .btn-ghost:hover { border-color: var(--border2); color: var(--text); }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border: 1px solid transparent;
+  }
+  .btn-primary:hover { background: #6aadfb; }
+  .btn-reto {
+    background: var(--reto);
+    color: #0d1117;
+    border: 1px solid transparent;
+  }
+  .btn-reto:hover { background: #fbba6f; }
+
+  /* Rubric */
+  .rubric-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 0.8rem;
+  }
+  .rubric-table th {
+    background: var(--bg3);
+    color: var(--text2);
+    font-weight: 500;
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .rubric-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+    vertical-align: top;
+  }
+  .rubric-table tr:last-child td { border-bottom: none; }
+  .pts {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .main-wrap { grid-template-columns: 1fr; }
+    .sidebar { position: static; }
+  }
+
+  h3 {
+    font-size: 15px; font-weight: 600;
+    color: var(--text);
+    margin: 1.2rem 0 0.5rem;
+  }
+  ol, ul { padding-left: 1.2rem; }
+  ol li, ul li { font-size: 14px; color: var(--text2); margin-bottom: 4px; line-height: 1.65; }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 4px;
+    padding: 1px 6px;
+    color: #a5d6ff;
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .output-preview {
+    background: #000;
+    border: 1px solid var(--code-border);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: #7ee8a2;
+    margin: 0.8rem 0;
+  }
+  .output-preview .prompt { color: #9ba3c4; }
+
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 0.6rem 0; }
+  .tag {
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text2);
+  }
+
+  .reto-star {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-badge">
+      <span class="dot dot-blue"></span>
+      Ingeniería Industrial · Computación II · 2.° Semestre
+    </div>
+    <h1>Sistema de <span>Inventarios</span><br>con Python &amp; Google Colab</h1>
+    <p class="header-sub">Actividad guiada paso a paso: aprenderás las bases de Python y construirás un sistema de inventarios conectado a Excel para un servicio real.</p>
+    <div class="header-meta">
+      <div class="meta-pill"><span class="dot dot-blue"></span><b>Fase 1</b> — Fundamentos Python (3 h)</div>
+      <div class="meta-pill"><span class="dot dot-green"></span><b>Fase 2</b> — Sistema de Inventarios (3 h)</div>
+      <div class="meta-pill"><span class="dot dot-orange"></span><b>Reto</b> — Puntos Extra</div>
+      <div class="meta-pill">⏱ <b>6 horas</b> en total</div>
+    </div>
+  </div>
+</header>
+
+<div class="main-wrap">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">Tu Progreso</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-label">
+        <span>Avance</span>
+        <span id="progress-pct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Fase 1 · Fundamentos</div>
+      <button class="nav-item active" onclick="goTo(0)" id="nav-0">
+        <span class="nav-num">1</span> Introducción &amp; Setup
+        <span class="check" id="chk-0"></span>
+      </button>
+      <button class="nav-item" onclick="goTo(1)" id="nav-1">
+        <span class="nav-num">2</span> Variables &amp; Tipos
+        <span class="check" id="chk-1"></span>
+      </button>
+      <button class="nav-item" onclick="goTo(2)" id="nav-2">
+        <span class="nav-num">3</span> Listas &amp; Diccionarios
+        <span class="check" id="chk-2"></span>
+      </button>
+      <button class="nav-item" onclick="goTo(3)" id="nav-3">
+        <span class="nav-num">4</span> Funciones &amp; Control
+        <span class="check" id="chk-3"></span>
+      </button>
+      <button class="nav-item" onclick="goTo(4)" id="nav-4">
+        <span class="nav-num">5</span> pandas &amp; Excel
+        <span class="check" id="chk-4"></span>
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Fase 2 · Inventarios</div>
+      <button class="nav-item" onclick="goTo(5)" id="nav-5">
+        <span class="nav-num">6</span> Diseño del Sistema
+        <span class="check" id="chk-5"></span>
+      </button>
+      <button class="nav-item" onclick="goTo(6)" id="nav-6">
+        <span class="nav-num">7</span> CRUD de Inventario
+        <span class="check" id="chk-6"></span>
+      </button>
+      <button class="nav-item" onclick="goTo(7)" id="nav-7">
+        <span class="nav-num">8</span> Reportes &amp; Alertas
+        <span class="check" id="chk-7"></span>
+      </button>
+      <button class="nav-item" onclick="goTo(8)" id="nav-8">
+        <span class="nav-num">9</span> Integración Final
+        <span class="check" id="chk-8"></span>
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Actividad Reto</div>
+      <button class="nav-item" onclick="goTo(9)" id="nav-9">
+        <span class="nav-num">★</span> Reto — Puntos Extra
+        <span class="check" id="chk-9"></span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content-area">
+
+    <!-- ===== SECCIÓN 0: INTRO & SETUP ===== -->
+    <div class="section active" id="sec-0">
+      <div class="phase-banner p1">
+        <div class="phase-tag tag-p1">Fase 1 · Módulo 0</div>
+        <h2>Bienvenido al Taller de Inventarios</h2>
+        <p>Antes de escribir código, prepararemos tu entorno de trabajo en Google Colab.</p>
+      </div>
+
+      <div class="time-badge"><span class="time-dot"></span> Duración estimada: 30 min</div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon icon-blue">🎯</span> Objetivo del Taller</div>
+        <p>Al finalizar estas 6 horas habrás construido, <strong>paso a paso</strong>, un <strong>Sistema de Inventarios para un Taller de Reparación de Equipos de Cómputo</strong> que:</p>
+        <ul style="margin-top: 0.6rem; padding-left: 1.4rem;">
+          <li>Lee y escribe datos desde/hacia un archivo <strong>Excel (.xlsx)</strong></li>
+          <li>Permite agregar, buscar, actualizar y eliminar refacciones</li>
+          <li>Genera alertas cuando el stock es bajo</li>
+          <li>Produce reportes de inventario en consola y en Excel</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon icon-blue">🚀</span> Paso 1 — Abre Google Colab</div>
+        <p>Google Colab es una plataforma gratuita en la nube donde puedes escribir y ejecutar código Python sin instalar nada.</p>
+        <a href="https://colab.research.google.com" target="_blank" class="resource-link">🔗 Abrir Google Colab</a>
+        <a href="https://colab.research.google.com/notebooks/intro.ipynb" target="_blank" class="resource-link">📖 Tutorial oficial de Colab</a>
+        <div class="divider"></div>
+        <div class="step-header">
+          <span class="step-num">1</span>
+          <span class="step-title">Crea un nuevo cuaderno</span>
+        </div>
+        <p>Una vez en Colab: <strong>Archivo → Nuevo cuaderno</strong>. Nómbralo <code>inventario_taller.ipynb</code>.</p>
+        <div class="step-header">
+          <span class="step-num">2</span>
+          <span class="step-title">Identifica las partes del cuaderno</span>
+        </div>
+        <p>Un cuaderno tiene <strong>celdas de texto</strong> (para notas) y <strong>celdas de código</strong> (donde escribes Python). Presiona <kbd>Shift + Enter</kbd> para ejecutar una celda.</p>
+        <div class="step-header">
+          <span class="step-num">3</span>
+          <span class="step-title">Tu primera celda — ¡Hola Mundo!</span>
+        </div>
+        <p>Escribe exactamente lo siguiente en la primera celda de código y ejecútala:</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">Python · Celda 1</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          </div>
+          <pre><span class="cm"># Mi primer programa en Python</span>
+<span class="fn">print</span>(<span class="st">"¡Hola! Voy a construir mi sistema de inventarios."</span>)
+<span class="fn">print</span>(<span class="st">"Nombre:"</span>, <span class="st">"[escribe tu nombre aquí]"</span>)
+<span class="fn">print</span>(<span class="st">"Materia: Computación II"</span>)</pre>
+        </div>
+        <div class="output-preview">
+          <span class="prompt">Salida esperada:</span><br>
+          ¡Hola! Voy a construir mi sistema de inventarios.<br>
+          Nombre: [tu nombre]<br>
+          Materia: Computación II
+        </div>
+        <div class="explain-box">
+          <div class="explain-title">¿Qué hace <code>print()</code>?</div>
+          <p><code>print()</code> es una <strong>función incorporada</strong> de Python. Muestra en pantalla el texto o valor que le pases entre paréntesis. Las comillas <code>"..."</code> indican que es una cadena de texto (string).</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon icon-orange">📚</span> Recursos de Referencia</div>
+        <p>Mantén estas pestañas abiertas mientras trabajas. Las necesitarás durante la actividad:</p>
+        <a href="https://docs.python.org/es/3/tutorial/index.html" target="_blank" class="resource-link">📘 Tutorial oficial Python (Español)</a>
+        <a href="https://pandas.pydata.org/docs/getting_started/intro_tutorials/index.html" target="_blank" class="resource-link">🐼 pandas — Guía de inicio</a>
+        <a href="https://openpyxl.readthedocs.io/en/stable/" target="_blank" class="resource-link">📊 openpyxl — Documentación</a>
+        <a href="https://www.w3schools.com/python/default.asp" target="_blank" class="resource-link">🎓 W3Schools Python</a>
+      </div>
+
+      <div class="reflection-box">
+        <h4>🤔 Preguntas de Reflexión — Antes de Continuar</h4>
+        <p style="font-size: 12.5px; color: var(--text3); margin-bottom: 1rem;">Escribe tus respuestas en una celda de texto de Colab. <strong>No busques la respuesta directamente con IA</strong> — piensa primero, luego investiga en los enlaces.</p>
+        <div class="reflection-q"><span class="q-num">1</span><p>¿Por qué crees que Python es uno de los lenguajes más usados en la industria? Menciona al menos dos características que lo distingan.</p></div>
+        <div class="reflection-q"><span class="q-num">2</span><p>¿Qué diferencia existe entre un <em>archivo .py</em> y un <em>cuaderno .ipynb</em> de Colab? ¿Cuándo usarías cada uno en un contexto industrial?</p></div>
+        <div class="reflection-q"><span class="q-num">3</span><p>Imagina que tu taller recibe 50 refacciones al día. ¿Por qué sería ineficiente llevar ese registro en papel o en Excel manualmente sin automatización?</p></div>
+      </div>
+
+      <div class="nav-buttons">
+        <div></div>
+        <button class="btn btn-primary" onclick="markDone(0)">Completado — Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- ===== SECCIÓN 1: VARIABLES ===== -->
+    <div class="section" id="sec-1">
+      <div class="phase-banner p1">
+        <div class="phase-tag tag-p1">Fase 1 · Módulo 1</div>
+        <h2>Variables, Tipos de Datos e Input</h2>
+        <p>Los bloques fundamentales con los que representarás cada dato de tu inventario.</p>
+      </div>
+      <div class="time-badge"><span class="time-dot"></span> Duración estimada: 40 min</div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon icon-blue">📦</span> ¿Qué es una Variable?</div>
+        <p>Una variable es un <strong>contenedor con nombre</strong> que almacena un valor en la memoria. En Python no necesitas declarar el tipo — Python lo deduce automáticamente.</p>
+
+        <div class="step-header"><span class="step-num">1</span><span class="step-title">Variables básicas del inventario</span></div>
+        <p>En una nueva celda, escribe y ejecuta:</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python · Celda 2</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+          <pre><span class="cm"># ── Variables para representar UNA refacción ──</span>
+<span class="va">nombre_refaccion</span> = <span class="st">"Disco Duro SSD 500GB"</span>   <span class="cm"># str (texto)</span>
+<span class="va">cantidad</span>         = <span class="num">15</span>                         <span class="cm"># int (entero)</span>
+<span class="va">precio_unitario</span>  = <span class="num">850.00</span>                    <span class="cm"># float (decimal)</span>
+<span class="va">disponible</span>       = <span class="kw">True</span>                       <span class="cm"># bool (verdadero/falso)</span>
+<span class="va">codigo</span>           = <span class="st">"REF-001"</span>
+
+<span class="cm"># Mostrar información</span>
+<span class="fn">print</span>(<span class="st">"=== DATOS DE REFACCIÓN ==="</span>)
+<span class="fn">print</span>(<span class="st">f"Nombre   : {nombre_refaccion}"</span>)
+<span class="fn">print</span>(<span class="st">f"Código   : {codigo}"</span>)
+<span class="fn">print</span>(<span class="st">f"Cantidad : {cantidad} unidades"</span>)
+<span class="fn">print</span>(<span class="st">f"Precio   : ${precio_unitario:.2f}"</span>)
+<span class="fn">print</span>(<span class="st">f"Disponible: {disponible}"</span>)</pre>
+        </div>
+        <div class="explain-box">
+          <div class="explain-title">f-strings — Formato de texto</div>
+          <p>Las <code>f"..."</code> son <strong>cadenas formateadas</strong>. Al poner <code>{variable}</code> dentro, Python sustituye el valor automáticamente. <code>:.2f</code> indica 2 decimales.</p>
+        </div>
+
+        <div class="step-header"><span class="step-num">2</span><span class="step-title">Operaciones con variables</span></div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python · Celda 3</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+          <pre><span class="cm"># Cálculos útiles para inventario</span>
+<span class="va">valor_total</span>    = cantidad * precio_unitario
+<span class="va">cantidad_nueva</span> = cantidad + <span class="num">5</span>   <span class="cm"># recibimos 5 unidades más</span>
+<span class="va">stock_minimo</span>   = <span class="num">5</span>
+
+<span class="fn">print</span>(<span class="st">f"Valor total en almacén : ${valor_total:,.2f}"</span>)
+<span class="fn">print</span>(<span class="st">f"Stock tras recepción   : {cantidad_nueva}"</span>)
+<span class="fn">print</span>(<span class="st">f"¿Stock bajo mínimo?    : {cantidad_nueva < stock_minimo}"</span>)</pre>
+        </div>
+
+        <div class="step-header"><span class="step-num">3</span><span class="step-title">Entrada del usuario con <code>input()</code></span></div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python · Celda 4</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+          <pre><span class="cm"># input() permite capturar datos del usuario</span>
+<span class="va">nombre</span>   = <span class="fn">input</span>(<span class="st">"Nombre de la refacción: "</span>)
+<span class="va">cantidad</span> = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"Cantidad: "</span>))         <span class="cm"># convertir a entero</span>
+<span class="va">precio</span>   = <span class="fn">float</span>(<span class="fn">input</span>(<span class="st">"Precio unitario: $"</span>)) <span class="cm"># convertir a decimal</span>
+
+<span class="fn">print</span>(<span class="st">f"\nRegistrado: {nombre} × {cantidad} = ${cantidad*precio:,.2f}"</span>)</pre>
+        </div>
+        <div class="warn-box">
+          <div class="warn-title">⚠ Importante</div>
+          <p><code>input()</code> siempre devuelve texto. Si necesitas un número debes convertirlo con <code>int()</code> o <code>float()</code>, de lo contrario obtendrás un error al hacer cálculos.</p>
+        </div>
+      </div>
+
+      <div class="reflection-box">
+        <h4>🤔 Preguntas de Reflexión</h4>
+        <div class="reflection-q"><span class="q-num">1</span><p>¿Qué sucede si escribes <code>cantidad = "15"</code> (con comillas) y luego intentas sumar <code>cantidad + 5</code>? Pruébalo en Colab y explica el error que ves.</p></div>
+        <div class="reflection-q"><span class="q-num">2</span><p>¿Por qué es conveniente usar nombres de variables descriptivos como <code>precio_unitario</code> en lugar de simplemente <code>p</code>? ¿Cómo afecta esto al trabajo en equipo?</p></div>
+        <div class="reflection-q"><span class="q-num">3</span><p>Busca en la <a href="https://docs.python.org/es/3/library/stdtypes.html" target="_blank" style="color: var(--accent);">documentación oficial</a> qué otros tipos de datos existen en Python. ¿Cuál usarías para guardar la fecha de ingreso de una refacción?</p></div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn btn-ghost" onclick="goTo(0)">← Anterior</button>
+        <button class="btn btn-primary" onclick="markDone(1)">Completado — Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- ===== SECCIÓN 2: LISTAS & DICCIONARIOS ===== -->
+    <div class="section" id="sec-2">
+      <div class="phase-banner p1">
+        <div class="phase-tag tag-p1">Fase 1 · Módulo 2</div>
+        <h2>Listas y Diccionarios</h2>
+        <p>Estructuras que te permiten almacenar <em>múltiples</em> refacciones en memoria.</p>
+      </div>
+      <div class="time-badge"><span class="time-dot"></span> Duración estimada: 40 min</div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon icon-blue">📋</span> Listas — Colecciones Ordenadas</div>
+        <p>Una <strong>lista</strong> almacena varios valores en orden. Se define con corchetes <code>[]</code>. Piensa en ella como un listado de nombres de refacciones.</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python · Celda 5</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+          <pre><span class="cm"># Lista de nombres de refacciones en el taller</span>
+<span class="va">refacciones</span> = [
+    <span class="st">"Disco Duro SSD 500GB"</span>,
+    <span class="st">"RAM DDR4 8GB"</span>,
+    <span class="st">"Fuente de poder 600W"</span>,
+    <span class="st">"Tarjeta madre Socket AM4"</span>,
+    <span class="st">"Ventilador CPU"</span>
+]
+
+<span class="fn">print</span>(<span class="st">f"Total de refacciones: {len(refacciones)}"</span>)
+<span class="fn">print</span>(<span class="st">f"Primera: {refacciones[0]}"</span>)   <span class="cm"># índice empieza en 0</span>
+<span class="fn">print</span>(<span class="st">f"Última : {refacciones[-1]}"</span>)  <span class="cm"># -1 = último elemento</span>
+
+<span class="cm"># Recorrer la lista</span>
+<span class="fn">print</span>(<span class="st">"\n── Catálogo del Taller ──"</span>)
+<span class="kw">for</span> i, ref <span class="kw">in</span> <span class="fn">enumerate</span>(refacciones, <span class="num">1</span>):
+    <span class="fn">print</span>(<span class="st">f"  {i}. {ref}"</span>)
+
+<span class="cm"># Agregar y eliminar</span>
+refacciones.append(<span class="st">"Monitor 24 pulgadas"</span>)  <span class="cm"># agregar al final</span>
+refacciones.remove(<span class="st">"Ventilador CPU"</span>)        <span class="cm"># eliminar por valor</span>
+<span class="fn">print</span>(<span class="st">f"\nLista actualizada: {len(refacciones)} refacciones"</span>)</pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon icon-blue">🗂️</span> Diccionarios — Datos con Clave</div>
+        <p>Un <strong>diccionario</strong> guarda pares <code>clave: valor</code>. Es ideal para representar <em>un registro completo</em> de una refacción con todos sus atributos.</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python · Celda 6</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+          <pre><span class="cm"># Un diccionario = una refacción completa</span>
+<span class="va">refaccion</span> = {
+    <span class="st">"codigo"</span>    : <span class="st">"REF-001"</span>,
+    <span class="st">"nombre"</span>    : <span class="st">"Disco Duro SSD 500GB"</span>,
+    <span class="st">"categoria"</span> : <span class="st">"Almacenamiento"</span>,
+    <span class="st">"cantidad"</span>  : <span class="num">15</span>,
+    <span class="st">"precio"</span>    : <span class="num">850.00</span>,
+    <span class="st">"minimo"</span>    : <span class="num">5</span>
+}
+
+<span class="cm"># Acceder a valores</span>
+<span class="fn">print</span>(<span class="st">f"Código : {refaccion['codigo']}"</span>)
+<span class="fn">print</span>(<span class="st">f"Stock  : {refaccion['cantidad']} uds"</span>)
+
+<span class="cm"># Modificar un valor</span>
+refaccion[<span class="st">"cantidad"</span>] += <span class="num">3</span>   <span class="cm"># recibimos 3 más</span>
+<span class="fn">print</span>(<span class="st">f"Nuevo stock: {refaccion['cantidad']}"</span>)
+
+<span class="cm"># Lista de diccionarios = inventario completo</span>
+<span class="va">inventario</span> = [
+    {<span class="st">"codigo"</span>: <span class="st">"REF-001"</span>, <span class="st">"nombre"</span>: <span class="st">"SSD 500GB"</span>,    <span class="st">"cantidad"</span>: <span class="num">15</span>, <span class="st">"precio"</span>: <span class="num">850.0</span>,  <span class="st">"minimo"</span>: <span class="num">5</span>},
+    {<span class="st">"codigo"</span>: <span class="st">"REF-002"</span>, <span class="st">"nombre"</span>: <span class="st">"RAM 8GB DDR4"</span>, <span class="st">"cantidad"</span>:  <span class="num">3</span>, <span class="st">"precio"</span>: <span class="num">420.0</span>,  <span class="st">"minimo"</span>: <span class="num">5</span>},
+    {<span class="st">"codigo"</span>: <span class="st">"REF-003"</span>, <span class="st">"nombre"</span>: <span class="st">"Fuente 600W"</span>,  <span class="st">"cantidad"</span>:  <span class="num">8</span>, <span class="st">"precio"</span>: <span class="num">650.0</span>,  <span class="st">"minimo"</span>: <span class="num">3</span>},
+    {<span class="st">"codigo"</span>: <span class="st">"REF-004"</span>, <span class="st">"nombre"</span>: <span class="st">"Tarjeta madre"</span>, <span class="st">"cantidad"</span>:  <span class="num">2</span>, <span class="st">"precio"</span>: <span class="num">1850.0</span>, <span class="st">"minimo"</span>: <span class="num">2</span>},
+]
+
+<span class="fn">print</span>(<span class="st">"\n── Inventario Taller Tech ──"</span>)
+<span class="kw">for</span> item <span class="kw">in</span> inventario:
+    alerta = <span class="st">" ⚠ STOCK BAJO"</span> <span class="kw">if</span> item[<span class="st">"cantidad"</span>] &lt;= item[<span class="st">"minimo"</span>] <span class="kw">else</span> <span class="st">""</span>
+    <span class="fn">print</span>(<span class="st">f"  {item['codigo']} | {item['nombre']:<span class="num">20</span>} | {item['cantidad']:>3} uds{alerta}"</span>)</pre>
+        </div>
+        <div class="explain-box">
+          <div class="explain-title">Estructura clave del sistema</div>
+          <p>Un <strong>inventario</strong> es una <em>lista de diccionarios</em>. Cada diccionario representa una fila de la tabla (un artículo). Esta estructura es exactamente lo que pandas también usa internamente — ya estás pensando como un programador de datos.</p>
+        </div>
+      </div>
+
+      <div class="reflection-box">
+        <h4>🤔 Preguntas de Reflexión</h4>
+        <div class="reflection-q"><span class="q-num">1</span><p>¿Cuál es la diferencia principal entre una lista y un diccionario? Da un ejemplo de cuándo usarías cada uno en el contexto del taller de cómputo.</p></div>
+        <div class="reflection-q"><span class="q-num">2</span><p>¿Por qué el índice de las listas empieza en <code>0</code> y no en <code>1</code>? Busca en internet la razón histórica de esta convención en programación.</p></div>
+        <div class="reflection-q"><span class="q-num">3</span><p>Modifica el código de la celda 6 para agregar un campo <code>"proveedor"</code> a cada diccionario del inventario. ¿Qué tendrías que cambiar en el ciclo <code>for</code> para mostrarlo?</p></div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn btn-ghost" onclick="goTo(1)">← Anterior</button>
+        <button class="btn btn-primary" onclick="markDone(2)">Completado — Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- ===== SECCIÓN 3: FUNCIONES & CONTROL ===== -->
+    <div class="section" id="sec-3">
+      <div class="phase-banner p1">
+        <div class="phase-tag tag-p1">Fase 1 · Módulo 3</div>
+        <h2>Funciones y Estructuras de Control</h2>
+        <p>Organiza tu código en bloques reutilizables y toma decisiones automáticas.</p>
+      </div>
+      <div class="time-badge"><span class="time-dot"></span> Duración estimada: 50 min</div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon icon-blue">⚙️</span> Condicionales — if / elif / else</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python · Celda 7</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+          <pre><span class="cm"># Función para clasificar el nivel de stock</span>
+<span class="kw">def</span> <span class="fn">clasificar_stock</span>(cantidad, minimo):
+    <span class="kw">if</span> cantidad == <span class="num">0</span>:
+        <span class="kw">return</span> <span class="st">"🔴 SIN STOCK"</span>
+    <span class="kw">elif</span> cantidad &lt;= minimo:
+        <span class="kw">return</span> <span class="st">"🟡 STOCK BAJO"</span>
+    <span class="kw">elif</span> cantidad &lt;= minimo * <span class="num">2</span>:
+        <span class="kw">return</span> <span class="st">"🟠 STOCK MODERADO"</span>
+    <span class="kw">else</span>:
+        <span class="kw">return</span> <span class="st">"🟢 STOCK OK"</span>
+
+<span class="cm"># Probar con distintos valores</span>
+<span class="kw">for</span> qty <span class="kw">in</span> [<span class="num">0</span>, <span class="num">3</span>, <span class="num">8</span>, <span class="num">20</span>]:
+    estado = <span class="fn">clasificar_stock</span>(qty, minimo=<span class="num">5</span>)
+    <span class="fn">print</span>(<span class="st">f"  Cantidad {qty:>3}: {estado}"</span>)</pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon icon-blue">🔧</span> Funciones Esenciales del Inventario</div>
+        <p>Vamos a construir las <strong>4 operaciones básicas</strong> (CRUD) como funciones individuales. Las usaremos en la Fase 2.</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python · Celda 8</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+          <pre><span class="cm"># ── Base de datos en memoria (lista de diccionarios) ──</span>
+<span class="va">inventario</span> = []
+
+<span class="kw">def</span> <span class="fn">agregar_refaccion</span>(codigo, nombre, categoria, cantidad, precio, minimo=<span class="num">5</span>):
+    <span class="st">"""Agrega una nueva refacción al inventario."""</span>
+    nueva = {
+        <span class="st">"codigo"</span>   : codigo,
+        <span class="st">"nombre"</span>   : nombre,
+        <span class="st">"categoria"</span>: categoria,
+        <span class="st">"cantidad"</span> : cantidad,
+        <span class="st">"precio"</span>   : precio,
+        <span class="st">"minimo"</span>   : minimo
+    }
+    inventario.append(nueva)
+    <span class="fn">print</span>(<span class="st">f"✅ Agregado: {nombre} ({codigo})"</span>)
+
+<span class="kw">def</span> <span class="fn">buscar_refaccion</span>(termino):
+    <span class="st">"""Busca por código o nombre (insensible a mayúsculas)."""</span>
+    termino = termino.lower()
+    resultados = [
+        r <span class="kw">for</span> r <span class="kw">in</span> inventario
+        <span class="kw">if</span> termino <span class="kw">in</span> r[<span class="st">"codigo"</span>].lower()
+        <span class="kw">or</span> termino <span class="kw">in</span> r[<span class="st">"nombre"</span>].lower()
+    ]
+    <span class="kw">return</span> resultados
+
+<span class="kw">def</span> <span class="fn">actualizar_cantidad</span>(codigo, nueva_cantidad):
+    <span class="st">"""Actualiza la cantidad de una refacción por código."""</span>
+    <span class="kw">for</span> r <span class="kw">in</span> inventario:
+        <span class="kw">if</span> r[<span class="st">"codigo"</span>] == codigo:
+            r[<span class="st">"cantidad"</span>] = nueva_cantidad
+            <span class="fn">print</span>(<span class="st">f"✅ {r['nombre']}: cantidad actualizada a {nueva_cantidad}"</span>)
+            <span class="kw">return</span>
+    <span class="fn">print</span>(<span class="st">f"❌ Código {codigo} no encontrado"</span>)
+
+<span class="kw">def</span> <span class="fn">eliminar_refaccion</span>(codigo):
+    <span class="st">"""Elimina una refacción del inventario."""</span>
+    <span class="kw">global</span> inventario
+    original = <span class="fn">len</span>(inventario)
+    inventario = [r <span class="kw">for</span> r <span class="kw">in</span> inventario <span class="kw">if</span> r[<span class="st">"codigo"</span>] != codigo]
+    <span class="kw">if</span> <span class="fn">len</span>(inventario) &lt; original:
+        <span class="fn">print</span>(<span class="st">f"🗑️ Refacción {codigo} eliminada."</span>)
+    <span class="kw">else</span>:
+        <span class="fn">print</span>(<span class="st">f"❌ No se encontró {codigo}"</span>)
+
+<span class="cm"># ── Probar las funciones ──</span>
+<span class="fn">agregar_refaccion</span>(<span class="st">"REF-001"</span>, <span class="st">"SSD 500GB"</span>,    <span class="st">"Almacenamiento"</span>, <span class="num">15</span>, <span class="num">850.0</span>)
+<span class="fn">agregar_refaccion</span>(<span class="st">"REF-002"</span>, <span class="st">"RAM 8GB DDR4"</span>, <span class="st">"Memoria"</span>,        <span class="num">3</span>,  <span class="num">420.0</span>)
+<span class="fn">agregar_refaccion</span>(<span class="st">"REF-003"</span>, <span class="st">"Fuente 600W"</span>,  <span class="st">"Energía"</span>,         <span class="num">8</span>,  <span class="num">650.0</span>)
+
+<span class="fn">print</span>(<span class="st">"\n── Búsqueda 'ram' ──"</span>)
+<span class="kw">for</span> r <span class="kw">in</span> <span class="fn">buscar_refaccion</span>(<span class="st">"ram"</span>):
+    <span class="fn">print</span>(<span class="st">f"  {r['codigo']}: {r['nombre']}"</span>)
+
+<span class="fn">actualizar_cantidad</span>(<span class="st">"REF-002"</span>, <span class="num">10</span>)</pre>
+        </div>
+        <div class="explain-box">
+          <div class="explain-title">¿Por qué usar funciones?</div>
+          <p>Las funciones hacen tu código <strong>modular</strong> — puedes reutilizar <code>agregar_refaccion()</code> en cualquier parte del programa sin reescribirla. En la Fase 2 las conectaremos directamente al Excel.</p>
+        </div>
+      </div>
+
+      <div class="reflection-box">
+        <h4>🤔 Preguntas de Reflexión</h4>
+        <div class="reflection-q"><span class="q-num">1</span><p>¿Qué hace la palabra clave <code>return</code> dentro de una función? ¿Qué pasaría si <code>buscar_refaccion()</code> no tuviera <code>return</code>?</p></div>
+        <div class="reflection-q"><span class="q-num">2</span><p>La función <code>buscar_refaccion()</code> usa una <em>list comprehension</em>. Reescríbela usando un ciclo <code>for</code> y un <code>if</code> tradicionales. ¿Ambas versiones producen el mismo resultado?</p></div>
+        <div class="reflection-q"><span class="q-num">3</span><p>¿Por qué usamos <code>global inventario</code> en <code>eliminar_refaccion()</code>? Investiga en la documentación qué son las variables globales y locales en Python.</p></div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn btn-ghost" onclick="goTo(2)">← Anterior</button>
+        <button class="btn btn-primary" onclick="markDone(3)">Completado — Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- ===== SECCIÓN 4: PANDAS & EXCEL ===== -->
+    <div class="section" id="sec-4">
+      <div class="phase-banner p1">
+        <div class="phase-tag tag-p1">Fase 1 · Módulo 4</div>
+        <h2>pandas y Manejo de Excel</h2>
+        <p>La biblioteca que conecta tu código Python con hojas de cálculo reales.</p>
+      </div>
+      <div class="time-badge"><span class="time-dot"></span> Duración estimada: 40 min</div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon icon-blue">🐼</span> Instalar e Importar pandas</div>
+        <p>En Colab, pandas ya está instalado. Necesitamos también <code>openpyxl</code> para leer/escribir archivos <code>.xlsx</code>.</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python · Celda 9</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+          <pre><span class="cm"># Instalar openpyxl (solo se ejecuta una vez)</span>
+!pip install openpyxl --quiet
+
+<span class="cm"># Importar bibliotecas</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> openpyxl
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+
+<span class="fn">print</span>(<span class="st">f"pandas versión: {pd.__version__}"</span>)
+<span class="fn">print</span>(<span class="st">"✅ Bibliotecas listas"</span>)</pre>
+        </div>
+
+        <div class="step-header"><span class="step-num">1</span><span class="step-title">Crear un DataFrame desde el inventario</span></div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python · Celda 10</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+          <pre><span class="cm"># Datos iniciales del taller</span>
+<span class="va">datos_iniciales</span> = [
+    {<span class="st">"codigo"</span>: <span class="st">"REF-001"</span>, <span class="st">"nombre"</span>: <span class="st">"SSD 500GB"</span>,       <span class="st">"categoria"</span>: <span class="st">"Almacenamiento"</span>, <span class="st">"cantidad"</span>: <span class="num">15</span>, <span class="st">"precio"</span>: <span class="num">850.0</span>,  <span class="st">"minimo"</span>: <span class="num">5</span>},
+    {<span class="st">"codigo"</span>: <span class="st">"REF-002"</span>, <span class="st">"nombre"</span>: <span class="st">"RAM 8GB DDR4"</span>,    <span class="st">"categoria"</span>: <span class="st">"Memoria"</span>,        <span class="st">"cantidad"</span>:  <span class="num">3</span>, <span class="st">"precio"</span>: <span class="num">420.0</span>,  <span class="st">"minimo"</span>: <span class="num">5</span>},
+    {<span class="st">"codigo"</span>: <span class="st">"REF-003"</span>, <span class="st">"nombre"</span>: <span class="st">"Fuente 600W"</span>,     <span class="st">"categoria"</span>: <span class="st">"Energía"</span>,        <span class="st">"cantidad"</span>:  <span class="num">8</span>, <span class="st">"precio"</span>: <span class="num">650.0</span>,  <span class="st">"minimo"</span>: <span class="num">3</span>},
+    {<span class="st">"codigo"</span>: <span class="st">"REF-004"</span>, <span class="st">"nombre"</span>: <span class="st">"Tarjeta madre AM4"</span>,<span class="st">"categoria"</span>: <span class="st">"Procesamiento"</span>, <span class="st">"cantidad"</span>:  <span class="num">2</span>, <span class="st">"precio"</span>: <span class="num">1850.0</span>, <span class="st">"minimo"</span>: <span class="num">2</span>},
+    {<span class="st">"codigo"</span>: <span class="st">"REF-005"</span>, <span class="st">"nombre"</span>: <span class="st">"Monitor 24\""</span>,     <span class="st">"categoria"</span>: <span class="st">"Periférico"</span>,    <span class="st">"cantidad"</span>:  <span class="num">6</span>, <span class="st">"precio"</span>: <span class="num">3200.0</span>, <span class="st">"minimo"</span>: <span class="num">2</span>},
+]
+
+<span class="va">df</span> = pd.DataFrame(datos_iniciales)
+
+<span class="cm"># Agregar columnas calculadas</span>
+df[<span class="st">"valor_total"</span>] = df[<span class="st">"cantidad"</span>] * df[<span class="st">"precio"</span>]
+df[<span class="st">"estado"</span>] = df.apply(
+    <span class="kw">lambda</span> row: <span class="st">"⚠ BAJO"</span> <span class="kw">if</span> row[<span class="st">"cantidad"</span>] &lt;= row[<span class="st">"minimo"</span>] <span class="kw">else</span> <span class="st">"OK"</span>,
+    axis=<span class="num">1</span>
+)
+
+<span class="fn">print</span>(<span class="st">"=== INVENTARIO TALLER TECH ==="</span>)
+<span class="fn">print</span>(df.to_string(index=<span class="kw">False</span>))
+<span class="fn">print</span>(<span class="st">f"\nValor total del inventario: ${df['valor_total'].sum():,.2f}"</span>)</pre>
+        </div>
+
+        <div class="step-header"><span class="step-num">2</span><span class="step-title">Exportar e importar Excel</span></div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python · Celda 11</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+          <pre><span class="cm"># ── Guardar el inventario en un archivo Excel ──</span>
+<span class="va">ARCHIVO_EXCEL</span> = <span class="st">"inventario_taller.xlsx"</span>
+
+df.to_excel(ARCHIVO_EXCEL, index=<span class="kw">False</span>, sheet_name=<span class="st">"Inventario"</span>)
+<span class="fn">print</span>(<span class="st">f"✅ Archivo guardado: {ARCHIVO_EXCEL}"</span>)
+
+<span class="cm"># ── Leer el Excel de regreso ──</span>
+<span class="va">df_leido</span> = pd.read_excel(ARCHIVO_EXCEL, sheet_name=<span class="st">"Inventario"</span>)
+<span class="fn">print</span>(<span class="st">f"✅ Registros leídos: {len(df_leido)}"</span>)
+<span class="fn">print</span>(df_leido.head(<span class="num">3</span>))
+
+<span class="cm"># ── Descargar el archivo desde Colab ──</span>
+<span class="kw">from</span> google.colab <span class="kw">import</span> files
+files.download(ARCHIVO_EXCEL)</pre>
+        </div>
+        <div class="success-box">
+          <div class="success-title">✅ ¡Felicidades!</div>
+          <p>Completaste la Fase 1. Ya sabes usar variables, listas, diccionarios, funciones y pandas. En la Fase 2 combinarás todo para construir el sistema completo.</p>
+        </div>
+      </div>
+
+      <div class="reflection-box">
+        <h4>🤔 Preguntas de Reflexión</h4>
+        <div class="reflection-q"><span class="q-num">1</span><p>¿Qué ventaja tiene usar pandas para manejar el inventario en lugar de solo listas de diccionarios? Consulta la <a href="https://pandas.pydata.org/docs/getting_started/intro_tutorials/01_table_oriented.html" target="_blank" style="color:var(--accent)">documentación oficial</a>.</p></div>
+        <div class="reflection-q"><span class="q-num">2</span><p>¿Qué hace el método <code>apply()</code> con <code>lambda</code> en la celda 10? ¿Cómo lo reescribirías sin <code>lambda</code>?</p></div>
+        <div class="reflection-q"><span class="q-num">3</span><p>Investiga en la documentación de pandas qué diferencia hay entre <code>read_excel()</code> y <code>read_csv()</code>. ¿Cuándo preferirías cada uno para un sistema de inventarios?</p></div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn btn-ghost" onclick="goTo(3)">← Anterior</button>
+        <button class="btn btn-primary" onclick="markDone(4)">¡Fase 1 Completa! → Fase 2</button>
+      </div>
+    </div>
+
+    <!-- ===== SECCIÓN 5: DISEÑO DEL SISTEMA ===== -->
+    <div class="section" id="sec-5">
+      <div class="phase-banner p2">
+        <div class="phase-tag tag-p2">Fase 2 · Módulo 5</div>
+        <h2>Diseño del Sistema de Inventarios</h2>
+        <p>Planifica la arquitectura antes de codificar. Un buen diseño evita el caos.</p>
+      </div>
+      <div class="time-badge"><span class="time-dot"></span> Duración estimada: 30 min</div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon icon-green">🏗️</span> Arquitectura del Sistema</div>
+        <p>Nuestro sistema tendrá <strong>5 módulos</strong> que trabajarán juntos:</p>
+        <div class="grid-2">
+          <div style="background: var(--bg3); border-radius: 8px; padding: 1rem; border: 1px solid var(--border);">
+            <div style="font-size: 12px; font-weight: 600; color: var(--accent2); margin-bottom: 6px;">📁 Módulo 1 — Datos</div>
+            <p style="font-size: 13px; margin: 0;">Lee y escribe el archivo Excel. Fuente única de verdad.</p>
+          </div>
+          <div style="background: var(--bg3); border-radius: 8px; padding: 1rem; border: 1px solid var(--border);">
+            <div style="font-size: 12px; font-weight: 600; color: var(--accent2); margin-bottom: 6px;">➕ Módulo 2 — CRUD</div>
+            <p style="font-size: 13px; margin: 0;">Crear, Leer, Actualizar, Eliminar refacciones.</p>
+          </div>
+          <div style="background: var(--bg3); border-radius: 8px; padding: 1rem; border: 1px solid var(--border);">
+            <div style="font-size: 12px; font-weight: 600; color: var(--accent2); margin-bottom: 6px;">🔔 Módulo 3 — Alertas</div>
+            <p style="font-size: 13px; margin: 0;">Detecta artículos con stock por debajo del mínimo.</p>
+          </div>
+          <div style="background: var(--bg3); border-radius: 8px; padding: 1rem; border: 1px solid var(--border);">
+            <div style="font-size: 12px; font-weight: 600; color: var(--accent2); margin-bottom: 6px;">📊 Módulo 4 — Reportes</div>
+            <p style="font-size: 13px; margin: 0;">Genera resúmenes por categoría y valor total.</p>
+          </div>
+        </div>
+        <div style="background: var(--bg3); border-radius: 8px; padding: 1rem; border: 1px solid var(--border); margin-top: 0.6rem;">
+          <div style="font-size: 12px; font-weight: 600; color: var(--accent2); margin-bottom: 6px;">🖥️ Módulo 5 — Menú Principal</div>
+          <p style="font-size: 13px; margin: 0;">Interfaz de texto que conecta todos los módulos. El usuario interactúa aquí.</p>
+        </div>
+
+        <div class="divider"></div>
+        <div class="step-header"><span class="step-num">1</span><span class="step-title">Crea una nueva celda — Encabezado del proyecto</span></div>
+        <p>Inicia una nueva sección en tu cuaderno con este encabezado:</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python · Celda 12 — Encabezado</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+          <pre><span class="cm"># ============================================================</span>
+<span class="cm">#   SISTEMA DE INVENTARIOS — TALLER TECH SERVICES</span>
+<span class="cm">#   Computación II · Ingeniería Industrial</span>
+<span class="cm">#   Autor: [Tu nombre]  |  Fecha: [Hoy]</span>
+<span class="cm"># ============================================================</span>
+
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+<span class="kw">import</span> os
+
+<span class="va">ARCHIVO</span> = <span class="st">"inventario_taller.xlsx"</span>
+<span class="va">HOJA</span>    = <span class="st">"Inventario"</span>
+<span class="va">VERSION</span> = <span class="st">"1.0"</span>
+
+<span class="fn">print</span>(<span class="st">f"Sistema de Inventarios v{VERSION} — Listo"</span>)</pre>
+        </div>
+      </div>
+
+      <div class="reflection-box">
+        <h4>🤔 Preguntas de Reflexión</h4>
+        <div class="reflection-q"><span class="q-num">1</span><p>Antes de programar: ¿qué información mínima necesita tener cada refacción en el sistema? Haz una lista de campos y justifica por qué es necesario cada uno.</p></div>
+        <div class="reflection-q"><span class="q-num">2</span><p>¿Por qué guardamos las constantes <code>ARCHIVO</code> y <code>HOJA</code> al inicio y no directamente dentro de las funciones? ¿Qué problema resuelve esto cuando necesitas cambiar el nombre del archivo?</p></div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn btn-ghost" onclick="goTo(4)">← Anterior</button>
+        <button class="btn btn-primary" onclick="markDone(5)">Completado — Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- ===== SECCIÓN 6: CRUD ===== -->
+    <div class="section" id="sec-6">
+      <div class="phase-banner p2">
+        <div class="phase-tag tag-p2">Fase 2 · Módulo 6</div>
+        <h2>CRUD del Inventario Conectado a Excel</h2>
+        <p>Las 4 operaciones fundamentales, ahora con persistencia real en archivo Excel.</p>
+      </div>
+      <div class="time-badge"><span class="time-dot"></span> Duración estimada: 60 min</div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon icon-green">💾</span> Módulo 1 — Carga y Guardado</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python · Celda 13</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+          <pre><span class="kw">def</span> <span class="fn">cargar_inventario</span>():
+    <span class="st">"""Carga el inventario desde Excel. Si no existe, crea uno vacío."""</span>
+    <span class="kw">if</span> os.path.exists(ARCHIVO):
+        df = pd.read_excel(ARCHIVO, sheet_name=HOJA)
+        <span class="fn">print</span>(<span class="st">f"✅ Inventario cargado: {len(df)} registros"</span>)
+        <span class="kw">return</span> df
+    <span class="kw">else</span>:
+        columnas = [<span class="st">"codigo"</span>, <span class="st">"nombre"</span>, <span class="st">"categoria"</span>,
+                    <span class="st">"cantidad"</span>, <span class="st">"precio"</span>, <span class="st">"minimo"</span>, <span class="st">"fecha_ingreso"</span>]
+        df = pd.DataFrame(columns=columnas)
+        <span class="fn">print</span>(<span class="st">"📄 Creando nuevo inventario..."</span>)
+        <span class="kw">return</span> df
+
+<span class="kw">def</span> <span class="fn">guardar_inventario</span>(df):
+    <span class="st">"""Guarda el DataFrame en el archivo Excel."""</span>
+    df.to_excel(ARCHIVO, sheet_name=HOJA, index=<span class="kw">False</span>)
+    <span class="fn">print</span>(<span class="st">f"💾 Guardado en '{ARCHIVO}'"</span>)
+
+<span class="cm"># Inicializar con datos de prueba</span>
+<span class="va">df_inv</span> = <span class="fn">cargar_inventario</span>()
+<span class="kw">if</span> df_inv.empty:
+    <span class="va">datos</span> = [
+        [<span class="st">"REF-001"</span>, <span class="st">"SSD 500GB"</span>,       <span class="st">"Almacenamiento"</span>, <span class="num">15</span>, <span class="num">850.0</span>,  <span class="num">5</span>, <span class="st">"2024-01-10"</span>],
+        [<span class="st">"REF-002"</span>, <span class="st">"RAM 8GB DDR4"</span>,    <span class="st">"Memoria"</span>,         <span class="num">3</span>, <span class="num">420.0</span>,  <span class="num">5</span>, <span class="st">"2024-01-10"</span>],
+        [<span class="st">"REF-003"</span>, <span class="st">"Fuente 600W"</span>,     <span class="st">"Energía"</span>,          <span class="num">8</span>, <span class="num">650.0</span>,  <span class="num">3</span>, <span class="st">"2024-01-11"</span>],
+        [<span class="st">"REF-004"</span>, <span class="st">"Tarjeta madre AM4"</span>,<span class="st">"Procesamiento"</span>,   <span class="num">2</span>,<span class="num">1850.0</span>,  <span class="num">2</span>, <span class="st">"2024-01-12"</span>],
+        [<span class="st">"REF-005"</span>, <span class="st">'Monitor 24"'</span>,     <span class="st">"Periférico"</span>,       <span class="num">6</span>,<span class="num">3200.0</span>,  <span class="num">2</span>, <span class="st">"2024-01-12"</span>],
+    ]
+    df_inv = pd.DataFrame(datos, columns=df_inv.columns)
+    <span class="fn">guardar_inventario</span>(df_inv)
+
+<span class="fn">print</span>(df_inv)</pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon icon-green">➕</span> Módulo 2 — CRUD Completo</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python · Celda 14</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+          <pre><span class="kw">def</span> <span class="fn">agregar</span>(df, codigo, nombre, categoria, cantidad, precio, minimo=<span class="num">5</span>):
+    <span class="st">"""CREATE — agrega una refacción nueva."""</span>
+    <span class="kw">if</span> codigo <span class="kw">in</span> df[<span class="st">"codigo"</span>].values:
+        <span class="fn">print</span>(<span class="st">f"❌ El código {codigo} ya existe."</span>)
+        <span class="kw">return</span> df
+    nueva_fila = {
+        <span class="st">"codigo"</span>       : codigo,
+        <span class="st">"nombre"</span>       : nombre,
+        <span class="st">"categoria"</span>    : categoria,
+        <span class="st">"cantidad"</span>     : cantidad,
+        <span class="st">"precio"</span>       : precio,
+        <span class="st">"minimo"</span>       : minimo,
+        <span class="st">"fecha_ingreso"</span>: datetime.today().strftime(<span class="st">"%Y-%m-%d"</span>)
+    }
+    df = pd.concat([df, pd.DataFrame([nueva_fila])], ignore_index=<span class="kw">True</span>)
+    <span class="fn">guardar_inventario</span>(df)
+    <span class="fn">print</span>(<span class="st">f"✅ Agregado: {nombre}"</span>)
+    <span class="kw">return</span> df
+
+<span class="kw">def</span> <span class="fn">ver_inventario</span>(df):
+    <span class="st">"""READ — muestra todo el inventario con estado de stock."""</span>
+    <span class="fn">print</span>(<span class="st">"\n" + "="*60</span>)
+    <span class="fn">print</span>(<span class="st">"  INVENTARIO — TALLER TECH SERVICES"</span>)
+    <span class="fn">print</span>(<span class="st">"="*60</span>)
+    <span class="kw">for</span> _, row <span class="kw">in</span> df.iterrows():
+        estado = <span class="st">"⚠ BAJO"</span> <span class="kw">if</span> row[<span class="st">"cantidad"</span>] &lt;= row[<span class="st">"minimo"</span>] <span class="kw">else</span> <span class="st">"  OK "</span>
+        <span class="fn">print</span>(<span class="st">f"[{estado}] {row['codigo']} | {row['nombre']:<span class="num">22</span>} | "</span>
+              <span class="st">f"Cant: {int(row['cantidad']):>3} | Precio: ${row['precio']:>8,.2f}"</span>)
+    <span class="fn">print</span>(<span class="st">"-"*60</span>)
+    <span class="fn">print</span>(<span class="st">f"Total artículos: {len(df)} | Valor total: ${(df['cantidad']*df['precio']).sum():,.2f}\n"</span>)
+
+<span class="kw">def</span> <span class="fn">actualizar</span>(df, codigo, campo, nuevo_valor):
+    <span class="st">"""UPDATE — modifica un campo de una refacción."""</span>
+    idx = df[df[<span class="st">"codigo"</span>] == codigo].index
+    <span class="kw">if</span> idx.empty:
+        <span class="fn">print</span>(<span class="st">f"❌ Código {codigo} no encontrado"</span>)
+        <span class="kw">return</span> df
+    df.loc[idx, campo] = nuevo_valor
+    <span class="fn">guardar_inventario</span>(df)
+    <span class="fn">print</span>(<span class="st">f"✅ {codigo} → {campo} = {nuevo_valor}"</span>)
+    <span class="kw">return</span> df
+
+<span class="kw">def</span> <span class="fn">eliminar</span>(df, codigo):
+    <span class="st">"""DELETE — elimina una refacción por código."""</span>
+    <span class="kw">if</span> codigo <span class="kw">not</span> <span class="kw">in</span> df[<span class="st">"codigo"</span>].values:
+        <span class="fn">print</span>(<span class="st">f"❌ Código {codigo} no encontrado"</span>)
+        <span class="kw">return</span> df
+    nombre = df[df[<span class="st">"codigo"</span>]==codigo][<span class="st">"nombre"</span>].values[<span class="num">0</span>]
+    df = df[df[<span class="st">"codigo"</span>] != codigo].reset_index(drop=<span class="kw">True</span>)
+    <span class="fn">guardar_inventario</span>(df)
+    <span class="fn">print</span>(<span class="st">f"🗑️ Eliminado: {nombre}"</span>)
+    <span class="kw">return</span> df
+
+<span class="cm"># ── Probar el CRUD ──</span>
+<span class="va">df_inv</span> = <span class="fn">cargar_inventario</span>()
+<span class="fn">ver_inventario</span>(df_inv)
+
+<span class="va">df_inv</span> = <span class="fn">agregar</span>(df_inv, <span class="st">"REF-006"</span>, <span class="st">"Teclado Mecánico"</span>, <span class="st">"Periférico"</span>, <span class="num">10</span>, <span class="num">580.0</span>)
+<span class="va">df_inv</span> = <span class="fn">actualizar</span>(df_inv, <span class="st">"REF-002"</span>, <span class="st">"cantidad"</span>, <span class="num">12</span>)
+<span class="fn">ver_inventario</span>(df_inv)</pre>
+        </div>
+      </div>
+
+      <div class="reflection-box">
+        <h4>🤔 Preguntas de Reflexión</h4>
+        <div class="reflection-q"><span class="q-num">1</span><p>¿Por qué las funciones CRUD reciben y devuelven el DataFrame en lugar de modificarlo directamente como variable global? Reflexiona sobre qué implicaciones tiene esto para la seguridad y prueba del código.</p></div>
+        <div class="reflection-q"><span class="q-num">2</span><p>Prueba eliminar un código que no existe. ¿Qué mensaje ves? ¿Cómo mejorarías ese manejo de errores usando un bloque <code>try/except</code>?</p></div>
+        <div class="reflection-q"><span class="q-num">3</span><p>La función <code>agregar()</code> usa <code>pd.concat()</code>. Investiga en la documentación de pandas por qué ya no se usa <code>df.append()</code>. ¿Qué pasó con ese método?</p></div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn btn-ghost" onclick="goTo(5)">← Anterior</button>
+        <button class="btn btn-primary" onclick="markDone(6)">Completado — Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- ===== SECCIÓN 7: REPORTES & ALERTAS ===== -->
+    <div class="section" id="sec-7">
+      <div class="phase-banner p2">
+        <div class="phase-tag tag-p2">Fase 2 · Módulo 7</div>
+        <h2>Reportes y Sistema de Alertas</h2>
+        <p>Transforma los datos en información útil para la toma de decisiones del taller.</p>
+      </div>
+      <div class="time-badge"><span class="time-dot"></span> Duración estimada: 50 min</div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon icon-green">🔔</span> Módulo 3 — Alertas de Stock</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python · Celda 15</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+          <pre><span class="kw">def</span> <span class="fn">alertas_stock</span>(df):
+    <span class="st">"""Muestra los artículos con stock igual o menor al mínimo."""</span>
+    bajos = df[df[<span class="st">"cantidad"</span>] &lt;= df[<span class="st">"minimo"</span>]]
+    sin_stock = df[df[<span class="st">"cantidad"</span>] == <span class="num">0</span>]
+
+    <span class="fn">print</span>(<span class="st">"\n🔔 === ALERTAS DE INVENTARIO ==="</span>)
+
+    <span class="kw">if</span> <span class="kw">not</span> sin_stock.empty:
+        <span class="fn">print</span>(<span class="st">"\n🔴 SIN STOCK:"</span>)
+        <span class="kw">for</span> _, r <span class="kw">in</span> sin_stock.iterrows():
+            <span class="fn">print</span>(<span class="st">f"   • {r['codigo']}: {r['nombre']}"</span>)
+
+    <span class="kw">if</span> <span class="kw">not</span> bajos.empty:
+        <span class="fn">print</span>(<span class="st">"\n🟡 STOCK BAJO (reponer pronto):"</span>)
+        <span class="kw">for</span> _, r <span class="kw">in</span> bajos.iterrows():
+            <span class="fn">print</span>(<span class="st">f"   • {r['codigo']}: {r['nombre']} | Actual: {int(r['cantidad'])} | Mínimo: {int(r['minimo'])}"</span>)
+    <span class="kw">else</span>:
+        <span class="fn">print</span>(<span class="st">"\n🟢 Todo el stock está dentro del nivel mínimo."</span>)
+
+    <span class="fn">print</span>(<span class="st">f"\nResumen: {len(bajos)} artículo(s) requieren reposición."</span>)
+
+<span class="fn">alertas_stock</span>(df_inv)</pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon icon-green">📊</span> Módulo 4 — Reportes con pandas</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python · Celda 16</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+          <pre><span class="kw">def</span> <span class="fn">reporte_general</span>(df):
+    <span class="st">"""Genera un reporte completo del inventario."""</span>
+    <span class="fn">print</span>(<span class="st">"\n" + "="*55</span>)
+    <span class="fn">print</span>(<span class="st">"  REPORTE GENERAL — TALLER TECH SERVICES"</span>)
+    <span class="fn">print</span>(<span class="st">f"  Fecha: {datetime.today().strftime('%d/%m/%Y %H:%M')}"</span>)
+    <span class="fn">print</span>(<span class="st">"="*55</span>)
+
+    <span class="cm"># KPIs principales</span>
+    <span class="va">total_articulos</span>  = <span class="fn">len</span>(df)
+    <span class="va">valor_inventario</span> = (df[<span class="st">"cantidad"</span>] * df[<span class="st">"precio"</span>]).sum()
+    <span class="va">art_bajo_stock</span>   = <span class="fn">len</span>(df[df[<span class="st">"cantidad"</span>] &lt;= df[<span class="st">"minimo"</span>]])
+    <span class="va">precio_promedio</span>  = df[<span class="st">"precio"</span>].mean()
+
+    <span class="fn">print</span>(<span class="st">f"\n📦 Total artículos   : {total_articulos}"</span>)
+    <span class="fn">print</span>(<span class="st">f"💰 Valor inventario  : ${valor_inventario:,.2f}"</span>)
+    <span class="fn">print</span>(<span class="st">f"⚠  Bajo stock        : {art_bajo_stock} artículo(s)"</span>)
+    <span class="fn">print</span>(<span class="st">f"📈 Precio promedio   : ${precio_promedio:,.2f}"</span>)
+
+    <span class="cm"># Reporte por categoría</span>
+    <span class="fn">print</span>(<span class="st">"\n── Por Categoría ──"</span>)
+    <span class="va">por_cat</span> = df.groupby(<span class="st">"categoria"</span>).agg(
+        articulos   = (<span class="st">"nombre"</span>,   <span class="st">"count"</span>),
+        stock_total = (<span class="st">"cantidad"</span>, <span class="st">"sum"</span>),
+        valor_total = (<span class="st">"precio"</span>,   <span class="kw">lambda</span> x: (x * df.loc[x.index, <span class="st">"cantidad"</span>]).sum())
+    ).reset_index()
+
+    <span class="kw">for</span> _, r <span class="kw">in</span> por_cat.iterrows():
+        <span class="fn">print</span>(<span class="st">f"  {r['categoria']:<span class="num">18</span>} | {r['articulos']:>2} arts | "</span>
+              <span class="st">f"Stock: {int(r['stock_total']):>4} | Valor: ${r['valor_total']:>10,.2f}"</span>)
+
+    <span class="cm"># Top 3 artículos más valiosos</span>
+    <span class="fn">print</span>(<span class="st">"\n── Top 3 Mayor Valor en Almacén ──"</span>)
+    df_val = df.copy()
+    df_val[<span class="st">"valor"</span>] = df_val[<span class="st">"cantidad"</span>] * df_val[<span class="st">"precio"</span>]
+    top3 = df_val.nlargest(<span class="num">3</span>, <span class="st">"valor"</span>)
+    <span class="kw">for</span> i, (_, r) <span class="kw">in</span> <span class="fn">enumerate</span>(top3.iterrows(), <span class="num">1</span>):
+        <span class="fn">print</span>(<span class="st">f"  {i}. {r['nombre']:<span class="num">22</span>} → ${r['valor']:>10,.2f}"</span>)
+
+<span class="kw">def</span> <span class="fn">exportar_reporte_excel</span>(df):
+    <span class="st">"""Guarda un reporte detallado en una nueva hoja del Excel."""</span>
+    df_rep = df.copy()
+    df_rep[<span class="st">"valor_total"</span>] = df_rep[<span class="st">"cantidad"</span>] * df_rep[<span class="st">"precio"</span>]
+    df_rep[<span class="st">"estado"</span>] = df_rep.apply(
+        <span class="kw">lambda</span> r: <span class="st">"SIN STOCK"</span> <span class="kw">if</span> r[<span class="st">"cantidad"</span>]==<span class="num">0</span>
+                  <span class="kw">else</span> (<span class="st">"STOCK BAJO"</span> <span class="kw">if</span> r[<span class="st">"cantidad"</span>] &lt;= r[<span class="st">"minimo"</span>] <span class="kw">else</span> <span class="st">"OK"</span>), axis=<span class="num">1</span>)
+
+    <span class="kw">with</span> pd.ExcelWriter(ARCHIVO, engine=<span class="st">"openpyxl"</span>, mode=<span class="st">"a"</span>,
+                        if_sheet_exists=<span class="st">"replace"</span>) <span class="kw">as</span> writer:
+        df_rep.to_excel(writer, sheet_name=<span class="st">"Reporte"</span>, index=<span class="kw">False</span>)
+
+    <span class="fn">print</span>(<span class="st">f"📊 Reporte exportado a hoja 'Reporte' en {ARCHIVO}"</span>)
+
+<span class="fn">reporte_general</span>(df_inv)
+<span class="fn">exportar_reporte_excel</span>(df_inv)</pre>
+        </div>
+      </div>
+
+      <div class="reflection-box">
+        <h4>🤔 Preguntas de Reflexión</h4>
+        <div class="reflection-q"><span class="q-num">1</span><p>¿Qué hace <code>groupby()</code> en pandas? Explica con tus palabras cómo funciona y proporciona un ejemplo de dónde más lo usarías en un contexto industrial.</p></div>
+        <div class="reflection-q"><span class="q-num">2</span><p>¿Por qué usamos <code>mode="a"</code> en <code>pd.ExcelWriter()</code> al exportar el reporte? ¿Qué pasaría si usáramos <code>mode="w"</code>?</p></div>
+        <div class="reflection-q"><span class="q-num">3</span><p>Diseña en papel (o en una celda de texto en Colab) dos KPIs adicionales que serían útiles para un gerente del taller. ¿Cómo los calcularías con pandas?</p></div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn btn-ghost" onclick="goTo(6)">← Anterior</button>
+        <button class="btn btn-primary" onclick="markDone(7)">Completado — Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- ===== SECCIÓN 8: INTEGRACIÓN FINAL ===== -->
+    <div class="section" id="sec-8">
+      <div class="phase-banner p2">
+        <div class="phase-tag tag-p2">Fase 2 · Módulo 8 — FINAL</div>
+        <h2>Menú Principal — Sistema Completo</h2>
+        <p>Integra todos los módulos en una interfaz funcional de texto.</p>
+      </div>
+      <div class="time-badge"><span class="time-dot"></span> Duración estimada: 40 min</div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon icon-green">🖥️</span> Módulo 5 — Menú Interactivo</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python · Celda 17 — Sistema Completo</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+          <pre><span class="kw">def</span> <span class="fn">mostrar_menu</span>():
+    <span class="fn">print</span>(<span class="st">"""
+╔══════════════════════════════════════════╗
+║   TALLER TECH SERVICES — INVENTARIO      ║
+╠══════════════════════════════════════════╣
+║  1. Ver inventario completo              ║
+║  2. Agregar nueva refacción              ║
+║  3. Actualizar cantidad                  ║
+║  4. Eliminar refacción                   ║
+║  5. Buscar refacción                     ║
+║  6. Ver alertas de stock                 ║
+║  7. Reporte general                      ║
+║  8. Exportar reporte a Excel             ║
+║  0. Salir                                ║
+╚══════════════════════════════════════════╝"""</span>)
+
+<span class="kw">def</span> <span class="fn">buscar_interactivo</span>(df, termino):
+    <span class="st">"""Busca por nombre o código (insensible a mayúsculas)."""</span>
+    t = termino.lower()
+    res = df[df[<span class="st">"codigo"</span>].str.lower().str.contains(t) |
+             df[<span class="st">"nombre"</span>].str.lower().str.contains(t)]
+    <span class="kw">if</span> res.empty:
+        <span class="fn">print</span>(<span class="st">f"❌ Sin resultados para '{termino}'"</span>)
+    <span class="kw">else</span>:
+        <span class="fn">print</span>(<span class="st">f"\n🔍 Resultados ({len(res)}):"</span>)
+        <span class="kw">for</span> _, r <span class="kw">in</span> res.iterrows():
+            <span class="fn">print</span>(<span class="st">f"   {r['codigo']} | {r['nombre']} | Cant: {int(r['cantidad'])}"</span>)
+
+<span class="kw">def</span> <span class="fn">ejecutar_sistema</span>():
+    <span class="st">"""Bucle principal del sistema de inventarios."""</span>
+    df = <span class="fn">cargar_inventario</span>()
+    <span class="fn">print</span>(<span class="st">"🚀 Sistema iniciado correctamente."</span>)
+
+    <span class="kw">while</span> <span class="kw">True</span>:
+        <span class="fn">mostrar_menu</span>()
+        opcion = <span class="fn">input</span>(<span class="st">"\n👉 Selecciona una opción: "</span>).strip()
+
+        <span class="kw">if</span> opcion == <span class="st">"1"</span>:
+            <span class="fn">ver_inventario</span>(df)
+
+        <span class="kw">elif</span> opcion == <span class="st">"2"</span>:
+            cod  = <span class="fn">input</span>(<span class="st">"Código (ej: REF-007): "</span>).strip().upper()
+            nom  = <span class="fn">input</span>(<span class="st">"Nombre: "</span>).strip()
+            cat  = <span class="fn">input</span>(<span class="st">"Categoría: "</span>).strip()
+            cant = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"Cantidad inicial: "</span>))
+            prec = <span class="fn">float</span>(<span class="fn">input</span>(<span class="st">"Precio unitario: $"</span>))
+            mini = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"Stock mínimo [5]: "</span>) <span class="kw">or</span> <span class="num">5</span>)
+            df = <span class="fn">agregar</span>(df, cod, nom, cat, cant, prec, mini)
+
+        <span class="kw">elif</span> opcion == <span class="st">"3"</span>:
+            cod  = <span class="fn">input</span>(<span class="st">"Código a actualizar: "</span>).strip().upper()
+            cant = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"Nueva cantidad: "</span>))
+            df = <span class="fn">actualizar</span>(df, cod, <span class="st">"cantidad"</span>, cant)
+
+        <span class="kw">elif</span> opcion == <span class="st">"4"</span>:
+            cod = <span class="fn">input</span>(<span class="st">"Código a eliminar: "</span>).strip().upper()
+            conf = <span class="fn">input</span>(<span class="st">f"¿Confirmar eliminación de {cod}? (s/n): "</span>)
+            <span class="kw">if</span> conf.lower() == <span class="st">"s"</span>:
+                df = <span class="fn">eliminar</span>(df, cod)
+
+        <span class="kw">elif</span> opcion == <span class="st">"5"</span>:
+            termino = <span class="fn">input</span>(<span class="st">"Buscar (nombre o código): "</span>).strip()
+            <span class="fn">buscar_interactivo</span>(df, termino)
+
+        <span class="kw">elif</span> opcion == <span class="st">"6"</span>:
+            <span class="fn">alertas_stock</span>(df)
+
+        <span class="kw">elif</span> opcion == <span class="st">"7"</span>:
+            <span class="fn">reporte_general</span>(df)
+
+        <span class="kw">elif</span> opcion == <span class="st">"8"</span>:
+            <span class="fn">exportar_reporte_excel</span>(df)
+
+        <span class="kw">elif</span> opcion == <span class="st">"0"</span>:
+            <span class="fn">print</span>(<span class="st">"👋 ¡Sistema cerrado! Datos guardados."</span>)
+            <span class="kw">break</span>
+        <span class="kw">else</span>:
+            <span class="fn">print</span>(<span class="st">"❓ Opción inválida, intenta de nuevo."</span>)
+
+<span class="cm"># ── EJECUTAR EL SISTEMA ──</span>
+<span class="fn">ejecutar_sistema</span>()</pre>
+        </div>
+        <div class="success-box">
+          <div class="success-title">🎉 ¡Sistema de Inventarios Completado!</div>
+          <p>Tu sistema de inventarios para Taller Tech Services está funcional. Lee y escribe en Excel, gestiona refacciones con CRUD completo, genera alertas automáticas y reportes detallados.</p>
+        </div>
+
+        <div class="divider"></div>
+        <div class="card-title" style="margin-top: 0.5rem;"><span class="icon icon-green">📋</span> Lista de Entregables</div>
+        <ul class="checklist" id="entregables">
+          <li onclick="toggleCheck(this)"><span class="check-box"><span class="check-mark">✓</span></span> Cuaderno .ipynb con todas las celdas ejecutadas</li>
+          <li onclick="toggleCheck(this)"><span class="check-box"><span class="check-mark">✓</span></span> Archivo inventario_taller.xlsx con datos reales</li>
+          <li onclick="toggleCheck(this)"><span class="check-box"><span class="check-mark">✓</span></span> Sistema ejecutable con menú funcional</li>
+          <li onclick="toggleCheck(this)"><span class="check-box"><span class="check-mark">✓</span></span> Respuestas a todas las preguntas de reflexión</li>
+          <li onclick="toggleCheck(this)"><span class="check-box"><span class="check-mark">✓</span></span> Captura de pantalla del menú ejecutándose</li>
+        </ul>
+
+        <div class="divider"></div>
+        <div class="card-title"><span class="icon icon-blue">📐</span> Rúbrica de Evaluación</div>
+        <table class="rubric-table">
+          <tr><th>Criterio</th><th>Puntos</th></tr>
+          <tr><td>Fase 1 completa (celdas 1–11 ejecutadas)</td><td class="pts">25</td></tr>
+          <tr><td>CRUD funcional con persistencia Excel</td><td class="pts">25</td></tr>
+          <tr><td>Alertas y reportes operando</td><td class="pts">20</td></tr>
+          <tr><td>Menú interactivo funcional</td><td class="pts">15</td></tr>
+          <tr><td>Preguntas de reflexión respondidas</td><td class="pts">15</td></tr>
+          <tr><td><strong>Total</strong></td><td class="pts">100</td></tr>
+        </table>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn btn-ghost" onclick="goTo(7)">← Anterior</button>
+        <button class="btn btn-reto" onclick="markDone(8)">🌟 Ver Actividad Reto →</button>
+      </div>
+    </div>
+
+    <!-- ===== SECCIÓN 9: RETO ===== -->
+    <div class="section" id="sec-9">
+      <div class="phase-banner reto">
+        <div class="phase-tag tag-reto">Actividad Reto · Puntos Extra</div>
+        <h2>🌟 Niveles Avanzados del Sistema</h2>
+        <p>Sube el nivel de tu sistema. Cada reto otorga puntos extra sobre la calificación final.</p>
+      </div>
+      <div class="time-badge"><span class="time-dot"></span> Sin límite de tiempo — trabajo extra en casa o clase</div>
+
+      <div class="card">
+        <div class="reto-star">⭐</div>
+        <div class="card-title" style="color: var(--accent3);">Reto 1 — Historial de Movimientos (+5 pts)</div>
+        <p>Agrega un registro automático de cada operación CRUD realizada. Cada vez que se agregue, actualice o elimine una refacción, se debe guardar en una hoja de Excel llamada <code>"Historial"</code> con: fecha, hora, tipo de operación, código y descripción.</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python · Punto de partida — Reto 1</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+          <pre><span class="cm"># RETO 1: Completa esta función</span>
+<span class="kw">def</span> <span class="fn">registrar_movimiento</span>(operacion, codigo, descripcion):
+    <span class="st">"""
+    Registra un movimiento en la hoja 'Historial' del Excel.
+    operacion: 'AGREGAR', 'ACTUALIZAR', 'ELIMINAR'
+    codigo: código de la refacción
+    descripcion: texto con los detalles del cambio
+    """</span>
+    <span class="cm"># TODO: Implementa la lógica para:</span>
+    <span class="cm"># 1. Leer el historial existente (o crear uno vacío)</span>
+    <span class="cm"># 2. Agregar el nuevo movimiento con fecha/hora</span>
+    <span class="cm"># 3. Guardarlo en la hoja 'Historial' del Excel</span>
+    <span class="kw">pass</span>  <span class="cm"># ← Elimina esto y escribe tu código aquí</span></pre>
+        </div>
+        <div class="reflection-box" style="margin-top: 1rem;">
+          <h4>🧠 Antes de programar, reflexiona</h4>
+          <div class="reflection-q"><span class="q-num">1</span><p>¿Qué estructura de datos usarías para el historial? ¿Un diccionario, una lista, un DataFrame? ¿Por qué?</p></div>
+          <div class="reflection-q"><span class="q-num">2</span><p>Si ya tienes datos en el Excel (hoja Historial), ¿deberías sobreescribir esa hoja o solo agregar la nueva fila? Investiga <code>mode="a"</code> con <code>if_sheet_exists</code> en openpyxl.</p></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="reto-star">⭐⭐</div>
+        <div class="card-title" style="color: var(--accent3);">Reto 2 — Gráfica de Inventario (+8 pts)</div>
+        <p>Usa <strong>matplotlib</strong> para generar al menos dos visualizaciones automáticas desde el inventario:</p>
+        <ul style="margin-top: 0.5rem;">
+          <li><strong>Gráfica 1:</strong> Barras con la cantidad de cada refacción (color rojo si está bajo mínimo).</li>
+          <li><strong>Gráfica 2:</strong> Pastel con la distribución del valor total por categoría.</li>
+        </ul>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python · Punto de partida — Reto 2</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+          <pre><span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+<span class="kw">def</span> <span class="fn">graficar_inventario</span>(df):
+    <span class="st">"""
+    Genera gráficas del inventario.
+    RETO: Implementa las dos visualizaciones descritas.
+    Pista: usa df['cantidad'] <= df['minimo'] para colorear
+    las barras de rojo cuando están en alerta.
+    """</span>
+    <span class="cm"># Consulta la documentación:</span>
+    <span class="cm"># https://matplotlib.org/stable/gallery/index.html</span>
+    <span class="kw">pass</span>
+
+<span class="fn">graficar_inventario</span>(df_inv)</pre>
+        </div>
+        <a href="https://matplotlib.org/stable/gallery/index.html" target="_blank" class="resource-link">📊 Galería de Matplotlib</a>
+        <a href="https://matplotlib.org/stable/api/axes_api.html" target="_blank" class="resource-link">📖 API de Matplotlib</a>
+        <div class="reflection-box" style="margin-top: 1rem;">
+          <h4>🧠 Antes de programar, reflexiona</h4>
+          <div class="reflection-q"><span class="q-num">1</span><p>¿Cómo generarías una lista de colores condicionada a si el stock está bajo o no? Piensa en cómo las listas de comprensión pueden ayudarte aquí.</p></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="reto-star">⭐⭐⭐</div>
+        <div class="card-title" style="color: var(--accent3);">Reto 3 — Sistema con Múltiples Hojas (+12 pts)</div>
+        <p>Amplía el Excel para tener <strong>tres hojas de trabajo</strong>:</p>
+        <ul style="margin-top: 0.5rem; margin-bottom: 1rem;">
+          <li><code>Inventario</code> — Datos actuales (ya implementado).</li>
+          <li><code>Proveedores</code> — Catálogo de proveedores (nombre, contacto, tiempo de entrega).</li>
+          <li><code>Órdenes</code> — Órdenes de reposición automáticas para artículos bajo stock.</li>
+        </ul>
+        <p>Implementa una función <code>generar_orden_reposicion(df)</code> que cree automáticamente una orden de compra en la hoja <code>Órdenes</code> para todos los artículos con stock bajo, calculando la cantidad a pedir para llegar al doble del mínimo.</p>
+        <div class="warn-box">
+          <div class="warn-title">💡 Pista de diseño</div>
+          <p>Antes de programar, dibuja en papel el esquema de las tres hojas y cómo se relacionan entre sí. ¿Qué campo conecta <code>Inventario</code> con <code>Proveedores</code>? Agrega ese campo primero.</p>
+        </div>
+        <div class="reflection-box" style="margin-top: 1rem;">
+          <h4>🧠 Antes de programar, reflexiona</h4>
+          <div class="reflection-q"><span class="q-num">1</span><p>¿Qué campo necesitas agregar a la hoja <code>Inventario</code> para vincularla con <code>Proveedores</code>? ¿Es un concepto similar a las llaves foráneas en bases de datos?</p></div>
+          <div class="reflection-q"><span class="q-num">2</span><p>¿Cómo calcularías la "cantidad a pedir" para que el stock final sea exactamente el doble del mínimo? Escribe la fórmula matemática antes de codificarla.</p></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon icon-orange">📐</span> Rúbrica de Retos</div>
+        <table class="rubric-table">
+          <tr><th>Reto</th><th>Requisito mínimo</th><th>Pts Extra</th></tr>
+          <tr><td>⭐ Historial de movimientos</td><td>Guarda 3+ tipos de operación correctamente</td><td class="pts">+5</td></tr>
+          <tr><td>⭐⭐ Gráficas matplotlib</td><td>2 gráficas funcionales con colores condicionales</td><td class="pts">+8</td></tr>
+          <tr><td>⭐⭐⭐ Múltiples hojas</td><td>3 hojas integradas + orden de reposición automática</td><td class="pts">+12</td></tr>
+          <tr><td><strong>Máximo extra posible</strong></td><td></td><td class="pts">+25</td></tr>
+        </table>
+        <div class="warn-box" style="margin-top: 1rem;">
+          <div class="warn-title">📌 Lineamientos de IA para los Retos</div>
+          <p>Puedes usar herramientas de IA como apoyo, pero <strong>debes ser capaz de explicar cada línea de tu código</strong>. Se evaluará con preguntas orales sobre tu implementación. Si no puedes explicarlo, no cuenta. El reto es <em>tuyo</em>.</p>
+        </div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn btn-ghost" onclick="goTo(8)">← Regresar al Sistema Final</button>
+        <button class="btn btn-reto" onclick="markDone(9)">✅ Actividad Completa</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+let current = 0;
+const total = 10;
+const done = new Array(total).fill(false);
+
+function goTo(idx) {
+  document.getElementById('sec-' + current).classList.remove('active');
+  document.getElementById('nav-' + current).classList.remove('active');
+  current = idx;
+  document.getElementById('sec-' + current).classList.add('active');
+  document.getElementById('nav-' + current).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  updateProgress();
+}
+
+function markDone(idx) {
+  done[idx] = true;
+  const navItem = document.getElementById('nav-' + idx);
+  navItem.classList.add('done');
+  navItem.classList.remove('active');
+  document.getElementById('chk-' + idx).textContent = '✓';
+  updateProgress();
+  if (idx < total - 1) goTo(idx + 1);
+}
+
+function updateProgress() {
+  const count = done.filter(Boolean).length;
+  const pct = Math.round((count / total) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+}
+
+function toggleCheck(el) {
+  el.classList.toggle('checked');
+}
+
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '¡Copiado!';
+    setTimeout(() => btn.textContent = 'Copiar', 1800);
+  });
+}
+</script>
+</body>
+</html>
