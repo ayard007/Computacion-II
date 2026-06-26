@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Examen de Excel – Ingeniería Industrial | UNE</title>
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --azul:    #1e2e6e;
+    --rojo:    #d9232d;
+    --blanco:  #ffffff;
+    --gris-cl: #f5f6fa;
+    --gris-md: #e2e5ef;
+    --gris-tx: #5a6075;
+    --verde:   #17864a;
+    --naranja: #e07b00;
+    --sombra:  0 4px 18px rgba(30,46,110,.13);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--gris-cl);
+    color: #1a1a2e;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--azul);
+    padding: 0;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,.35);
+  }
+  .header-inner {
+    max-width: 960px; margin: auto;
+    display: flex; align-items: center; gap: 18px;
+    padding: 14px 24px;
+  }
+  .logo-wrap img { height: 54px; filter: brightness(0) invert(1); }
+  .header-text h1 { color: var(--blanco); font-size: 1.15rem; font-weight: 700; letter-spacing: .5px; }
+  .header-text p  { color: rgba(255,255,255,.72); font-size: .82rem; margin-top: 2px; }
+  .badge {
+    margin-left: auto; background: var(--rojo);
+    color: var(--blanco); font-size: .78rem; font-weight: 700;
+    padding: 5px 14px; border-radius: 20px; white-space: nowrap;
+  }
+
+  /* ── Hero / Info ── */
+  .hero {
+    background: linear-gradient(135deg, var(--azul) 0%, #2d3f8f 100%);
+    color: var(--blanco); text-align: center;
+    padding: 48px 24px 52px;
+  }
+  .hero h2 { font-size: 1.7rem; font-weight: 800; letter-spacing: .4px; margin-bottom: 10px; }
+  .hero p  { font-size: .95rem; color: rgba(255,255,255,.8); max-width: 560px; margin: 0 auto 26px; }
+  .meta-pills { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .pill {
+    background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3);
+    color: var(--blanco); font-size: .8rem; font-weight: 600;
+    padding: 6px 16px; border-radius: 20px;
+  }
+
+  /* ── Progress bar ── */
+  #progress-wrap {
+    max-width: 960px; margin: 28px auto 0; padding: 0 24px;
+  }
+  .progress-label { display: flex; justify-content: space-between; font-size: .83rem; color: var(--gris-tx); margin-bottom: 6px; }
+  .progress-bar-bg { background: var(--gris-md); border-radius: 8px; height: 10px; overflow: hidden; }
+  .progress-bar-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--azul), var(--rojo));
+    border-radius: 8px; transition: width .4s ease;
+  }
+
+  /* ── Main container ── */
+  main { max-width: 960px; margin: 28px auto 60px; padding: 0 24px; }
+
+  /* ── Section header ── */
+  .section-title {
+    background: var(--azul); color: var(--blanco);
+    font-size: .9rem; font-weight: 700; letter-spacing: .8px;
+    padding: 10px 20px; border-radius: 8px 8px 0 0;
+    text-transform: uppercase; margin-top: 36px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title span.num {
+    background: var(--rojo); border-radius: 50%;
+    width: 26px; height: 26px; display: inline-flex;
+    align-items: center; justify-content: center;
+    font-size: .8rem; font-weight: 900;
+  }
+
+  /* ── Question card ── */
+  .q-card {
+    background: var(--blanco);
+    border: 1px solid var(--gris-md);
+    border-top: none;
+    padding: 22px 24px 18px;
+    transition: background .2s;
+  }
+  .q-card:last-of-type { border-radius: 0 0 8px 8px; }
+  .q-card + .q-card { border-top: 1px solid var(--gris-md); }
+
+  .q-num {
+    font-size: .72rem; font-weight: 700;
+    color: var(--azul); letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 7px;
+  }
+  .q-text {
+    font-size: .97rem; font-weight: 600; line-height: 1.55;
+    margin-bottom: 14px; color: #1a1a2e;
+  }
+  .q-text code {
+    background: #eef0f8; color: var(--azul);
+    padding: 1px 6px; border-radius: 4px;
+    font-size: .9em; font-family: 'Consolas','Courier New',monospace;
+  }
+
+  /* ── Options ── */
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option-label {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 14px; border-radius: 8px;
+    border: 1.5px solid var(--gris-md);
+    cursor: pointer; transition: border-color .2s, background .2s;
+    font-size: .92rem; line-height: 1.45;
+  }
+  .option-label:hover { border-color: var(--azul); background: #f0f2fb; }
+  .option-label input[type="radio"] { accent-color: var(--azul); margin-top: 2px; flex-shrink: 0; }
+
+  /* States after submit */
+  .option-label.correct  { border-color: var(--verde) !important; background: #e8f7ee !important; }
+  .option-label.wrong    { border-color: var(--rojo)  !important; background: #fdecea !important; }
+  .option-label.correct .opt-letter { background: var(--verde); color: #fff; }
+  .option-label.wrong   .opt-letter { background: var(--rojo);  color: #fff; }
+
+  .opt-letter {
+    min-width: 26px; height: 26px;
+    border-radius: 50%; background: var(--gris-md);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .78rem; font-weight: 800; color: var(--azul);
+    flex-shrink: 0; transition: background .2s, color .2s;
+  }
+
+  /* ── Feedback ── */
+  .feedback {
+    display: none; margin-top: 10px;
+    padding: 9px 14px; border-radius: 6px;
+    font-size: .85rem; line-height: 1.45; font-weight: 500;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok  { background: #e8f7ee; color: #145c33; border-left: 4px solid var(--verde); }
+  .feedback.err { background: #fdecea; color: #8c1111; border-left: 4px solid var(--rojo); }
+
+  /* ── Timer ── */
+  #timer-wrap {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--azul); color: var(--blanco);
+    padding: 10px 20px; border-radius: 30px;
+    font-weight: 700; font-size: 1rem;
+    box-shadow: 0 4px 14px rgba(30,46,110,.4);
+    z-index: 200;
+  }
+  #timer-wrap.warn { background: var(--rojo); animation: pulse .8s infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.6; } }
+
+  /* ── Submit / Results ── */
+  #btn-submit {
+    display: block; margin: 36px auto 0;
+    background: linear-gradient(135deg, var(--azul), #2d3f8f);
+    color: var(--blanco); font-size: 1rem; font-weight: 700;
+    padding: 14px 48px; border: none; border-radius: 30px;
+    cursor: pointer; letter-spacing: .6px;
+    box-shadow: 0 4px 16px rgba(30,46,110,.35);
+    transition: transform .15s, box-shadow .15s;
+  }
+  #btn-submit:hover { transform: translateY(-2px); box-shadow: 0 7px 22px rgba(30,46,110,.45); }
+  #btn-submit:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+  #results {
+    display: none; max-width: 960px; margin: 36px auto 0; padding: 0 24px;
+  }
+  .result-card {
+    background: var(--blanco); border-radius: 12px;
+    box-shadow: var(--sombra); padding: 40px 36px; text-align: center;
+  }
+  .result-score {
+    font-size: 4rem; font-weight: 900; color: var(--azul); line-height: 1;
+  }
+  .result-score span { font-size: 1.6rem; color: var(--gris-tx); font-weight: 400; }
+  .result-grade {
+    font-size: 1.4rem; font-weight: 800; margin: 12px 0 6px;
+  }
+  .grade-A { color: var(--verde); }
+  .grade-B { color: #2a85c7; }
+  .grade-C { color: var(--naranja); }
+  .grade-F { color: var(--rojo); }
+  .result-msg { color: var(--gris-tx); font-size: .95rem; margin-bottom: 28px; }
+  .result-bars { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 28px; }
+  .r-bar {
+    background: var(--gris-cl); border-radius: 8px;
+    padding: 14px 22px; min-width: 130px;
+  }
+  .r-bar .val { font-size: 1.5rem; font-weight: 800; color: var(--azul); }
+  .r-bar .lbl { font-size: .75rem; color: var(--gris-tx); margin-top: 2px; }
+  .r-bar.green .val { color: var(--verde); }
+  .r-bar.red   .val { color: var(--rojo); }
+
+  #btn-retry {
+    background: var(--rojo); color: var(--blanco);
+    border: none; border-radius: 30px;
+    padding: 12px 36px; font-size: .95rem; font-weight: 700;
+    cursor: pointer; transition: opacity .2s;
+  }
+  #btn-retry:hover { opacity: .88; }
+
+  /* ── Unanswered highlight ── */
+  .q-card.unanswered { background: #fff8e1; }
+  .q-card.unanswered .q-num::after { content: ' ⚠ Sin responder'; color: var(--naranja); }
+
+  /* ── Responsive ── */
+  @media(max-width:600px){
+    .header-inner { flex-wrap: wrap; }
+    .hero h2 { font-size: 1.3rem; }
+    .result-score { font-size: 2.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="header-inner">
+    <div class="logo-wrap">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAH0CAYAAADL1t+KAAAABGdBTUEAALGOfPtRkwAAACBjSFJNAACHDwAAjA8AAP1SAACBQAAAfXkAAOmLAAA85QAAGcxzPIV3AAAKOWlDQ1BQaG90b3Nob3AgSUNDIHByb2ZpbGUAAEjHnZZ3VFTXFofPvXd6oc0wAlKG3rvAANJ7k15FYZgZYCgDDjM0sSGiAhFFRJoiSFDEgNFQJFZEsRAUVLAHJAgoMRhFVCxvRtaLrqy89/Ly++Osb+2z97n77L3PWhcAkqcvl5cGSwGQyhPwgzyc6RGRUXTsAIABHmCAKQBMVka6X7B7CBDJy82FniFyAl8EAfB6WLwCcNPQM4BOB/+fpFnpfIHomAARm7M5GSwRF4g4JUuQLrbPipgalyxmGCVmvihBEcuJOWGRDT77LLKjmNmpPLaIxTmns1PZYu4V8bZMIUfEiK+ICzO5nCwR3xKxRoowlSviN+LYVA4zAwAUSWwXcFiJIjYRMYkfEuQi4uUA4EgJX3HcVyzgZAvEl3JJS8/hcxMSBXQdli7d1NqaQffkZKVwBALDACYrmcln013SUtOZvBwAFu/8WTLi2tJFRbY0tba0NDQzMv2qUP91829K3NtFehn4uWcQrf+L7a/80hoAYMyJarPziy2uCoDOLQDI3fti0zgAgKSobx3Xv7oPTTwviQJBuo2xcVZWlhGXwzISF/QP/U+Hv6GvvmckPu6P8tBdOfFMYYqALq4bKy0lTeinZ6QzWRy64Z+H+B8H/nUeBkGceA6fwxNFhImmjMtLELWbx+YKuGk8Opf3n5r4D8P+pMW5FonS+BFQY4yA1HUqQH7tBygKESDR+8Vd/6NvvvgwIH554SqTi3P/7zf9Z8Gl4iWDm/A5ziUohM4S8jMX98TPEqABAUgCKpAHykAd6ABDYAasgC1wBG7AG/iDEBAJVgMWSASpgA+yQB7YBApBMdgJ9oBqUAcaQTNoBcdBJzgFzoNL4Bq4AW6D+2AUTIBnYBa8BgsQBGEhMkSB5CEVSBPSh8wgBmQPuUG+UBAUCcVCCRAPEkJ50GaoGCqDqqF6qBn6HjoJnYeuQIPQXWgMmoZ+h97BCEyCqbASrAUbwwzYCfaBQ+BVcAK8Bs6FC+AdcCXcAB+FO+Dz8DX4NjwKP4PnEIAQERqiihgiDMQF8UeikHiEj6xHipAKpAFpRbqRPuQmMorMIG9RGBQFRUcZomxRnqhQFAu1BrUeVYKqRh1GdaB6UTdRY6hZ1Ec0Ga2I1kfboL3QEegEdBa6EF2BbkK3oy+ib6Mn0K8xGAwNo42xwnhiIjFJmLWYEsw+TBvmHGYQM46Zw2Kx8lh9rB3WH8vECrCF2CrsUexZ7BB2AvsGR8Sp4Mxw7rgoHA+Xj6vAHcGdwQ3hJnELeCm8Jt4G749n43PwpfhGfDf+On4Cv0CQJmgT7AghhCTCJkIloZVwkfCA8JJIJKoRrYmBRC5xI7GSeIx4mThGfEuSIemRXEjRJCFpB+kQ6RzpLuklmUzWIjuSo8gC8g5yM/kC+RH5jQRFwkjCS4ItsUGiRqJDYkjiuSReUlPSSXK1ZK5kheQJyeuSM1J4KS0pFymm1HqpGqmTUiNSc9IUaVNpf+lU6RLpI9JXpKdksDJaMm4ybJkCmYMyF2TGKQhFneJCYVE2U..." alt="Logo UNE">
+    </div>
+    <div class="header-text">
+      <h1>Universidad de Especialidades</h1>
+      <p>Ingeniería Industrial · Evaluación de Competencias Digitales</p>
+    </div>
+    <div class="badge">40 Reactivos</div>
+  </div>
+</header>
+
+<!-- ══ HERO ══ -->
+<div class="hero">
+  <h2>Examen: Microsoft Excel Avanzado</h2>
+  <p>Fórmulas, funciones, tablas dinámicas y dashboards. Nivel licenciatura – Ingeniería Industrial.</p>
+  <div class="meta-pills">
+    <span class="pill">📋 40 preguntas</span>
+    <span class="pill">⏱ 50 minutos</span>
+    <span class="pill">✅ Autocalificable</span>
+    <span class="pill">📊 Retroalimentación inmediata</span>
+  </div>
+</div>
+
+<!-- ══ PROGRESS ══ -->
+<div id="progress-wrap">
+  <div class="progress-label">
+    <span id="prog-text">Progreso: 0 / 40 respondidas</span>
+    <span id="prog-pct">0%</span>
+  </div>
+  <div class="progress-bar-bg"><div class="progress-bar-fill" id="prog-fill"></div></div>
+</div>
+
+<!-- ══ EXAM ══ -->
+<main id="exam-form">
+
+<!-- ─── SECCIÓN 1: Conceptos de Fórmulas ─── -->
+<div class="section-title"><span class="num">1</span>Conceptos de Fórmulas en Excel</div>
+
+<!-- Q1 -->
+<div class="q-card" id="qc1">
+  <div class="q-num">Pregunta 1 de 40 · Constantes y Operadores</div>
+  <div class="q-text">¿Qué tipo de dato representa el valor <code>3.14</code> ingresado directamente en una fórmula de Excel?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q1" value="a"><span class="opt-letter">A</span>Una referencia relativa</label>
+    <label class="option-label"><input type="radio" name="q1" value="b"><span class="opt-letter">B</span>Una constante numérica</label>
+    <label class="option-label"><input type="radio" name="q1" value="c"><span class="opt-letter">C</span>Un nombre definido</label>
+    <label class="option-label"><input type="radio" name="q1" value="d"><span class="opt-letter">D</span>Un operador aritmético</label>
+  </div>
+  <div class="feedback" id="fb1"></div>
+</div>
+
+<!-- Q2 -->
+<div class="q-card" id="qc2">
+  <div class="q-num">Pregunta 2 de 40 · Operadores</div>
+  <div class="q-text">En Excel, ¿qué operador se utiliza para concatenar (unir) cadenas de texto?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q2" value="a"><span class="opt-letter">A</span><code>+</code></label>
+    <label class="option-label"><input type="radio" name="q2" value="b"><span class="opt-letter">B</span><code>&amp;</code></label>
+    <label class="option-label"><input type="radio" name="q2" value="c"><span class="opt-letter">C</span><code>*</code></label>
+    <label class="option-label"><input type="radio" name="q2" value="d"><span class="opt-letter">D</span><code>|</code></label>
+  </div>
+  <div class="feedback" id="fb2"></div>
+</div>
+
+<!-- Q3 -->
+<div class="q-card" id="qc3">
+  <div class="q-num">Pregunta 3 de 40 · Referencias Relativas</div>
+  <div class="q-text">Al copiar la fórmula <code>=A1+B1</code> desde la celda C1 hacia C2, ¿qué fórmula aparece en C2?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q3" value="a"><span class="opt-letter">A</span><code>=A1+B1</code></label>
+    <label class="option-label"><input type="radio" name="q3" value="b"><span class="opt-letter">B</span><code>=A2+B2</code></label>
+    <label class="option-label"><input type="radio" name="q3" value="c"><span class="opt-letter">C</span><code>=$A$1+$B$1</code></label>
+    <label class="option-label"><input type="radio" name="q3" value="d"><span class="opt-letter">D</span><code>=A$1+B$1</code></label>
+  </div>
+  <div class="feedback" id="fb3"></div>
+</div>
+
+<!-- Q4 -->
+<div class="q-card" id="qc4">
+  <div class="q-num">Pregunta 4 de 40 · Referencias Absolutas</div>
+  <div class="q-text">¿Cuál es la notación correcta para una referencia <strong>absolutamente fija</strong> a la celda B5?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q4" value="a"><span class="opt-letter">A</span><code>B5</code></label>
+    <label class="option-label"><input type="radio" name="q4" value="b"><span class="opt-letter">B</span><code>$B5</code></label>
+    <label class="option-label"><input type="radio" name="q4" value="c"><span class="opt-letter">C</span><code>B$5</code></label>
+    <label class="option-label"><input type="radio" name="q4" value="d"><span class="opt-letter">D</span><code>$B$5</code></label>
+  </div>
+  <div class="feedback" id="fb4"></div>
+</div>
+
+<!-- Q5 -->
+<div class="q-card" id="qc5">
+  <div class="q-num">Pregunta 5 de 40 · Referencias Mixtas</div>
+  <div class="q-text">La referencia <code>$A1</code> se clasifica como:</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q5" value="a"><span class="opt-letter">A</span>Absoluta en fila, relativa en columna</label>
+    <label class="option-label"><input type="radio" name="q5" value="b"><span class="opt-letter">B</span>Absoluta en columna, relativa en fila</label>
+    <label class="option-label"><input type="radio" name="q5" value="c"><span class="opt-letter">C</span>Totalmente absoluta</label>
+    <label class="option-label"><input type="radio" name="q5" value="d"><span class="opt-letter">D</span>Totalmente relativa</label>
+  </div>
+  <div class="feedback" id="fb5"></div>
+</div>
+
+<!-- Q6 -->
+<div class="q-card" id="qc6">
+  <div class="q-num">Pregunta 6 de 40 · Referencias Mixtas</div>
+  <div class="q-text">Al copiar <code>=A$1*B2</code> una columna a la derecha y una fila hacia abajo, ¿cuál es el resultado?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q6" value="a"><span class="opt-letter">A</span><code>=B$1*C3</code></label>
+    <label class="option-label"><input type="radio" name="q6" value="b"><span class="opt-letter">B</span><code>=A$1*B3</code></label>
+    <label class="option-label"><input type="radio" name="q6" value="c"><span class="opt-letter">C</span><code>=B$2*C3</code></label>
+    <label class="option-label"><input type="radio" name="q6" value="d"><span class="opt-letter">D</span><code>=$A1*$B2</code></label>
+  </div>
+  <div class="feedback" id="fb6"></div>
+</div>
+
+<!-- Q7 -->
+<div class="q-card" id="qc7">
+  <div class="q-num">Pregunta 7 de 40 · Función Lógica SI</div>
+  <div class="q-text">¿Qué devuelve <code>=SI(5&gt;3,"Mayor","Menor")</code>?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q7" value="a"><span class="opt-letter">A</span>Menor</label>
+    <label class="option-label"><input type="radio" name="q7" value="b"><span class="opt-letter">B</span>FALSO</label>
+    <label class="option-label"><input type="radio" name="q7" value="c"><span class="opt-letter">C</span>Mayor</label>
+    <label class="option-label"><input type="radio" name="q7" value="d"><span class="opt-letter">D</span>#¡VALOR!</label>
+  </div>
+  <div class="feedback" id="fb7"></div>
+</div>
+
+<!-- Q8 -->
+<div class="q-card" id="qc8">
+  <div class="q-num">Pregunta 8 de 40 · Funciones Lógicas</div>
+  <div class="q-text">La función <code>=Y(A1&gt;0, B1&gt;0)</code> devuelve VERDADERO únicamente cuando:</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q8" value="a"><span class="opt-letter">A</span>Al menos una condición es verdadera</label>
+    <label class="option-label"><input type="radio" name="q8" value="b"><span class="opt-letter">B</span>Ambas condiciones son verdaderas</label>
+    <label class="option-label"><input type="radio" name="q8" value="c"><span class="opt-letter">C</span>Ninguna condición es verdadera</label>
+    <label class="option-label"><input type="radio" name="q8" value="d"><span class="opt-letter">D</span>La primera condición es verdadera</label>
+  </div>
+  <div class="feedback" id="fb8"></div>
+</div>
+
+<!-- Q9 -->
+<div class="q-card" id="qc9">
+  <div class="q-num">Pregunta 9 de 40 · Función BUSCARV</div>
+  <div class="q-text"><code>=BUSCARV(101,A2:D100,3,FALSO)</code> — ¿Qué representa el argumento <code>3</code>?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q9" value="a"><span class="opt-letter">A</span>El número de filas a buscar</label>
+    <label class="option-label"><input type="radio" name="q9" value="b"><span class="opt-letter">B</span>La columna del rango desde la que se retorna el valor</label>
+    <label class="option-label"><input type="radio" name="q9" value="c"><span class="opt-letter">C</span>El número máximo de coincidencias</label>
+    <label class="option-label"><input type="radio" name="q9" value="d"><span class="opt-letter">D</span>El tipo de coincidencia</label>
+  </div>
+  <div class="feedback" id="fb9"></div>
+</div>
+
+<!-- Q10 -->
+<div class="q-card" id="qc10">
+  <div class="q-num">Pregunta 10 de 40 · Función BUSCARV</div>
+  <div class="q-text">Al usar <code>BUSCARV</code> con el argumento <code>FALSO</code> en el cuarto parámetro, la búsqueda es:</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q10" value="a"><span class="opt-letter">A</span>Aproximada (los datos deben estar ordenados)</label>
+    <label class="option-label"><input type="radio" name="q10" value="b"><span class="opt-letter">B</span>Exacta (independiente del orden)</label>
+    <label class="option-label"><input type="radio" name="q10" value="c"><span class="opt-letter">C</span>Por rango numérico</label>
+    <label class="option-label"><input type="radio" name="q10" value="d"><span class="opt-letter">D</span>Solo para texto</label>
+  </div>
+  <div class="feedback" id="fb10"></div>
+</div>
+
+<!-- ─── SECCIÓN 1.2: Vínculos y Anidación ─── -->
+<div class="section-title"><span class="num">2</span>Vínculos entre Hojas y Funciones Anidadas</div>
+
+<!-- Q11 -->
+<div class="q-card" id="qc11">
+  <div class="q-num">Pregunta 11 de 40 · Vínculos entre Hojas</div>
+  <div class="q-text">¿Cuál es la sintaxis correcta para referenciar la celda <code>C5</code> ubicada en la hoja <em>Ventas</em> del mismo libro?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q11" value="a"><span class="opt-letter">A</span><code>=Ventas!C5</code></label>
+    <label class="option-label"><input type="radio" name="q11" value="b"><span class="opt-letter">B</span><code>=Ventas/C5</code></label>
+    <label class="option-label"><input type="radio" name="q11" value="c"><span class="opt-letter">C</span><code>=[Ventas]C5</code></label>
+    <label class="option-label"><input type="radio" name="q11" value="d"><span class="opt-letter">D</span><code>=C5@Ventas</code></label>
+  </div>
+  <div class="feedback" id="fb11"></div>
+</div>
+
+<!-- Q12 -->
+<div class="q-card" id="qc12">
+  <div class="q-num">Pregunta 12 de 40 · Vínculos entre Hojas</div>
+  <div class="q-text">Cuando se abre un libro de Excel con vínculos a otro libro externo, ¿qué ocurre por defecto con los datos vinculados?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q12" value="a"><span class="opt-letter">A</span>Se eliminan automáticamente</label>
+    <label class="option-label"><input type="radio" name="q12" value="b"><span class="opt-letter">B</span>Excel pregunta si desea actualizar los vínculos</label>
+    <label class="option-label"><input type="radio" name="q12" value="c"><span class="opt-letter">C</span>Los valores se convierten en texto</label>
+    <label class="option-label"><input type="radio" name="q12" value="d"><span class="opt-letter">D</span>Se actualiza sin preguntar siempre</label>
+  </div>
+  <div class="feedback" id="fb12"></div>
+</div>
+
+<!-- Q13 -->
+<div class="q-card" id="qc13">
+  <div class="q-num">Pregunta 13 de 40 · Vínculos Externos</div>
+  <div class="q-text">La fórmula <code>='[Presupuesto.xlsx]Hoja1'!$D$10</code> hace referencia a:</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q13" value="a"><span class="opt-letter">A</span>Una celda en la hoja activa</label>
+    <label class="option-label"><input type="radio" name="q13" value="b"><span class="opt-letter">B</span>Una celda en otro libro de Excel</label>
+    <label class="option-label"><input type="radio" name="q13" value="c"><span class="opt-letter">C</span>Un rango con nombre</label>
+    <label class="option-label"><input type="radio" name="q13" value="d"><span class="opt-letter">D</span>Una base de datos SQL</label>
+  </div>
+  <div class="feedback" id="fb13"></div>
+</div>
+
+<!-- Q14 -->
+<div class="q-card" id="qc14">
+  <div class="q-num">Pregunta 14 de 40 · Anidación de Funciones</div>
+  <div class="q-text">¿Cuántos niveles de anidación permite Excel 2016 y versiones posteriores?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q14" value="a"><span class="opt-letter">A</span>7 niveles</label>
+    <label class="option-label"><input type="radio" name="q14" value="b"><span class="opt-letter">B</span>32 niveles</label>
+    <label class="option-label"><input type="radio" name="q14" value="c"><span class="opt-letter">C</span>64 niveles</label>
+    <label class="option-label"><input type="radio" name="q14" value="d"><span class="opt-letter">D</span>128 niveles</label>
+  </div>
+  <div class="feedback" id="fb14"></div>
+</div>
+
+<!-- Q15 -->
+<div class="q-card" id="qc15">
+  <div class="q-num">Pregunta 15 de 40 · Anidación SI</div>
+  <div class="q-text">¿Qué devuelve <code>=SI(A1&gt;90,"A",SI(A1&gt;70,"B","C"))</code> cuando <code>A1=75</code>?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q15" value="a"><span class="opt-letter">A</span>A</label>
+    <label class="option-label"><input type="radio" name="q15" value="b"><span class="opt-letter">B</span>B</label>
+    <label class="option-label"><input type="radio" name="q15" value="c"><span class="opt-letter">C</span>C</label>
+    <label class="option-label"><input type="radio" name="q15" value="d"><span class="opt-letter">D</span>#¡ERROR!</label>
+  </div>
+  <div class="feedback" id="fb15"></div>
+</div>
+
+<!-- Q16 -->
+<div class="q-card" id="qc16">
+  <div class="q-num">Pregunta 16 de 40 · Anidación con BUSCARV + SI</div>
+  <div class="q-text">La función <code>=SI(ESERROR(BUSCARV(A1,B:C,2,0)),"No encontrado",BUSCARV(A1,B:C,2,0))</code> tiene como propósito:</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q16" value="a"><span class="opt-letter">A</span>Buscar dos veces el mismo valor para mayor precisión</label>
+    <label class="option-label"><input type="radio" name="q16" value="b"><span class="opt-letter">B</span>Evitar que aparezca un error cuando no se encuentra el valor</label>
+    <label class="option-label"><input type="radio" name="q16" value="c"><span class="opt-letter">C</span>Sumar todos los valores encontrados</label>
+    <label class="option-label"><input type="radio" name="q16" value="d"><span class="opt-letter">D</span>Filtrar duplicados automáticamente</label>
+  </div>
+  <div class="feedback" id="fb16"></div>
+</div>
+
+<!-- Q17 -->
+<div class="q-card" id="qc17">
+  <div class="q-num">Pregunta 17 de 40 · Función SUMAR.SI</div>
+  <div class="q-text"><code>=SUMAR.SI(A2:A10,"Norte",C2:C10)</code> — ¿Qué hace esta función?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q17" value="a"><span class="opt-letter">A</span>Cuenta las celdas que dicen "Norte"</label>
+    <label class="option-label"><input type="radio" name="q17" value="b"><span class="opt-letter">B</span>Suma los valores de C2:C10 donde A2:A10 es "Norte"</label>
+    <label class="option-label"><input type="radio" name="q17" value="c"><span class="opt-letter">C</span>Busca "Norte" y devuelve el primer valor de C</label>
+    <label class="option-label"><input type="radio" name="q17" value="d"><span class="opt-letter">D</span>Promedia C2:C10 si hay al menos una celda "Norte"</label>
+  </div>
+  <div class="feedback" id="fb17"></div>
+</div>
+
+<!-- Q18 -->
+<div class="q-card" id="qc18">
+  <div class="q-num">Pregunta 18 de 40 · Función CONTAR.SI</div>
+  <div class="q-text">¿Cuál es la diferencia principal entre <code>CONTAR.SI</code> y <code>CONTAR.SI.CONJUNTO</code>?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q18" value="a"><span class="opt-letter">A</span>CONTAR.SI.CONJUNTO permite múltiples criterios en distintos rangos</label>
+    <label class="option-label"><input type="radio" name="q18" value="b"><span class="opt-letter">B</span>CONTAR.SI solo funciona con números</label>
+    <label class="option-label"><input type="radio" name="q18" value="c"><span class="opt-letter">C</span>CONTAR.SI.CONJUNTO cuenta celdas vacías</label>
+    <label class="option-label"><input type="radio" name="q18" value="d"><span class="opt-letter">D</span>No hay diferencia funcional</label>
+  </div>
+  <div class="feedback" id="fb18"></div>
+</div>
+
+<!-- Q19 -->
+<div class="q-card" id="qc19">
+  <div class="q-num">Pregunta 19 de 40 · Función ÍNDICE + COINCIDIR</div>
+  <div class="q-text"><code>=ÍNDICE(C2:C100,COINCIDIR("Producto A",A2:A100,0))</code> realiza:</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q19" value="a"><span class="opt-letter">A</span>Una suma condicional</label>
+    <label class="option-label"><input type="radio" name="q19" value="b"><span class="opt-letter">B</span>Una búsqueda flexible que no requiere que el valor de búsqueda esté en la primera columna</label>
+    <label class="option-label"><input type="radio" name="q19" value="c"><span class="opt-letter">C</span>Ordenar el rango alfabéticamente</label>
+    <label class="option-label"><input type="radio" name="q19" value="d"><span class="opt-letter">D</span>Una referencia circular</label>
+  </div>
+  <div class="feedback" id="fb19"></div>
+</div>
+
+<!-- Q20 -->
+<div class="q-card" id="qc20">
+  <div class="q-num">Pregunta 20 de 40 · Operadores de Comparación</div>
+  <div class="q-text">En Excel, el operador <code>&lt;&gt;</code> significa:</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q20" value="a"><span class="opt-letter">A</span>Menor que</label>
+    <label class="option-label"><input type="radio" name="q20" value="b"><span class="opt-letter">B</span>Mayor que</label>
+    <label class="option-label"><input type="radio" name="q20" value="c"><span class="opt-letter">C</span>Distinto de (no igual a)</label>
+    <label class="option-label"><input type="radio" name="q20" value="d"><span class="opt-letter">D</span>Menor o igual que</label>
+  </div>
+  <div class="feedback" id="fb20"></div>
+</div>
+
+<!-- ─── SECCIÓN 2: Funciones y Tablas Dinámicas ─── -->
+<div class="section-title"><span class="num">3</span>Funciones y Tablas Dinámicas</div>
+
+<!-- Q21 -->
+<div class="q-card" id="qc21">
+  <div class="q-num">Pregunta 21 de 40 · Tablas Dinámicas – Concepto</div>
+  <div class="q-text">¿Cuál es la principal utilidad de una tabla dinámica en Excel?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q21" value="a"><span class="opt-letter">A</span>Crear gráficos de dispersión automáticamente</label>
+    <label class="option-label"><input type="radio" name="q21" value="b"><span class="opt-letter">B</span>Resumir, analizar, explorar y presentar datos de forma interactiva</label>
+    <label class="option-label"><input type="radio" name="q21" value="c"><span class="opt-letter">C</span>Proteger el libro con contraseña</label>
+    <label class="option-label"><input type="radio" name="q21" value="d"><span class="opt-letter">D</span>Ejecutar macros de VBA automáticamente</label>
+  </div>
+  <div class="feedback" id="fb21"></div>
+</div>
+
+<!-- Q22 -->
+<div class="q-card" id="qc22">
+  <div class="q-num">Pregunta 22 de 40 · Crear Tabla Dinámica</div>
+  <div class="q-text">¿Cuál es el requisito mínimo que debe cumplir una base de datos para crear una tabla dinámica correctamente?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q22" value="a"><span class="opt-letter">A</span>Tener al menos 1,000 filas de datos</label>
+    <label class="option-label"><input type="radio" name="q22" value="b"><span class="opt-letter">B</span>Contar con encabezados únicos en la primera fila y sin filas completamente vacías</label>
+    <label class="option-label"><input type="radio" name="q22" value="c"><span class="opt-letter">C</span>Estar en formato CSV</label>
+    <label class="option-label"><input type="radio" name="q22" value="d"><span class="opt-letter">D</span>Tener exactamente 5 columnas</label>
+  </div>
+  <div class="feedback" id="fb22"></div>
+</div>
+
+<!-- Q23 -->
+<div class="q-card" id="qc23">
+  <div class="q-num">Pregunta 23 de 40 · Áreas de la Tabla Dinámica</div>
+  <div class="q-text">En el panel de una tabla dinámica, ¿en cuál área se colocan los campos que agrupan los datos en filas?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q23" value="a"><span class="opt-letter">A</span>Valores</label>
+    <label class="option-label"><input type="radio" name="q23" value="b"><span class="opt-letter">B</span>Filtros</label>
+    <label class="option-label"><input type="radio" name="q23" value="c"><span class="opt-letter">C</span>Filas</label>
+    <label class="option-label"><input type="radio" name="q23" value="d"><span class="opt-letter">D</span>Columnas</label>
+  </div>
+  <div class="feedback" id="fb23"></div>
+</div>
+
+<!-- Q24 -->
+<div class="q-card" id="qc24">
+  <div class="q-num">Pregunta 24 de 40 · Función de Resumen</div>
+  <div class="q-text">Por defecto, cuando se arrastra un campo numérico al área "Valores" de una tabla dinámica, Excel aplica:</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q24" value="a"><span class="opt-letter">A</span>Promedio</label>
+    <label class="option-label"><input type="radio" name="q24" value="b"><span class="opt-letter">B</span>Conteo</label>
+    <label class="option-label"><input type="radio" name="q24" value="c"><span class="opt-letter">C</span>Suma</label>
+    <label class="option-label"><input type="radio" name="q24" value="d"><span class="opt-letter">D</span>Máximo</label>
+  </div>
+  <div class="feedback" id="fb24"></div>
+</div>
+
+<!-- Q25 -->
+<div class="q-card" id="qc25">
+  <div class="q-num">Pregunta 25 de 40 · Actualizar Tabla Dinámica</div>
+  <div class="q-text">Después de modificar los datos de origen, ¿cómo se actualizan los resultados de una tabla dinámica?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q25" value="a"><span class="opt-letter">A</span>Se actualiza automáticamente al guardar el archivo</label>
+    <label class="option-label"><input type="radio" name="q25" value="b"><span class="opt-letter">B</span>Haciendo clic derecho sobre la tabla y seleccionando "Actualizar"</label>
+    <label class="option-label"><input type="radio" name="q25" value="c"><span class="opt-letter">C</span>Cerrando y volviendo a abrir el libro</label>
+    <label class="option-label"><input type="radio" name="q25" value="d"><span class="opt-letter">D</span>Borrando la tabla y creándola nuevamente</label>
+  </div>
+  <div class="feedback" id="fb25"></div>
+</div>
+
+<!-- Q26 -->
+<div class="q-card" id="qc26">
+  <div class="q-num">Pregunta 26 de 40 · Actualizar Datos de Origen</div>
+  <div class="q-text">Si se agregan nuevas filas al rango de datos de origen de una tabla dinámica, ¿qué acción adicional es necesaria para que esas filas se incluyan?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q26" value="a"><span class="opt-letter">A</span>Solo actualizar la tabla dinámica</label>
+    <label class="option-label"><input type="radio" name="q26" value="b"><span class="opt-letter">B</span>Cambiar el origen de datos para incluir las nuevas filas y luego actualizar</label>
+    <label class="option-label"><input type="radio" name="q26" value="c"><span class="opt-letter">C</span>Crear una nueva tabla dinámica obligatoriamente</label>
+    <label class="option-label"><input type="radio" name="q26" value="d"><span class="opt-letter">D</span>Copiar manualmente los datos al área de la tabla dinámica</label>
+  </div>
+  <div class="feedback" id="fb26"></div>
+</div>
+
+<!-- Q27 -->
+<div class="q-card" id="qc27">
+  <div class="q-num">Pregunta 27 de 40 · Segmentaciones</div>
+  <div class="q-text">¿Para qué sirven las <em>segmentaciones de datos</em> (slicers) en una tabla dinámica?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q27" value="a"><span class="opt-letter">A</span>Dividir la tabla dinámica en varias hojas</label>
+    <label class="option-label"><input type="radio" name="q27" value="b"><span class="opt-letter">B</span>Filtrar visualmente los datos con botones interactivos</label>
+    <label class="option-label"><input type="radio" name="q27" value="c"><span class="opt-letter">C</span>Ocultar columnas automáticamente</label>
+    <label class="option-label"><input type="radio" name="q27" value="d"><span class="opt-letter">D</span>Importar datos desde bases de datos externas</label>
+  </div>
+  <div class="feedback" id="fb27"></div>
+</div>
+
+<!-- Q28 -->
+<div class="q-card" id="qc28">
+  <div class="q-num">Pregunta 28 de 40 · Campo Calculado</div>
+  <div class="q-text">Un <em>campo calculado</em> en una tabla dinámica permite:</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q28" value="a"><span class="opt-letter">A</span>Agregar fórmulas basadas en los campos existentes sin alterar los datos de origen</label>
+    <label class="option-label"><input type="radio" name="q28" value="b"><span class="opt-letter">B</span>Modificar los datos originales directamente</label>
+    <label class="option-label"><input type="radio" name="q28" value="c"><span class="opt-letter">C</span>Crear un gráfico dinámico automáticamente</label>
+    <label class="option-label"><input type="radio" name="q28" value="d"><span class="opt-letter">D</span>Cambiar el color de las celdas de la tabla</label>
+  </div>
+  <div class="feedback" id="fb28"></div>
+</div>
+
+<!-- Q29 -->
+<div class="q-card" id="qc29">
+  <div class="q-num">Pregunta 29 de 40 · Agrupación de Fechas</div>
+  <div class="q-text">Al incluir un campo de fecha en filas de una tabla dinámica, Excel puede agrupar automáticamente por:</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q29" value="a"><span class="opt-letter">A</span>Solo por año</label>
+    <label class="option-label"><input type="radio" name="q29" value="b"><span class="opt-letter">B</span>Años, trimestres y meses simultáneamente</label>
+    <label class="option-label"><input type="radio" name="q29" value="c"><span class="opt-letter">C</span>Únicamente por mes</label>
+    <label class="option-label"><input type="radio" name="q29" value="d"><span class="opt-letter">D</span>No es posible agrupar fechas automáticamente</label>
+  </div>
+  <div class="feedback" id="fb29"></div>
+</div>
+
+<!-- Q30 -->
+<div class="q-card" id="qc30">
+  <div class="q-num">Pregunta 30 de 40 · Mostrar Valores Como</div>
+  <div class="q-text">La opción "Mostrar valores como → % del total general" en una tabla dinámica permite:</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q30" value="a"><span class="opt-letter">A</span>Convertir los valores a porcentaje respecto al gran total</label>
+    <label class="option-label"><input type="radio" name="q30" value="b"><span class="opt-letter">B</span>Dividir cada celda entre 100 automáticamente</label>
+    <label class="option-label"><input type="radio" name="q30" value="c"><span class="opt-letter">C</span>Mostrar solo los valores mayores al promedio</label>
+    <label class="option-label"><input type="radio" name="q30" value="d"><span class="opt-letter">D</span>Ordenar la tabla de mayor a menor</label>
+  </div>
+  <div class="feedback" id="fb30"></div>
+</div>
+
+<!-- ─── SECCIÓN 3: Dashboard ─── -->
+<div class="section-title"><span class="num">4</span>Dashboard: Creación y Diseño</div>
+
+<!-- Q31 -->
+<div class="q-card" id="qc31">
+  <div class="q-num">Pregunta 31 de 40 · Concepto de Dashboard</div>
+  <div class="q-text">¿Qué es un <em>dashboard</em> (tablero de control) en Excel?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q31" value="a"><span class="opt-letter">A</span>Una hoja con macros VBA exclusivamente</label>
+    <label class="option-label"><input type="radio" name="q31" value="b"><span class="opt-letter">B</span>Una vista consolidada de indicadores clave (KPIs) y gráficos para la toma de decisiones</label>
+    <label class="option-label"><input type="radio" name="q31" value="c"><span class="opt-letter">C</span>Un informe imprimible en formato PDF</label>
+    <label class="option-label"><input type="radio" name="q31" value="d"><span class="opt-letter">D</span>Una tabla de datos sin gráficos</label>
+  </div>
+  <div class="feedback" id="fb31"></div>
+</div>
+
+<!-- Q32 -->
+<div class="q-card" id="qc32">
+  <div class="q-num">Pregunta 32 de 40 · Gráficos Dinámicos</div>
+  <div class="q-text">¿Cuál es la ventaja de usar <em>gráficos dinámicos</em> (PivotCharts) vinculados a tablas dinámicas en un dashboard?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q32" value="a"><span class="opt-letter">A</span>Son más coloridos que los gráficos normales</label>
+    <label class="option-label"><input type="radio" name="q32" value="b"><span class="opt-letter">B</span>Se actualizan automáticamente al filtrar o actualizar la tabla dinámica</label>
+    <label class="option-label"><input type="radio" name="q32" value="c"><span class="opt-letter">C</span>Pueden exportarse directamente a Power BI</label>
+    <label class="option-label"><input type="radio" name="q32" value="d"><span class="opt-letter">D</span>Permiten 3D en todas las vistas</label>
+  </div>
+  <div class="feedback" id="fb32"></div>
+</div>
+
+<!-- Q33 -->
+<div class="q-card" id="qc33">
+  <div class="q-num">Pregunta 33 de 40 · Buenas Prácticas</div>
+  <div class="q-text">Para mantener un dashboard limpio y profesional, ¿qué se recomienda hacer con las cuadrículas de la hoja?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q33" value="a"><span class="opt-letter">A</span>Pintarlas de color azul</label>
+    <label class="option-label"><input type="radio" name="q33" value="b"><span class="opt-letter">B</span>Ocultarlas desde la pestaña Vista → desmarcar "Líneas de cuadrícula"</label>
+    <label class="option-label"><input type="radio" name="q33" value="c"><span class="opt-letter">C</span>Eliminar todas las celdas de la hoja</label>
+    <label class="option-label"><input type="radio" name="q33" value="d"><span class="opt-letter">D</span>Proteger la hoja con contraseña</label>
+  </div>
+  <div class="feedback" id="fb33"></div>
+</div>
+
+<!-- Q34 -->
+<div class="q-card" id="qc34">
+  <div class="q-num">Pregunta 34 de 40 · KPIs en Dashboard</div>
+  <div class="q-text">¿Qué elemento de Excel se usa comúnmente para mostrar un KPI numérico grande y destacado en un dashboard?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q34" value="a"><span class="opt-letter">A</span>Un comentario de celda</label>
+    <label class="option-label"><input type="radio" name="q34" value="b"><span class="opt-letter">B</span>Una celda con fuente grande, negrita y sin bordes visibles de cuadrícula</label>
+    <label class="option-label"><input type="radio" name="q34" value="c"><span class="opt-letter">C</span>Un objeto WordArt</label>
+    <label class="option-label"><input type="radio" name="q34" value="d"><span class="opt-letter">D</span>Una imagen PNG importada</label>
+  </div>
+  <div class="feedback" id="fb34"></div>
+</div>
+
+<!-- Q35 -->
+<div class="q-card" id="qc35">
+  <div class="q-num">Pregunta 35 de 40 · Formato Condicional en Dashboard</div>
+  <div class="q-text">¿Para qué se usa el <em>formato condicional</em> dentro de un dashboard?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q35" value="a"><span class="opt-letter">A</span>Para cambiar el idioma de las etiquetas</label>
+    <label class="option-label"><input type="radio" name="q35" value="b"><span class="opt-letter">B</span>Para resaltar visualmente valores críticos, tendencias o anomalías automáticamente</label>
+    <label class="option-label"><input type="radio" name="q35" value="c"><span class="opt-letter">C</span>Para proteger las fórmulas de edición</label>
+    <label class="option-label"><input type="radio" name="q35" value="d"><span class="opt-letter">D</span>Para ordenar datos de menor a mayor</label>
+  </div>
+  <div class="feedback" id="fb35"></div>
+</div>
+
+<!-- Q36 -->
+<div class="q-card" id="qc36">
+  <div class="q-num">Pregunta 36 de 40 · Estructura del Dashboard</div>
+  <div class="q-text">La buena práctica de separar la hoja de <em>datos brutos</em>, la hoja de <em>cálculos</em> y la hoja de <em>presentación</em> en un dashboard tiene como objetivo:</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q36" value="a"><span class="opt-letter">A</span>Aumentar el tamaño del archivo para mayor seguridad</label>
+    <label class="option-label"><input type="radio" name="q36" value="b"><span class="opt-letter">B</span>Facilitar el mantenimiento y evitar errores al actualizar datos</label>
+    <label class="option-label"><input type="radio" name="q36" value="c"><span class="opt-letter">C</span>Cumplir un requisito obligatorio de Excel</label>
+    <label class="option-label"><input type="radio" name="q36" value="d"><span class="opt-letter">D</span>Reducir la cantidad de fórmulas necesarias</label>
+  </div>
+  <div class="feedback" id="fb36"></div>
+</div>
+
+<!-- Q37 -->
+<div class="q-card" id="qc37">
+  <div class="q-num">Pregunta 37 de 40 · Tipos de Gráficos</div>
+  <div class="q-text">Para mostrar la distribución porcentual de ventas por categoría en un dashboard, el gráfico más adecuado es:</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q37" value="a"><span class="opt-letter">A</span>Gráfico de dispersión (XY)</label>
+    <label class="option-label"><input type="radio" name="q37" value="b"><span class="opt-letter">B</span>Gráfico circular o de anillo (pie/donut)</label>
+    <label class="option-label"><input type="radio" name="q37" value="c"><span class="opt-letter">C</span>Gráfico de área</label>
+    <label class="option-label"><input type="radio" name="q37" value="d"><span class="opt-letter">D</span>Gráfico de superficie</label>
+  </div>
+  <div class="feedback" id="fb37"></div>
+</div>
+
+<!-- Q38 -->
+<div class="q-card" id="qc38">
+  <div class="q-num">Pregunta 38 de 40 · Segmentaciones en Dashboard</div>
+  <div class="q-text">¿Es posible conectar una misma segmentación de datos a <strong>varias</strong> tablas dinámicas en un dashboard?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q38" value="a"><span class="opt-letter">A</span>No, cada segmentación solo controla una tabla dinámica</label>
+    <label class="option-label"><input type="radio" name="q38" value="b"><span class="opt-letter">B</span>Sí, usando "Conexiones de informe" se puede vincular a múltiples tablas</label>
+    <label class="option-label"><input type="radio" name="q38" value="c"><span class="opt-letter">C</span>Solo si las tablas están en la misma hoja</label>
+    <label class="option-label"><input type="radio" name="q38" value="d"><span class="opt-letter">D</span>Solo en Excel 365 con licencia Premium</label>
+  </div>
+  <div class="feedback" id="fb38"></div>
+</div>
+
+<!-- Q39 -->
+<div class="q-card" id="qc39">
+  <div class="q-num">Pregunta 39 de 40 · Función OBTENER.DATOS.DINÁMICOS</div>
+  <div class="q-text">La función <code>=OBTENER.DATOS.DINÁMICOS()</code> en Excel permite:</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q39" value="a"><span class="opt-letter">A</span>Extraer un valor específico de una tabla dinámica mediante referencia dinámica</label>
+    <label class="option-label"><input type="radio" name="q39" value="b"><span class="opt-letter">B</span>Importar datos en tiempo real desde internet</label>
+    <label class="option-label"><input type="radio" name="q39" value="c"><span class="opt-letter">C</span>Actualizar automáticamente todas las tablas dinámicas del libro</label>
+    <label class="option-label"><input type="radio" name="q39" value="d"><span class="opt-letter">D</span>Crear un gráfico dinámico desde cero</label>
+  </div>
+  <div class="feedback" id="fb39"></div>
+</div>
+
+<!-- Q40 -->
+<div class="q-card" id="qc40">
+  <div class="q-num">Pregunta 40 de 40 · Integración Dashboard + TD</div>
+  <div class="q-text">En un dashboard de Ingeniería Industrial, ¿cuál es la secuencia correcta de trabajo?</div>
+  <div class="options">
+    <label class="option-label"><input type="radio" name="q40" value="a"><span class="opt-letter">A</span>Diseñar primero el dashboard visual, luego recolectar los datos</label>
+    <label class="option-label"><input type="radio" name="q40" value="b"><span class="opt-letter">B</span>Recolectar y limpiar datos → Crear tablas dinámicas → Insertar gráficos y KPIs → Diseñar presentación</label>
+    <label class="option-label"><input type="radio" name="q40" value="c"><span class="opt-letter">C</span>Crear gráficos → Ingresar datos → Agregar tablas dinámicas</label>
+    <label class="option-label"><input type="radio" name="q40" value="d"><span class="opt-letter">D</span>Importar datos desde SQL → Crear macros → Diseñar formularios</label>
+  </div>
+  <div class="feedback" id="fb40"></div>
+</div>
+
+<!-- ══ SUBMIT ══ -->
+<button id="btn-submit" onclick="submitExam()">📝 Calificar Examen</button>
+
+</main>
+
+<!-- ══ RESULTS ══ -->
+<div id="results">
+  <div class="result-card">
+    <div class="result-score" id="res-score">—</div>
+    <div class="result-grade" id="res-grade"></div>
+    <div class="result-msg"  id="res-msg"></div>
+    <div class="result-bars">
+      <div class="r-bar green"><div class="val" id="res-correct">0</div><div class="lbl">✅ Correctas</div></div>
+      <div class="r-bar red">  <div class="val" id="res-wrong">0</div><div class="lbl">❌ Incorrectas</div></div>
+      <div class="r-bar">      <div class="val" id="res-omit">0</div><div class="lbl">⬜ Omitidas</div></div>
+      <div class="r-bar">      <div class="val" id="res-pct">0%</div><div class="lbl">📊 Porcentaje</div></div>
+    </div>
+    <button id="btn-retry" onclick="retryExam()">🔄 Intentar de Nuevo</button>
+  </div>
+</div>
+
+<!-- ══ TIMER ══ -->
+<div id="timer-wrap">⏱ <span id="timer-display">50:00</span></div>
+
+<script>
+/* ══ ANSWER KEY ══ */
+const answers = {
+  q1:'b', q2:'b', q3:'b', q4:'d', q5:'b',
+  q6:'a', q7:'c', q8:'b', q9:'b', q10:'b',
+  q11:'a', q12:'b', q13:'b', q14:'c', q15:'b',
+  q16:'b', q17:'b', q18:'a', q19:'b', q20:'c',
+  q21:'b', q22:'b', q23:'c', q24:'c', q25:'b',
+  q26:'b', q27:'b', q28:'a', q29:'b', q30:'a',
+  q31:'b', q32:'b', q33:'b', q34:'b', q35:'b',
+  q36:'b', q37:'b', q38:'b', q39:'a', q40:'b'
+};
+
+const feedback = {
+  q1:  ['Una constante es un valor fijo (número, texto, fecha) escrito directamente en la fórmula, no una referencia ni función.','Las constantes son valores literales; una referencia apunta a una celda.'],
+  q2:  ['El operador <strong>&amp;</strong> concatena texto. Ej: <code>="Hola "&amp;"Mundo"</code> produce "Hola Mundo".','El operador + solo suma números; &amp; es el de concatenación.'],
+  q3:  ['Las referencias relativas se ajustan automáticamente al copiar. Al bajar una fila, A1 → A2 y B1 → B2.','Las referencias relativas cambian al copiar; las absolutas ($) no.'],
+  q4:  ['<code>$B$5</code> fija tanto la columna (B) como la fila (5) al copiar la fórmula.','Para fijar columna y fila se usa $ antes de cada parte: $B$5.'],
+  q5:  ['<code>$A1</code>: el $ antes de A fija la <em>columna</em> A, pero la fila 1 es relativa y cambia al copiar.','El $ fija solo lo que precede: $A fija columna, A$1 fija fila.'],
+  q6:  ['Al copiar una columna a la derecha: A → B (relativa). Al bajar una fila: fila 2 → 3 (relativa). La fila 1 en A$1 no cambia.','A$1: columna relativa (A→B), fila fija (1 no cambia). B2: columna relativa (B→C), fila relativa (2→3).'],
+  q7:  ['5 > 3 es VERDADERO, por lo que la función devuelve el primer argumento: "Mayor".','El primer argumento de SI se devuelve cuando la condición es VERDADERA.'],
+  q8:  ['La función Y() requiere que TODAS las condiciones sean verdaderas para retornar VERDADERO.','Y() es AND lógico: todas las condiciones deben ser verdaderas.'],
+  q9:  ['El tercer argumento de BUSCARV indica el número de columna del rango desde la que se retorna el valor. Columna 3 = tercera columna de A2:D100 (columna C).','El índice de columna indica QUÉ columna del rango se devuelve como resultado.'],
+  q10: ['FALSO (o 0) solicita coincidencia exacta. Los datos no necesitan estar ordenados.','FALSO = coincidencia exacta. VERDADERO = aproximada (requiere datos ordenados).'],
+  q11: ['La sintaxis es <code>=NombreHoja!Celda</code>. Si el nombre tiene espacios se encierra en comillas simples: <code>=\'Hoja ventas\'!C5</code>.','El separador entre hoja y celda es el símbolo de exclamación (!).'],
+  q12: ['Excel muestra un aviso de seguridad preguntando si se desea actualizar los vínculos externos al abrir el archivo.','Los vínculos externos se actualizan bajo demanda para proteger la integridad de los datos.'],
+  q13: ['La sintaxis <code>[Nombre.xlsx]Hoja</code> indica un vínculo a un libro externo de Excel.','Los corchetes [ ] identifican el nombre del libro externo en la fórmula.'],
+  q14: ['Excel 2007 y versiones posteriores permiten hasta 64 niveles de anidación de funciones.','Versiones antiguas (2003) tenían solo 7 niveles; desde 2007 son 64.'],
+  q15: ['A1=75: primera condición (>90) es falsa → pasa a la segunda (>70 → 75>70 es verdadera) → devuelve "B".','Las condiciones se evalúan en orden; la primera verdadera determina el resultado.'],
+  q16: ['Al anidar ESERROR(BUSCARV(...)) dentro de SI, se captura el error y se muestra un mensaje amigable en su lugar.','Esta técnica de manejo de errores evita que aparezca #N/A en pantalla.'],
+  q17: ['SUMAR.SI evalúa el rango A2:A10; donde el valor sea "Norte", suma el correspondiente en C2:C10.','SUMAR.SI: rango_criterio, criterio, rango_suma.'],
+  q18: ['CONTAR.SI.CONJUNTO acepta hasta 127 pares criterio/rango, mientras que CONTAR.SI solo acepta uno.','La versión "CONJUNTO" amplía la función para múltiples criterios simultáneos.'],
+  q19: ['ÍNDICE devuelve el valor en la posición encontrada por COINCIDIR. No requiere que el valor de búsqueda esté en la primera columna, a diferencia de BUSCARV.','ÍNDICE+COINCIDIR es más flexible que BUSCARV porque busca en cualquier columna.'],
+  q20: ['<code>&lt;&gt;</code> es el operador "distinto de" (≠). Ej: <code>=A1&lt;&gt;"Rojo"</code> es VERDADERO si A1 no contiene "Rojo".','En Excel: &lt; (menor), &gt; (mayor), = (igual), &lt;&gt; (distinto), &lt;= (menor o igual), &gt;= (mayor o igual).'],
+  q21: ['Las tablas dinámicas permiten resumir grandes bases de datos, cambiar perspectivas y filtrar información de forma interactiva sin alterar los datos originales.','Las tablas dinámicas son herramientas de análisis de datos, no de visualización pura.'],
+  q22: ['Los encabezados únicos permiten que Excel identifique cada campo; las filas vacías cortan la detección del rango de datos.','Sin encabezados correctos, Excel no puede identificar los campos de la tabla dinámica.'],
+  q23: ['El área "Filas" agrupa los datos formando las etiquetas de fila de la tabla dinámica.','Los cuatro áreas son: Filtros, Columnas, Filas y Valores.'],
+  q24: ['Si el campo contiene números, Excel aplica SUMA por defecto. Si contiene texto, aplica CONTEO.','La función predeterminada depende del tipo de dato: numérico → SUMA; texto → CONTEO.'],
+  q25: ['Con clic derecho → "Actualizar" (o botón "Actualizar todo" en la cinta) se recalcula la tabla con los datos modificados.','La tabla dinámica NO se actualiza automáticamente; requiere acción del usuario.'],
+  q26: ['Si las filas nuevas están fuera del rango original, hay que ir a Herramientas de tabla dinámica → "Cambiar origen de datos" y ampliar el rango.','Una solución elegante es convertir los datos origen en una Tabla de Excel (Ctrl+T) para que el rango se expanda automáticamente.'],
+  q27: ['Las segmentaciones son controles visuales con botones que permiten filtrar una o varias tablas dinámicas de forma intuitiva.','Los slicers hacen más interactivo y accesible el filtrado para usuarios no técnicos.'],
+  q28: ['Un campo calculado crea una nueva columna de cálculo dentro de la tabla dinámica usando los campos existentes, sin tocar los datos de origen.','Se inserta desde: Analizar → Campos, elementos y conjuntos → Campo calculado.'],
+  q29: ['Excel 2016+ agrupa fechas automáticamente en Años, Trimestres y Meses al añadirlas al área de filas.','Esta agrupación automática puede desactivarse si se requiere fecha completa.'],
+  q30: ['Esta opción muestra cada celda como el porcentaje que representa del gran total de la tabla.','Se accede desde: clic derecho sobre un valor → "Mostrar valores como → % del total general".'],
+  q31: ['Un dashboard consolida KPIs, gráficos y datos clave en una sola pantalla para apoyar la toma de decisiones gerenciales.','Los dashboards son herramientas de Business Intelligence (BI) visual.'],
+  q32: ['Los gráficos dinámicos están vinculados a la tabla dinámica: al aplicar un filtro o segmentación, el gráfico se actualiza instantáneamente.','Es la principal ventaja de los gráficos dinámicos frente a gráficos estáticos.'],
+  q33: ['Ocultar las líneas de cuadrícula da un aspecto más limpio y profesional al dashboard. Vista → desmarcar "Líneas de cuadrícula".','También se puede pintar el fondo de las celdas del color del tema para lograr el mismo efecto.'],
+  q34: ['Una celda con formato de fuente grande, negrita, color corporativo y sin cuadrículas visibles es la forma más común y efectiva de mostrar un KPI.','Los KPIs deben ser legibles de un vistazo; el tamaño y contraste son clave.'],
+  q35: ['El formato condicional aplica colores, barras de datos, íconos o escalas automáticamente según reglas definidas, destacando lo importante.','Ejemplo: semáforo rojo/amarillo/verde para indicadores fuera/en riesgo/en meta.'],
+  q36: ['Separar las capas (datos, cálculo, presentación) facilita la actualización de datos sin romper el diseño y mejora el mantenimiento del archivo.','Esta arquitectura de tres capas es una buena práctica estándar en desarrollo de dashboards.'],
+  q37: ['Los gráficos circulares (pie) o de anillo (donut) muestran la proporción de partes respecto a un todo, ideal para distribuciones porcentuales.','Se recomienda no usar más de 5-6 categorías en un gráfico circular para mantener la legibilidad.'],
+  q38: ['Con clic derecho sobre la segmentación → "Conexiones de informe" se puede vincular a múltiples tablas dinámicas del libro.','Esta funcionalidad es fundamental para dashboards con múltiples vistas interconectadas.'],
+  q39: ['OBTENER.DATOS.DINÁMICOS extrae un valor de una tabla dinámica mediante referencia al campo y elemento, permitiendo traer datos al dashboard sin depender de la posición de la celda.','Útil para crear tarjetas de KPI dinámicas vinculadas a tablas dinámicas.'],
+  q40: ['La secuencia profesional es: limpiar datos → crear tablas dinámicas (análisis) → construir gráficos/KPIs → diseñar la presentación visual.','Empezar por el diseño sin datos causa errores y retrabajo.']
+};
+
+/* ══ TIMER ══ */
+let totalSec = 50 * 60, timerInterval;
+function startTimer() {
+  timerInterval = setInterval(()=>{
+    totalSec--;
+    if(totalSec <= 0){ clearInterval(timerInterval); submitExam(true); return; }
+    const m = String(Math.floor(totalSec/60)).padStart(2,'0');
+    const s = String(totalSec%60).padStart(2,'0');
+    document.getElementById('timer-display').textContent = m+':'+s;
+    document.getElementById('timer-wrap').classList.toggle('warn', totalSec <= 300);
+  }, 1000);
+}
+startTimer();
+
+/* ══ PROGRESS ══ */
+function updateProgress(){
+  let answered = 0;
+  for(let i=1;i<=40;i++){
+    if(document.querySelector(`input[name="q${i}"]:checked`)) answered++;
+  }
+  const pct = Math.round(answered/40*100);
+  document.getElementById('prog-text').textContent = `Progreso: ${answered} / 40 respondidas`;
+  document.getElementById('prog-pct').textContent   = pct+'%';
+  document.getElementById('prog-fill').style.width  = pct+'%';
+}
+document.querySelectorAll('input[type="radio"]').forEach(r=>{
+  r.addEventListener('change', updateProgress);
+});
+
+/* ══ SUBMIT ══ */
+function submitExam(timeUp=false){
+  clearInterval(timerInterval);
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.textContent = '✅ Examen calificado';
+
+  let correct=0, wrong=0, omit=0;
+
+  for(let i=1;i<=40;i++){
+    const sel = document.querySelector(`input[name="q${i}"]:checked`);
+    const card = document.getElementById('qc'+i);
+    const fb   = document.getElementById('fb'+i);
+    const opts = document.querySelectorAll(`input[name="q${i}"]`);
+
+    // disable all options
+    opts.forEach(o=>{ o.disabled=true; });
+
+    const correctVal = answers['q'+i];
+
+    // mark correct option always
+    opts.forEach(o=>{
+      if(o.value === correctVal) o.parentElement.classList.add('correct');
+    });
+
+    if(!sel){
+      omit++;
+      card.classList.add('unanswered');
+      fb.className = 'feedback show err';
+      fb.innerHTML = `⬜ <strong>Sin responder.</strong> ${feedback['q'+i][1]}`;
+    } else if(sel.value === correctVal){
+      correct++;
+      sel.parentElement.classList.add('correct');
+      fb.className = 'feedback show ok';
+      fb.innerHTML = `✅ <strong>¡Correcto!</strong> ${feedback['q'+i][0]}`;
+    } else {
+      wrong++;
+      sel.parentElement.classList.add('wrong');
+      fb.className = 'feedback show err';
+      fb.innerHTML = `❌ <strong>Incorrecto.</strong> ${feedback['q'+i][1]}`;
+    }
+  }
+
+  const pct  = Math.round(correct/40*100);
+  let grade='', gradeClass='', msg='';
+  if(pct>=90){      grade='Excelente (A)';  gradeClass='grade-A'; msg='Dominio sobresaliente de Excel a nivel ingeniería industrial. ¡Felicitaciones!'; }
+  else if(pct>=80){ grade='Muy Bien (B)';   gradeClass='grade-B'; msg='Buen dominio de los temas. Refuerza los puntos fallados.'; }
+  else if(pct>=70){ grade='Suficiente (C)'; gradeClass='grade-C'; msg='Aprobado. Se recomienda revisar las secciones con errores.'; }
+  else {            grade='Insuficiente (F)';gradeClass='grade-F'; msg='Por debajo del mínimo aprobatorio (70%). Revisa el material y vuelve a intentarlo.'; }
+
+  document.getElementById('res-score').textContent = `${correct}/40`;
+  document.getElementById('res-grade').textContent  = grade;
+  document.getElementById('res-grade').className    = 'result-grade '+gradeClass;
+  document.getElementById('res-msg').textContent    = timeUp ? '⏰ Tiempo agotado. '+msg : msg;
+  document.getElementById('res-correct').textContent= correct;
+  document.getElementById('res-wrong').textContent  = wrong;
+  document.getElementById('res-omit').textContent   = omit;
+  document.getElementById('res-pct').textContent    = pct+'%';
+
+  document.getElementById('results').style.display='block';
+  document.getElementById('results').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+/* ══ RETRY ══ */
+function retryExam(){
+  location.reload();
+}
+
+/* ══ ANTI-COPY ══ */
+document.addEventListener('contextmenu', e=>e.preventDefault());
+document.addEventListener('keydown', e=>{
+  if((e.ctrlKey||e.metaKey) && ['c','a','u','s','p'].includes(e.key.toLowerCase())) e.preventDefault();
+  if(e.key==='F12') e.preventDefault();
+});
+</script>
+</body>
+</html>
