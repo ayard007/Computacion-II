@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Procesador de Textos en Psicología (Parte II) | Documentos de Google</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700;800&family=Public+Sans:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pizarra:       #1F3A5F;
+    --pizarra-medio: #2E5A88;
+    --azul-acero:    #4A7BB5;
+    --salvia:        #3F8E7C;
+    --salvia-claro:  #A8D5C8;
+    --terracota:     #C25E4A;
+    --ambar-doc:     #D99A3D;
+    --fondo:         #F4F6F8;
+    --card:          #FFFFFF;
+    --gris-texto:    #4E5A66;
+    --tinta:         #17222E;
+    --borde:         #DCE3EA;
+    --verde-ok:      #2E7D5B;
+    --sombra:        0 4px 24px rgba(31,58,95,0.09);
+    --sombra-hover:  0 10px 34px rgba(31,58,95,0.16);
+    --radio:         12px;
+    --f-display:     'Spectral', Georgia, serif;
+    --f-body:        'Public Sans', 'Segoe UI', sans-serif;
+    --f-mono:        'Roboto Mono', monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--f-body); background: var(--fondo); color: var(--tinta); font-size: 16px; line-height: 1.75; }
+
+  #progreso-barra { position: fixed; top: 0; left: 0; height: 4px; width: 0%; background: linear-gradient(90deg, var(--salvia), var(--azul-acero), var(--ambar-doc)); z-index: 9999; transition: width 0.2s ease; }
+
+  nav { position: sticky; top: 0; z-index: 900; background: var(--pizarra); border-bottom: 3px solid var(--salvia); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 56px; }
+  nav .nav-marca { font-family: var(--f-display); color: #fff; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.02em; white-space: nowrap; }
+  nav ul { list-style: none; display: flex; flex-wrap: wrap; gap: 0.1rem; }
+  nav ul li a { display: block; padding: 0.5rem 0.7rem; color: rgba(255,255,255,0.75); font-size: 0.76rem; font-weight: 600; letter-spacing: 0.02em; text-decoration: none; border-radius: 5px; transition: background 0.2s, color 0.2s; }
+  nav ul li a:hover, nav ul li a.activo { background: var(--salvia); color: #fff; }
+
+  header { background: radial-gradient(circle at 82% 22%, rgba(63,142,124,0.22), transparent 46%), linear-gradient(135deg, var(--pizarra) 0%, #24466E 60%, var(--pizarra-medio) 100%); color: #fff; padding: 3.5rem 2rem 3rem; position: relative; overflow: hidden; }
+  header::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--salvia), var(--azul-acero) 50%, var(--ambar-doc)); }
+  .header-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: flex-start; gap: 2.5rem; position: relative; z-index: 1; }
+  .header-logo { flex-shrink: 0; background: #fff; border-radius: 12px; padding: 0.7rem; box-shadow: 0 4px 20px rgba(0,0,0,0.35); }
+  .header-logo img { display: block; width: 90px; height: auto; }
+  .header-texto { flex: 1; }
+  .header-etiqueta { display: inline-block; background: var(--salvia); color: #fff; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.25rem 0.8rem; border-radius: 3px; margin-bottom: 0.8rem; }
+  .header-parte { display: inline-block; background: var(--ambar-doc); color: #fff; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.25rem 0.8rem; border-radius: 3px; margin-bottom: 0.8rem; margin-left: 0.5rem; }
+  .header-subtitulo-inst { font-size: 0.8rem; font-weight: 600; color: rgba(255,255,255,0.62); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  header h1 { font-family: var(--f-display); font-size: clamp(1.7rem, 3.6vw, 2.7rem); font-weight: 800; line-height: 1.2; margin-bottom: 0.8rem; }
+  header h1 span { color: var(--salvia-claro); }
+  .header-meta { display: flex; flex-wrap: wrap; gap: 1.2rem; font-size: 0.82rem; color: rgba(255,255,255,0.72); margin-top: 1.2rem; }
+  .header-meta span { display: flex; align-items: center; gap: 0.4rem; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ambar-doc); display: inline-block; }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  .tarjeta { background: var(--card); border-radius: var(--radio); box-shadow: var(--sombra); padding: 2.2rem 2.5rem; margin-bottom: 2.5rem; border-top: 4px solid transparent; transition: box-shadow 0.3s; }
+  .tarjeta:hover { box-shadow: var(--sombra-hover); }
+  .tarjeta.borde-azul   { border-top-color: var(--azul-acero); }
+  .tarjeta.borde-salvia { border-top-color: var(--salvia); }
+  .tarjeta.borde-ambar  { border-top-color: var(--ambar-doc); }
+
+  .seccion-titulo { font-family: var(--f-display); font-size: clamp(1.25rem, 2.5vw, 1.7rem); color: var(--pizarra); font-weight: 800; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.7rem; }
+  .seccion-titulo .num { font-family: var(--f-mono); font-size: 0.72rem; font-weight: 500; background: var(--pizarra); color: #fff; padding: 0.2rem 0.55rem; border-radius: 4px; letter-spacing: 0.06em; }
+  .seccion-desc { font-size: 0.92rem; color: var(--gris-texto); margin-bottom: 1.6rem; padding-bottom: 1.2rem; border-bottom: 1px solid var(--borde); }
+
+  h2 { font-family: var(--f-display); font-size: 1.4rem; font-weight: 700; color: var(--pizarra); margin: 1.8rem 0 0.8rem; }
+  h3 { font-family: var(--f-display); font-size: 1.15rem; font-weight: 600; color: var(--pizarra-medio); margin: 1.4rem 0 0.5rem; }
+  p { margin-bottom: 0.9rem; color: var(--gris-texto); font-size: 0.96rem; }
+  strong { color: var(--tinta); font-weight: 700; }
+  a.enlace-ext { color: var(--azul-acero); font-weight: 600; text-decoration: underline; }
+  a.enlace-ext:hover { color: var(--salvia); }
+
+  .menu-ruta { font-family: var(--f-mono); font-size: 0.82rem; background: var(--fondo); border: 1px solid var(--borde); border-radius: 6px; padding: 0.5rem 0.8rem; display: inline-block; margin: 0.3rem 0; color: var(--pizarra); }
+  .menu-ruta .sep { color: var(--salvia); font-weight: 700; margin: 0 0.3rem; }
+
+  .acordeon { margin: 1rem 0; }
+  .acord-item { border: 1px solid var(--borde); border-radius: 8px; margin-bottom: 0.6rem; overflow: hidden; }
+  .acord-btn { width: 100%; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.3rem; font-family: var(--f-body); font-size: 0.95rem; font-weight: 600; color: var(--pizarra); text-align: left; background: linear-gradient(90deg, #FAFBFC, #FFFFFF); transition: background 0.2s; }
+  .acord-btn:hover { background: #EEF2F6; }
+  .acord-btn.abierto { background: var(--pizarra); color: #fff; }
+  .acord-icono { font-size: 1.1rem; font-weight: 700; transition: transform 0.3s; flex-shrink: 0; margin-left: 1rem; }
+  .acord-btn.abierto .acord-icono { transform: rotate(45deg); }
+  .acord-body { display: none; padding: 1.3rem 1.5rem; background: var(--card); font-size: 0.93rem; color: var(--gris-texto); border-top: 1px solid var(--borde); animation: fadeIn 0.25s ease; }
+  .acord-body.visible { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:none; } }
+
+  .pestanas { margin: 1.5rem 0; }
+  .pest-nav { display: flex; flex-wrap: wrap; gap: 0.4rem; border-bottom: 2px solid var(--borde); }
+  .pest-btn { padding: 0.6rem 1.2rem; border: none; background: none; cursor: pointer; font-family: var(--f-body); font-size: 0.87rem; font-weight: 600; color: var(--gris-texto); border-radius: 6px 6px 0 0; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color 0.2s, border-color 0.2s; }
+  .pest-btn.activo { color: var(--pizarra); border-bottom-color: var(--salvia); background: var(--card); }
+  .pest-panel { display: none; padding: 1.5rem 0.5rem; animation: fadeIn 0.25s ease; }
+  .pest-panel.visible { display: block; }
+
+  .concepto-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin: 1rem 0; }
+  .concepto-card { background: var(--fondo); border-left: 4px solid var(--azul-acero); border-radius: 0 8px 8px 0; padding: 1rem 1.2rem; }
+  .concepto-card.salvia { border-left-color: var(--salvia); }
+  .concepto-card.ambar  { border-left-color: var(--ambar-doc); }
+  .concepto-titulo { font-family: var(--f-mono); font-size: 0.8rem; font-weight: 500; color: var(--pizarra); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem; }
+  .concepto-def { font-size: 0.88rem; color: var(--gris-texto); margin: 0; }
+
+  .tabla-wrap { overflow-x: auto; margin: 1rem 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  thead tr { background: var(--pizarra); color: #fff; }
+  thead th { padding: 0.8rem 1rem; text-align: left; font-weight: 600; }
+  tbody tr:nth-child(odd) { background: var(--fondo); }
+  tbody tr:nth-child(even) { background: var(--card); }
+  tbody td { padding: 0.75rem 1rem; color: var(--gris-texto); vertical-align: top; }
+  tbody tr:hover { background: #EEF2F6; }
+
+  .caja { border-radius: 8px; padding: 1.1rem 1.4rem; margin: 1.1rem 0; font-size: 0.92rem; }
+  .caja-info   { background: #E9F0F7; border-left: 4px solid var(--azul-acero); }
+  .caja-alerta { background: #FBF0DF; border-left: 4px solid var(--ambar-doc); }
+  .caja-logro  { background: #E4F2EC; border-left: 4px solid var(--verde-ok); }
+  .caja-etica  { background: #F7EAE6; border-left: 4px solid var(--terracota); }
+  .caja p, .caja ul { margin-bottom: 0.4rem; color: inherit; }
+  .caja strong { color: inherit; }
+  .caja-titulo { font-weight: 700; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; display: block; }
+  .caja-info .caja-titulo   { color: var(--azul-acero); }
+  .caja-alerta .caja-titulo { color: #9A6A1A; }
+  .caja-logro .caja-titulo  { color: var(--verde-ok); }
+  .caja-etica .caja-titulo  { color: var(--terracota); }
+  ul.lista, ol.lista { padding-left: 1.5rem; margin: 0.6rem 0; }
+  ul.lista li, ol.lista li { margin-bottom: 0.4rem; font-size: 0.92rem; color: var(--gris-texto); }
+
+  .pasos-lista { counter-reset: paso; margin: 1rem 0; }
+  .paso { counter-increment: paso; display: flex; gap: 1rem; padding: 0.9rem 1rem; margin-bottom: 0.6rem; background: var(--fondo); border-radius: 8px; align-items: flex-start; }
+  .paso::before { content: counter(paso); font-family: var(--f-mono); font-size: 0.75rem; font-weight: 500; color: #fff; background: var(--azul-acero); min-width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.05rem; }
+  .paso p { margin: 0; font-size: 0.92rem; }
+
+  .pregunta-detonadora { background: linear-gradient(135deg, var(--pizarra), var(--azul-acero)); color: #fff; border-radius: 10px; padding: 1.8rem 2rem; margin: 1.2rem 0; position: relative; overflow: hidden; }
+  .pregunta-detonadora::before { content: '?'; position: absolute; right: 1.5rem; top: 0.5rem; font-family: var(--f-display); font-size: 8rem; font-weight: 800; color: rgba(255,255,255,0.07); line-height: 1; }
+  .pregunta-detonadora .pd-etiq { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--salvia-claro); margin-bottom: 0.7rem; display: block; }
+  .pregunta-detonadora p { font-family: var(--f-display); font-size: 1.15rem; font-weight: 600; color: #fff; line-height: 1.5; position: relative; z-index: 1; }
+
+  .actividad-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--borde); }
+  .act-num { font-family: var(--f-display); font-size: 2rem; font-weight: 800; color: var(--salvia); line-height: 1; flex-shrink: 0; min-width: 2rem; }
+  .act-tipo { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--salvia); display: block; margin-bottom: 0.1rem; }
+  .act-nombre { font-family: var(--f-display); font-size: 1.2rem; font-weight: 800; color: var(--pizarra); }
+
+  .rubrica { margin: 1.2rem 0; }
+  .rubrica-item { display: grid; grid-template-columns: 2fr 1fr; gap: 0.5rem 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid var(--borde); align-items: center; font-size: 0.88rem; }
+  .rubrica-item:last-child { border-bottom: none; }
+  .rubrica-item:nth-child(odd) { background: var(--fondo); }
+  .rubrica-header { background: var(--pizarra) !important; color: #fff; font-weight: 700; border-radius: 6px 6px 0 0; }
+  .puntos { font-family: var(--f-mono); font-weight: 500; color: var(--azul-acero); text-align: right; }
+  .rubrica-header .puntos { color: var(--salvia-claro); }
+
+  .func-card { background: var(--fondo); border: 1px solid var(--borde); border-radius: 10px; padding: 1.3rem 1.5rem; margin-bottom: 1rem; display: flex; gap: 1.1rem; align-items: flex-start; }
+  .func-icon { width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: var(--f-mono); font-weight: 500; font-size: 0.9rem; color: #fff; }
+  .func-icon.azul   { background: var(--azul-acero); }
+  .func-icon.salvia { background: var(--salvia); }
+  .func-icon.ambar  { background: var(--ambar-doc); }
+  .func-icon.pizarra{ background: var(--pizarra); }
+  .func-nombre { font-family: var(--f-display); font-weight: 700; font-size: 1.02rem; color: var(--pizarra); margin-bottom: 0.3rem; }
+  .func-desc { font-size: 0.9rem; color: var(--gris-texto); margin: 0; }
+
+  /* Simulación índice */
+  .indice-demo { background: #fff; border: 1px solid var(--borde); border-radius: 8px; padding: 1.5rem 1.8rem; margin: 1rem 0; font-family: var(--f-display); }
+  .indice-demo .idx-titulo { font-weight: 700; font-size: 1.05rem; color: var(--pizarra); margin-bottom: 0.8rem; text-align: center; }
+  .indice-linea { display: flex; align-items: baseline; font-size: 0.9rem; color: var(--tinta); margin-bottom: 0.4rem; }
+  .indice-linea .idx-txt { }
+  .indice-linea .idx-puntos { flex: 1; border-bottom: 1.5px dotted var(--borde); margin: 0 0.5rem; transform: translateY(-3px); }
+  .indice-linea .idx-pag { font-family: var(--f-mono); font-size: 0.82rem; color: var(--gris-texto); }
+  .indice-linea.n2 { padding-left: 1.5rem; font-size: 0.85rem; color: var(--gris-texto); }
+
+  /* Comentario simulado */
+  .comentario-demo { display: flex; gap: 0.8rem; background: #FFF8E8; border: 1px solid var(--ambar-doc); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 0.8rem 0; }
+  .coment-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--salvia); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; flex-shrink: 0; }
+  .coment-cuerpo { flex: 1; }
+  .coment-autor { font-weight: 700; font-size: 0.85rem; color: var(--pizarra); }
+  .coment-hora { font-size: 0.72rem; color: var(--gris-texto); font-weight: 400; margin-left: 0.4rem; }
+  .coment-texto { font-size: 0.86rem; color: var(--gris-texto); margin: 0.2rem 0 0; }
+
+  /* Cita simulada */
+  .cita-demo { background: var(--fondo); border-left: 4px solid var(--salvia); border-radius: 0 8px 8px 0; padding: 1rem 1.3rem; margin: 1rem 0; font-family: var(--f-display); font-size: 0.9rem; }
+  .cita-demo .cita-inline { color: var(--tinta); }
+  .cita-demo .cita-marca { background: var(--salvia-claro); color: var(--pizarra); padding: 0 0.3em; border-radius: 3px; }
+
+  #quiz { counter-reset: pregunta; }
+  .quiz-pregunta { counter-increment: pregunta; background: var(--fondo); border-radius: 8px; padding: 1.3rem 1.5rem; margin-bottom: 1rem; border: 2px solid transparent; transition: border-color 0.3s; }
+  .quiz-pregunta.correcta   { border-color: var(--verde-ok); background: #E4F2EC; }
+  .quiz-pregunta.incorrecta { border-color: var(--terracota); background: #F7EAE6; }
+  .quiz-enun { font-weight: 700; font-size: 0.95rem; color: var(--pizarra); margin-bottom: 0.9rem; }
+  .quiz-enun::before { content: counter(pregunta) '. '; font-family: var(--f-mono); color: var(--salvia); }
+  .quiz-opciones { display: flex; flex-direction: column; gap: 0.5rem; }
+  .quiz-opcion { display: flex; align-items: center; gap: 0.7rem; padding: 0.6rem 0.9rem; background: var(--card); border-radius: 6px; cursor: pointer; border: 1.5px solid var(--borde); font-size: 0.9rem; color: var(--gris-texto); transition: border-color 0.2s, background 0.2s; user-select: none; }
+  .quiz-opcion:hover { border-color: var(--azul-acero); background: #EEF2F6; }
+  .quiz-opcion input[type=radio] { accent-color: var(--azul-acero); }
+  .quiz-feedback { margin-top: 0.7rem; padding: 0.6rem 0.9rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; display: none; }
+  .feedback-bien { background: #E4F2EC; color: var(--verde-ok); }
+  .feedback-mal  { background: #F7EAE6; color: #A83E2A; }
+  .quiz-controles { text-align: center; margin-top: 1.5rem; }
+  .btn { display: inline-block; padding: 0.75rem 2rem; border: none; border-radius: 7px; cursor: pointer; font-family: var(--f-body); font-size: 0.9rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; transition: background 0.2s, transform 0.15s, box-shadow 0.2s; }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  .btn-primario { background: var(--pizarra); color: #fff; }
+  .btn-salvia   { background: var(--salvia); color: #fff; }
+  #resultado-quiz { display: none; margin-top: 1.5rem; border-radius: 10px; padding: 1.8rem 2rem; text-align: center; }
+  #resultado-quiz.alto  { background: #E4F2EC; border: 2px solid var(--verde-ok); }
+  #resultado-quiz.medio { background: #FBF0DF; border: 2px solid var(--ambar-doc); }
+  #resultado-quiz.bajo  { background: #F7EAE6; border: 2px solid var(--terracota); }
+  .resultado-puntaje { font-family: var(--f-display); font-size: 3.5rem; font-weight: 800; line-height: 1; margin-bottom: 0.3rem; }
+  .alto  .resultado-puntaje { color: var(--verde-ok); }
+  .medio .resultado-puntaje { color: #9A6A1A; }
+  .bajo  .resultado-puntaje { color: var(--terracota); }
+  .resultado-msg { font-size: 1rem; font-weight: 600; }
+
+  .plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+  .plan-area { background: var(--fondo); border: 1px solid var(--borde); border-radius: 8px; padding: 1rem; }
+  .plan-area label { display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--azul-acero); margin-bottom: 0.5rem; }
+  .plan-area textarea, .plan-area input { width: 100%; border: 1px solid var(--borde); border-radius: 6px; padding: 0.6rem 0.8rem; font-family: var(--f-body); font-size: 0.88rem; color: var(--tinta); background: var(--card); resize: vertical; transition: border-color 0.2s; }
+  .plan-area textarea:focus, .plan-area input:focus { outline: none; border-color: var(--azul-acero); }
+  #plan-guardado { display: none; margin-top: 1rem; background: #E4F2EC; border: 1px solid var(--verde-ok); border-radius: 8px; padding: 1rem 1.2rem; font-size: 0.9rem; color: var(--verde-ok); font-weight: 600; }
+
+  footer { background: var(--pizarra); color: rgba(255,255,255,0.65); text-align: center; padding: 2rem 1.5rem; font-size: 0.82rem; }
+  footer strong { color: rgba(255,255,255,0.9); }
+  footer .footer-linea { margin-bottom: 0.3rem; }
+
+  .chip { display: inline-block; padding: 0.2rem 0.65rem; border-radius: 50px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; }
+  .chip-azul   { background: #DCE8F4; color: var(--pizarra); }
+  .chip-salvia { background: #D5EBE3; color: var(--verde-ok); }
+  .chip-terra  { background: #F4DDD6; color: #A83E2A; }
+  .mt-1 { margin-top: 0.5rem; } .mt-2 { margin-top: 1rem; } .mb-1 { margin-bottom: 0.5rem; }
+  .divider { border: none; border-top: 1px solid var(--borde); margin: 1.5rem 0; }
+
+  @media (max-width: 680px) {
+    nav ul { gap: 0; }
+    nav ul li a { font-size: 0.7rem; padding: 0.4rem 0.45rem; }
+    .header-inner { flex-direction: column; gap: 1.2rem; }
+    .tarjeta { padding: 1.5rem 1.2rem; }
+    .plan-grid { grid-template-columns: 1fr; }
+    .concepto-grid { grid-template-columns: 1fr; }
+    .func-card { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progreso-barra"></div>
+
+<nav>
+  <span class="nav-marca">Documentos de Google &mdash; Parte II</span>
+  <ul>
+    <li><a href="#introduccion" onclick="marcarActivo(this)">Introducción</a></li>
+    <li><a href="#entorno" onclick="marcarActivo(this)">Entorno</a></li>
+    <li><a href="#indices" onclick="marcarActivo(this)">Índices</a></li>
+    <li><a href="#colaboracion" onclick="marcarActivo(this)">Colaboración</a></li>
+    <li><a href="#citas" onclick="marcarActivo(this)">Citas</a></li>
+    <li><a href="#diagramas" onclick="marcarActivo(this)">Diagramas</a></li>
+    <li><a href="#actividad-1" onclick="marcarActivo(this)">Act. 1</a></li>
+    <li><a href="#actividad-2" onclick="marcarActivo(this)">Act. 2</a></li>
+    <li><a href="#actividad-3" onclick="marcarActivo(this)">Quiz</a></li>
+    <li><a href="#reflexion" onclick="marcarActivo(this)">Reflexión</a></li>
+  </ul>
+</nav>
+
+<header>
+  <div class="header-inner">
+    <div class="header-logo">
+      <img src="data:image/jpeg;base64,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" alt="Logo Universidad UNE" style="width:90px;height:auto;">
+    </div>
+    <div class="header-texto">
+      <span class="header-subtitulo-inst">Universidad de Especialidades UNE</span>
+      <span class="header-etiqueta">Licenciatura en Psicología</span>
+      <span class="header-parte">Parte II</span>
+      <h1>Documentos de Google:<br><span>Colaboración, Índices, Citas y Diagramas</span></h1>
+      <p style="color:rgba(255,255,255,0.72);font-size:0.92rem;margin:0.5rem 0 0;">Procesador de Textos Aplicado a la Psicología &mdash; Segunda parte</p>
+      <div class="header-meta">
+        <span><span class="dot"></span> Herramienta: Documentos de Google</span>
+        <span><span class="dot"></span> Nivel: Licenciatura</span>
+        <span><span class="dot"></span> Metodología: Constructivista / ABP</span>
+        <span><span class="dot"></span> 3 Actividades evaluables</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- INTRODUCCIÓN -->
+<section id="introduccion">
+  <div class="tarjeta borde-azul">
+    <div class="seccion-titulo"><span class="num">INTRO</span> Introducción a la Segunda Parte</div>
+    <p class="seccion-desc">Continuidad del tema y enfoque específico en Documentos de Google.</p>
+
+    <p>En la primera parte de esta guía se abordaron los fundamentos del procesador de textos y la elaboración de documentos conforme a las normas APA, con referencia a Microsoft Word y Google Docs. Esta <strong>segunda parte</strong> profundiza en el uso de <strong>Documentos de Google</strong> (también conocido como Google Docs, accesible desde el navegador Chrome), una plataforma basada en la nube que ha transformado la manera en que estudiantes y profesionales producen documentos de forma colaborativa.</p>
+
+    <p>El foco de esta parte está en cuatro capacidades de alto valor para el trabajo académico y profesional en psicología: la <strong>generación automática de índices</strong>, el <strong>trabajo colaborativo en tiempo real</strong>, la <strong>generación de citas y referencias</strong>, y la <strong>inserción de diagramas mediante complementos</strong>.</p>
+
+    <div class="caja caja-info">
+      <span class="caja-titulo">Propósito de esta parte</span>
+      <p>Que el estudiante domine las funciones avanzadas de Documentos de Google para producir documentos académicos extensos, bien estructurados y elaborados de forma colaborativa, integrando índices automáticos, citas normalizadas y representaciones gráficas.</p>
+    </div>
+
+    <h3>Objetivos de aprendizaje</h3>
+    <ul class="lista">
+      <li>Generar índices o tablas de contenido automáticas en Documentos de Google a partir de estilos de título.</li>
+      <li>Gestionar el trabajo colaborativo mediante permisos, modos de edición, comentarios y sugerencias.</li>
+      <li>Generar citas y referencias en formato APA utilizando la herramienta de citas integrada.</li>
+      <li>Insertar diagramas y representaciones gráficas mediante complementos y herramientas de dibujo.</li>
+      <li>Aplicar estas competencias en la producción colaborativa de documentos propios de la psicología.</li>
+    </ul>
+  </div>
+</section>
+
+
+<!-- ENTORNO -->
+<section id="entorno">
+  <div class="tarjeta borde-azul">
+    <div class="seccion-titulo"><span class="num">1</span> El Entorno de Documentos de Google</div>
+    <p class="seccion-desc">Acceso, características y organización de la plataforma en la nube.</p>
+
+    <p>Documentos de Google es un procesador de textos gratuito que funciona directamente en el navegador, sin necesidad de instalación. Forma parte del ecosistema de Google Workspace y se integra con Google Drive para el almacenamiento, y con otras aplicaciones como Presentaciones y Hojas de cálculo.</p>
+
+    <h3>Cómo acceder y crear un documento</h3>
+    <div class="pasos-lista">
+      <div class="paso"><p><strong>Abre el navegador Chrome</strong> e inicia sesión con tu cuenta de Google (preferentemente la institucional que proporcione tu universidad).</p></div>
+      <div class="paso"><p><strong>Accede a Documentos de Google</strong> escribiendo <span class="menu-ruta">docs.google.com</span> en la barra de direcciones, o desde el menú de aplicaciones de Google.</p></div>
+      <div class="paso"><p><strong>Crea un documento nuevo</strong> seleccionando la opción de documento en blanco, o elige una plantilla predefinida.</p></div>
+      <div class="paso"><p><strong>Asigna un nombre al documento</strong> haciendo clic en el título "Documento sin título" en la esquina superior izquierda. El guardado es automático y continuo.</p></div>
+    </div>
+
+    <div class="caja caja-logro">
+      <span class="caja-titulo">Ventaja del guardado automático</span>
+      <p>A diferencia de los procesadores tradicionales, Documentos de Google guarda cada cambio de forma automática en la nube. Esto elimina el riesgo de perder trabajo por no haber guardado y permite acceder al documento desde cualquier dispositivo con conexión.</p>
+    </div>
+
+    <h3>Historial de versiones</h3>
+    <p>Una función especialmente útil es el <strong>historial de versiones</strong>, que registra todos los cambios realizados a lo largo del tiempo y permite restaurar versiones anteriores del documento.</p>
+    <div class="menu-ruta">Archivo <span class="sep">&rsaquo;</span> Historial de versiones <span class="sep">&rsaquo;</span> Ver historial de versiones</div>
+    <div class="caja caja-info mt-2">
+      <span class="caja-titulo">Aplicación académica</span>
+      <p>El historial de versiones permite comprobar la evolución de un trabajo colaborativo y verificar la contribución de cada integrante de un equipo, lo que resulta útil tanto para los estudiantes como para el docente que evalúa el proceso.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ÍNDICES -->
+<section id="indices">
+  <div class="tarjeta borde-salvia">
+    <div class="seccion-titulo"><span class="num">2</span> Generador de Índices y Tablas de Contenido</div>
+    <p class="seccion-desc">Creación automática de índices navegables para documentos académicos extensos.</p>
+
+    <p>En documentos extensos &mdash;como reportes de investigación, protocolos o tesis&mdash; el <strong>índice o tabla de contenido</strong> es indispensable. Documentos de Google puede generarlo de forma automática, siempre que el documento esté correctamente estructurado con <strong>estilos de título</strong>.</p>
+
+    <div class="caja caja-alerta">
+      <span class="caja-titulo">Requisito indispensable</span>
+      <p>El índice automático solo funciona si has aplicado estilos de título (Título 1, Título 2, Título 3) a los encabezados del documento. No reconoce texto al que solo se le ha aplicado negrita o mayor tamaño de forma manual.</p>
+    </div>
+
+    <h3>Paso 1: Aplicar estilos de título</h3>
+    <div class="pasos-lista">
+      <div class="paso"><p><strong>Selecciona el texto</strong> que servirá como encabezado de una sección (por ejemplo, "Introducción").</p></div>
+      <div class="paso"><p><strong>Abre el menú de estilos</strong> desde la barra de herramientas, donde aparece "Texto normal".</p></div>
+      <div class="paso"><p><strong>Aplica el estilo correspondiente:</strong> "Título 1" para las secciones principales, "Título 2" para las subsecciones, y así sucesivamente, respetando la jerarquía.</p></div>
+      <div class="paso"><p><strong>Repite el proceso</strong> con todos los encabezados del documento, manteniendo la coherencia jerárquica.</p></div>
+    </div>
+
+    <h3>Paso 2: Insertar el índice</h3>
+    <div class="pasos-lista">
+      <div class="paso"><p><strong>Coloca el cursor</strong> en el lugar donde deseas que aparezca el índice (habitualmente después de la portada).</p></div>
+      <div class="paso"><p><strong>Accede al menú de inserción:</strong></p></div>
+    </div>
+    <div class="menu-ruta">Insertar <span class="sep">&rsaquo;</span> Índice</div>
+    <div class="pasos-lista mt-1">
+      <div class="paso"><p><strong>Elige el formato del índice:</strong> con números de página (para documentos impresos) o con enlaces azules (para navegación digital).</p></div>
+      <div class="paso"><p><strong>Actualiza el índice</strong> cuando modifiques el documento, haciendo clic sobre él y seleccionando el icono de actualización.</p></div>
+    </div>
+
+    <h3>Ejemplo visual de índice generado</h3>
+    <div class="indice-demo">
+      <div class="idx-titulo">Índice</div>
+      <div class="indice-linea"><span class="idx-txt">1. Introducción</span><span class="idx-puntos"></span><span class="idx-pag">1</span></div>
+      <div class="indice-linea"><span class="idx-txt">2. Marco teórico</span><span class="idx-puntos"></span><span class="idx-pag">3</span></div>
+      <div class="indice-linea n2"><span class="idx-txt">2.1 Antecedentes</span><span class="idx-puntos"></span><span class="idx-pag">3</span></div>
+      <div class="indice-linea n2"><span class="idx-txt">2.2 Teorías principales</span><span class="idx-puntos"></span><span class="idx-pag">5</span></div>
+      <div class="indice-linea"><span class="idx-txt">3. Metodología</span><span class="idx-puntos"></span><span class="idx-pag">8</span></div>
+      <div class="indice-linea"><span class="idx-txt">4. Resultados y discusión</span><span class="idx-puntos"></span><span class="idx-pag">11</span></div>
+      <div class="indice-linea"><span class="idx-txt">5. Referencias</span><span class="idx-puntos"></span><span class="idx-pag">15</span></div>
+    </div>
+
+    <div class="caja caja-info">
+      <span class="caja-titulo">Función complementaria: esquema del documento</span>
+      <p>Además del índice, Documentos de Google ofrece un panel de <strong>esquema</strong> (Ver &rsaquo; Mostrar esquema del documento) que muestra la estructura de títulos en un panel lateral, permitiendo navegar rápidamente por documentos extensos.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- COLABORACIÓN -->
+<section id="colaboracion">
+  <div class="tarjeta borde-azul">
+    <div class="seccion-titulo"><span class="num">3</span> Trabajo Colaborativo en Tiempo Real</div>
+    <p class="seccion-desc">Edición simultánea, permisos, comentarios y sugerencias para el trabajo en equipo.</p>
+
+    <p>La colaboración es, probablemente, la característica más distintiva de Documentos de Google. Varios usuarios pueden trabajar sobre un mismo documento simultáneamente, viendo los cambios de los demás en tiempo real. Esto resulta idóneo para trabajos en equipo, revisiones entre pares y retroalimentación docente.</p>
+
+    <h3>Compartir un documento y gestionar permisos</h3>
+    <div class="pasos-lista">
+      <div class="paso"><p><strong>Haz clic en el botón "Compartir"</strong> ubicado en la esquina superior derecha del documento.</p></div>
+      <div class="paso"><p><strong>Agrega a los colaboradores</strong> escribiendo sus correos electrónicos, o genera un enlace para compartir.</p></div>
+      <div class="paso"><p><strong>Define el nivel de permiso</strong> para cada colaborador según la función que deba cumplir.</p></div>
+    </div>
+
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Permiso</th><th>Qué permite</th><th>Cuándo usarlo</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Lector</strong></td><td>Solo ver el documento, sin modificarlo</td><td>Compartir un trabajo terminado para consulta</td></tr>
+          <tr><td><strong>Comentador</strong></td><td>Ver y agregar comentarios, sin editar el texto</td><td>Revisión entre pares o retroalimentación docente</td></tr>
+          <tr><td><strong>Editor</strong></td><td>Modificar libremente el documento</td><td>Trabajo colaborativo activo entre integrantes de un equipo</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Modos de edición del documento</h3>
+    <div class="concepto-grid">
+      <div class="concepto-card salvia">
+        <div class="concepto-titulo">Modo Edicion</div>
+        <p class="concepto-def">Permite modificar el documento directamente. Es el modo por defecto para los editores.</p>
+      </div>
+      <div class="concepto-card">
+        <div class="concepto-titulo">Modo Sugerencias</div>
+        <p class="concepto-def">Las modificaciones aparecen como propuestas que el propietario puede aceptar o rechazar, sin alterar el texto original hasta su aprobación. Equivale al control de cambios.</p>
+      </div>
+      <div class="concepto-card ambar">
+        <div class="concepto-titulo">Modo Visualizacion</div>
+        <p class="concepto-def">Muestra el documento como resultado final, sin marcas de edición ni sugerencias.</p>
+      </div>
+    </div>
+
+    <h3>Comentarios y asignación de tareas</h3>
+    <p>Los comentarios permiten insertar notas vinculadas a una parte específica del texto. Además, es posible <strong>asignar un comentario como tarea</strong> a un colaborador específico, escribiendo el símbolo de arroba seguido de su correo.</p>
+
+    <div class="comentario-demo">
+      <div class="coment-avatar">AM</div>
+      <div class="coment-cuerpo">
+        <div class="coment-autor">Ana M. <span class="coment-hora">10:24 a. m.</span></div>
+        <p class="coment-texto">Este párrafo necesita una cita que respalde la afirmación sobre la ansiedad. @carlos, ¿podrías agregar la referencia del estudio que mencionaste?</p>
+      </div>
+    </div>
+
+    <div class="caja caja-etica">
+      <span class="caja-titulo">Colaboración responsable en psicología</span>
+      <p>Al colaborar en documentos que involucren información de casos o datos de personas, deben anonimizarse los datos y limitarse el acceso solo a los integrantes autorizados. El enlace "cualquier persona con el enlace puede editar" debe evitarse en documentos con información sensible.</p>
+    </div>
+
+    <h3>Pasos para trabajar en modo Sugerencias</h3>
+    <div class="pasos-lista">
+      <div class="paso"><p><strong>Cambia al modo Sugerencias</strong> desde el icono del lápiz en la esquina superior derecha, seleccionando "Sugiriendo".</p></div>
+      <div class="paso"><p><strong>Realiza tus modificaciones:</strong> aparecerán en un color distinto y con una nota al margen, sin borrar el texto original.</p></div>
+      <div class="paso"><p><strong>El propietario o los editores</strong> pueden aceptar o rechazar cada sugerencia individualmente.</p></div>
+      <div class="paso"><p><strong>Utiliza los comentarios</strong> para justificar tus sugerencias y facilitar la discusión constructiva.</p></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- CITAS -->
+<section id="citas">
+  <div class="tarjeta borde-salvia">
+    <div class="seccion-titulo"><span class="num">4</span> Generación de Citas y Referencias</div>
+    <p class="seccion-desc">Uso de la herramienta de citas integrada para normalizar fuentes en formato APA.</p>
+
+    <p>Documentos de Google incluye una <strong>herramienta de citas integrada</strong> que facilita la inserción de citas dentro del texto y la generación de la lista de referencias, en los principales estilos, incluido el formato <strong>APA</strong>, estándar de la psicología.</p>
+
+    <h3>Acceder a la herramienta de citas</h3>
+    <div class="menu-ruta">Herramientas <span class="sep">&rsaquo;</span> Citas</div>
+    <p>Al activarla, se abre un panel lateral donde se seleccionan el estilo de cita (APA) y el tipo de fuente (libro, artículo de revista, sitio web, entre otros).</p>
+
+    <h3>Pasos para agregar una fuente y citarla</h3>
+    <div class="pasos-lista">
+      <div class="paso"><p><strong>Abre el panel de citas</strong> desde el menú Herramientas &rsaquo; Citas.</p></div>
+      <div class="paso"><p><strong>Selecciona el estilo APA</strong> en el menú desplegable del panel.</p></div>
+      <div class="paso"><p><strong>Haz clic en "Agregar fuente"</strong> y elige el tipo de fuente (por ejemplo, "Artículo de revista").</p></div>
+      <div class="paso"><p><strong>Completa los datos de la fuente:</strong> autor, año, título, nombre de la revista, volumen, número y páginas. Cuanto más completos sean los datos, más correcta será la cita generada.</p></div>
+      <div class="paso"><p><strong>Inserta la cita en el texto</strong> colocando el cursor en el lugar deseado y seleccionando "Citar" en la fuente correspondiente del panel.</p></div>
+      <div class="paso"><p><strong>Genera la lista de referencias</strong> al final del documento con el botón "Insertar referencias", que compila automáticamente todas las fuentes citadas.</p></div>
+    </div>
+
+    <h3>Ejemplo de cita y referencia generadas</h3>
+    <div class="cita-demo">
+      <p style="margin-bottom:0.6rem;"><strong>Cita en el texto:</strong></p>
+      <p class="cita-inline">Diversos estudios han vinculado el estrés académico con alteraciones del sueño <span class="cita-marca">(García, 2021)</span>.</p>
+      <p style="margin:0.8rem 0 0.6rem;"><strong>Referencia generada:</strong></p>
+      <p class="cita-inline" style="padding-left:2em;text-indent:-2em;">García, M. (2021). Estrés académico y calidad del sueño en universitarios. <em>Revista de Psicología Educativa, 15</em>(2), 45-60.</p>
+    </div>
+
+    <div class="caja caja-alerta">
+      <span class="caja-titulo">Verificación indispensable</span>
+      <p>Las herramientas de generación automática de citas son un apoyo valioso, pero no infalibles. El estudiante debe <strong>verificar siempre</strong> que la cita y la referencia generadas cumplan correctamente con las normas APA, ya que pueden contener errores de formato o datos incompletos. La responsabilidad final sobre la exactitud de las referencias recae en el autor.</p>
+    </div>
+
+    <div class="caja caja-info">
+      <span class="caja-titulo">Alternativa: complementos de gestión bibliográfica</span>
+      <p>Para trabajos con muchas referencias, existen complementos especializados que se integran con Documentos de Google y con gestores bibliográficos externos, permitiendo administrar bibliotecas de fuentes más amplias. Estos se instalan desde el menú de complementos.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- DIAGRAMAS -->
+<section id="diagramas">
+  <div class="tarjeta borde-ambar">
+    <div class="seccion-titulo"><span class="num">5</span> Inserción de Diagramas y Complementos</div>
+    <p class="seccion-desc">Representación gráfica de información mediante herramientas de dibujo y complementos.</p>
+
+    <p>En psicología es frecuente la necesidad de representar gráficamente información: modelos teóricos, procesos de intervención, mapas conceptuales, genogramas, diagramas de flujo de un proceso de evaluación. Documentos de Google ofrece dos vías principales para insertar diagramas.</p>
+
+    <div class="pestanas">
+      <div class="pest-nav">
+        <button class="pest-btn activo" onclick="mostrarPestana(this,'d-dibujo')">Herramienta de dibujo</button>
+        <button class="pest-btn" onclick="mostrarPestana(this,'d-complemento')">Complementos</button>
+      </div>
+
+      <div id="d-dibujo" class="pest-panel visible">
+        <h3>Herramienta de dibujo integrada</h3>
+        <p>Documentos de Google incluye una herramienta de dibujo que permite crear diagramas simples con formas, líneas, cuadros de texto y conectores.</p>
+        <div class="menu-ruta">Insertar <span class="sep">&rsaquo;</span> Dibujo <span class="sep">&rsaquo;</span> Nuevo</div>
+        <div class="pasos-lista mt-1">
+          <div class="paso"><p><strong>Abre el lienzo de dibujo</strong> desde el menú Insertar &rsaquo; Dibujo &rsaquo; Nuevo.</p></div>
+          <div class="paso"><p><strong>Inserta formas</strong> (rectángulos, óvalos, rombos) que representarán los elementos del diagrama.</p></div>
+          <div class="paso"><p><strong>Conecta las formas</strong> con líneas y flechas para indicar relaciones o secuencias.</p></div>
+          <div class="paso"><p><strong>Agrega texto</strong> a cada forma haciendo doble clic sobre ella.</p></div>
+          <div class="paso"><p><strong>Guarda y cierra</strong> con el botón "Guardar y cerrar"; el diagrama se insertará en el documento y podrá editarse posteriormente.</p></div>
+        </div>
+        <div class="caja caja-info">
+          <span class="caja-titulo">Uso recomendado</span>
+          <p>La herramienta de dibujo es ideal para diagramas sencillos: un modelo de tres o cuatro elementos, un esquema de proceso lineal o un mapa conceptual básico.</p>
+        </div>
+      </div>
+
+      <div id="d-complemento" class="pest-panel">
+        <h3>Complementos para diagramas avanzados</h3>
+        <p>Para diagramas más complejos (organigramas, diagramas de flujo elaborados, mapas mentales), se pueden instalar <strong>complementos</strong> especializados que se integran con Documentos de Google.</p>
+        <div class="menu-ruta">Extensiones <span class="sep">&rsaquo;</span> Complementos <span class="sep">&rsaquo;</span> Descargar complementos</div>
+        <div class="pasos-lista mt-1">
+          <div class="paso"><p><strong>Abre el menú de complementos</strong> desde Extensiones &rsaquo; Complementos &rsaquo; Descargar complementos.</p></div>
+          <div class="paso"><p><strong>Busca un complemento de diagramas</strong> en el mercado de complementos (por ejemplo, herramientas de creación de diagramas de flujo o mapas conceptuales).</p></div>
+          <div class="paso"><p><strong>Instala el complemento</strong> y concede los permisos solicitados, revisando siempre qué acceso requiere.</p></div>
+          <div class="paso"><p><strong>Crea el diagrama</strong> desde el panel del complemento e insértalo en el documento.</p></div>
+          <div class="paso"><p><strong>Actualiza el diagrama</strong> cuando sea necesario, editándolo desde el mismo complemento.</p></div>
+        </div>
+        <div class="caja caja-alerta">
+          <span class="caja-titulo">Precaución con los permisos</span>
+          <p>Antes de instalar un complemento, revisa los permisos que solicita y su reputación. Instala únicamente complementos de fuentes confiables, especialmente si trabajarás con documentos que contengan información académica o profesional relevante.</p>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <h3>Aplicaciones de los diagramas en psicología</h3>
+    <div class="concepto-grid">
+      <div class="concepto-card">
+        <div class="concepto-titulo">Modelos teoricos</div>
+        <p class="concepto-def">Representar visualmente las relaciones entre variables o los componentes de una teoría psicológica.</p>
+      </div>
+      <div class="concepto-card salvia">
+        <div class="concepto-titulo">Procesos de intervencion</div>
+        <p class="concepto-def">Diagramar las fases de un proceso de evaluación o intervención mediante diagramas de flujo.</p>
+      </div>
+      <div class="concepto-card ambar">
+        <div class="concepto-titulo">Mapas conceptuales</div>
+        <p class="concepto-def">Organizar y sintetizar los conceptos de un tema, favoreciendo el aprendizaje significativo.</p>
+      </div>
+    </div>
+
+    <div class="caja caja-alerta mt-2">
+      <span class="caja-titulo">Nota sobre formato APA</span>
+      <p>Todo diagrama o figura insertado en un documento académico debe acompañarse de su número de figura y título correspondiente, conforme a las normas APA revisadas en la primera parte de esta guía.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ACTIVIDAD 1 — FORO -->
+<section id="actividad-1">
+  <div class="tarjeta borde-salvia">
+    <div class="actividad-header">
+      <div class="act-num">01</div>
+      <div>
+        <span class="act-tipo">Actividad 1 &mdash; Entrega en Google Classroom</span>
+        <div class="act-nombre">Foro de Mediación: Construir en Equipo, ¿Suma o Resta?</div>
+      </div>
+    </div>
+
+    <div class="caja caja-info">
+      <span class="caja-titulo">Datos generales</span>
+      <p>
+        <span class="chip chip-azul">Tipo: Foro de discusión</span>&nbsp;
+        <span class="chip chip-salvia">Entrega: Google Classroom</span>&nbsp;
+        <span class="chip chip-terra">Modalidad: Colaborativa</span>
+      </p>
+      <p style="margin-top:0.5rem;margin-bottom:0;"><strong>Propósito:</strong> Promover la reflexión crítica sobre las ventajas y los desafíos del trabajo colaborativo en documentos compartidos, y su relación con la responsabilidad individual y la confidencialidad.</p>
+    </div>
+
+    <h3>Pregunta detonadora</h3>
+    <div class="pregunta-detonadora">
+      <span class="pd-etiq">Pregunta central del foro</span>
+      <p>La edición colaborativa en tiempo real permite que un equipo construya un documento de forma simultánea, pero también deja registro exacto de quién escribió qué y cuándo. ¿Este nivel de transparencia fortalece la colaboración y la responsabilidad individual, o puede generar tensiones y vigilancia excesiva dentro de un equipo? Y en un contexto profesional de la psicología, donde se manejan documentos con información sensible, ¿qué límites y acuerdos debería establecer un equipo antes de trabajar de forma colaborativa?</p>
+    </div>
+
+    <h3>Instrucciones paso a paso</h3>
+    <div class="pasos-lista">
+      <div class="paso"><p><strong>Revisa los contenidos</strong> de la guía, en especial las secciones sobre trabajo colaborativo, permisos e historial de versiones.</p></div>
+      <div class="paso"><p><strong>Elabora tu aportación inicial</strong> (mínimo 250 palabras): expón tu postura, fundaméntala con al menos dos argumentos y relaciónala con una situación concreta de trabajo en equipo, ya sea académica o profesional.</p></div>
+      <div class="paso"><p><strong>Publica tu aportación</strong> en el foro de Google Classroom dentro del plazo establecido.</p></div>
+      <div class="paso"><p><strong>Lee las aportaciones</strong> de al menos dos compañeros e identifica coincidencias y diferencias.</p></div>
+      <div class="paso"><p><strong>Responde a cada compañero</strong> seleccionado (mínimo 100 palabras por respuesta), aportando una perspectiva nueva o un matiz. No se aceptan respuestas de mero acuerdo.</p></div>
+      <div class="paso"><p><strong>Cierre (opcional):</strong> tras leer al menos cinco participaciones, redacta una síntesis breve (100-150 palabras) de los acuerdos que el grupo propone para un trabajo colaborativo sano y responsable.</p></div>
+    </div>
+
+    <h3>Rúbrica de evaluación</h3>
+    <div class="rubrica">
+      <div class="rubrica-item rubrica-header"><span>Criterio</span><span class="puntos">Puntos</span></div>
+      <div class="rubrica-item"><span>Aportación inicial: postura clara, fundamentada y contextualizada</span><span class="puntos">25 pts</span></div>
+      <div class="rubrica-item"><span>Extensión y desarrollo argumental (mín. 250 palabras)</span><span class="puntos">15 pts</span></div>
+      <div class="rubrica-item"><span>Calidad de las respuestas a compañeros: nueva perspectiva o matiz</span><span class="puntos">30 pts</span></div>
+      <div class="rubrica-item"><span>Relación con los conceptos de la guía</span><span class="puntos">15 pts</span></div>
+      <div class="rubrica-item"><span>Respeto en el intercambio, claridad y ortografía</span><span class="puntos">15 pts</span></div>
+      <div class="rubrica-item rubrica-header"><span><strong>Total</strong></span><span class="puntos">100 pts</span></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ACTIVIDAD 2 -->
+<section id="actividad-2">
+  <div class="tarjeta borde-azul">
+    <div class="actividad-header">
+      <div class="act-num">02</div>
+      <div>
+        <span class="act-tipo">Actividad 2 &mdash; Entrega en Google Classroom</span>
+        <div class="act-nombre">Proyecto Colaborativo: Documento Integral en Google Docs</div>
+      </div>
+    </div>
+
+    <div class="caja caja-info">
+      <span class="caja-titulo">Datos generales</span>
+      <p>
+        <span class="chip chip-azul">Tipo: Trabajo en equipo (3 a 4 integrantes)</span>&nbsp;
+        <span class="chip chip-salvia">Entrega: Enlace a Google Docs</span>&nbsp;
+        <span class="chip chip-terra">Aprendizaje: Significativo y aplicable</span>
+      </p>
+      <p style="margin-top:0.5rem;margin-bottom:0;"><strong>Propósito:</strong> Que el equipo produzca de forma colaborativa un documento académico completo en Documentos de Google, integrando índice automático, citas en formato APA, un diagrama y el uso de comentarios y sugerencias.</p>
+    </div>
+
+    <h3>Descripción de la actividad</h3>
+    <p>En equipos de tres a cuatro integrantes, elaborarán de forma colaborativa un <strong>documento académico</strong> sobre un tema psicológico asignado o de libre elección (por ejemplo: "El estrés académico en universitarios", "La influencia de las redes sociales en la autoestima", "Modelos de intervención en ansiedad"). El documento deberá integrar todas las funciones revisadas en esta segunda parte de la guía.</p>
+
+    <h3>Instrucciones paso a paso</h3>
+    <div class="pasos-lista">
+      <div class="paso"><p><strong>Creen un documento compartido:</strong> un integrante crea el documento en Google Docs y comparte el acceso como "Editor" con el resto del equipo y con el docente.</p></div>
+      <div class="paso"><p><strong>Estructuren el documento</strong> con al menos cuatro secciones (introducción, desarrollo con dos subsecciones, y conclusiones), aplicando estilos de título a cada encabezado.</p></div>
+      <div class="paso"><p><strong>Redacten el contenido</strong> de forma colaborativa, distribuyendo las secciones entre los integrantes. Cada integrante debe trabajar visiblemente en el documento.</p></div>
+      <div class="paso"><p><strong>Generen el índice automático</strong> a partir de los estilos de título aplicados.</p></div>
+      <div class="paso"><p><strong>Inserten al menos tres citas</strong> en formato APA utilizando la herramienta de citas integrada, y generen la lista de referencias.</p></div>
+      <div class="paso"><p><strong>Inserten un diagrama</strong> pertinente al tema (un modelo, un proceso o un mapa conceptual), con su título y numeración de figura conforme a APA.</p></div>
+      <div class="paso"><p><strong>Utilicen comentarios y el modo Sugerencias</strong> para revisar el trabajo entre integrantes: cada integrante debe dejar al menos un comentario constructivo sobre el aporte de otro compañero.</p></div>
+      <div class="paso"><p><strong>Entreguen el enlace</strong> al documento en Google Classroom, asegurándose de que los permisos permitan al docente ver el historial de versiones y los comentarios.</p></div>
+    </div>
+
+    <div class="caja caja-logro">
+      <span class="caja-titulo">Aprendizaje aplicable</span>
+      <p>Este proyecto reproduce las condiciones reales del trabajo académico y profesional colaborativo. El documento resultante puede servir como base para trabajos de otras materias, y las competencias desarrolladas son directamente transferibles a la elaboración de reportes e informes en el ejercicio profesional.</p>
+    </div>
+
+    <h3>Rúbrica de evaluación</h3>
+    <div class="rubrica">
+      <div class="rubrica-item rubrica-header"><span>Criterio</span><span class="puntos">Puntos</span></div>
+      <div class="rubrica-item"><span>Estructura con estilos de título e índice automático funcional</span><span class="puntos">20 pts</span></div>
+      <div class="rubrica-item"><span>Citas y referencias en formato APA correctamente generadas</span><span class="puntos">20 pts</span></div>
+      <div class="rubrica-item"><span>Diagrama pertinente, con título y numeración de figura</span><span class="puntos">15 pts</span></div>
+      <div class="rubrica-item"><span>Evidencia de colaboración real (historial de versiones y participación de todos)</span><span class="puntos">20 pts</span></div>
+      <div class="rubrica-item"><span>Uso de comentarios y modo Sugerencias para la revisión entre pares</span><span class="puntos">15 pts</span></div>
+      <div class="rubrica-item"><span>Calidad del contenido y coherencia del documento</span><span class="puntos">10 pts</span></div>
+      <div class="rubrica-item rubrica-header"><span><strong>Total</strong></span><span class="puntos">100 pts</span></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ACTIVIDAD 3 — QUIZ -->
+<section id="actividad-3">
+  <div class="tarjeta borde-salvia">
+    <div class="actividad-header">
+      <div class="act-num">03</div>
+      <div>
+        <span class="act-tipo">Actividad 3 &mdash; Entrega en Google Classroom</span>
+        <div class="act-nombre">Quiz Interactivo: Documentos de Google Avanzado</div>
+      </div>
+    </div>
+
+    <div class="caja caja-info">
+      <span class="caja-titulo">Instrucciones</span>
+      <p>Responde las 5 preguntas seleccionando la opción correcta. Al finalizar, haz clic en "Revisar respuestas" para obtener tu puntuación y retroalimentación. <strong>Toma una captura de pantalla de tu resultado y súbela a la tarea correspondiente en Google Classroom.</strong> Se acepta un máximo de dos intentos.</p>
+    </div>
+
+    <div id="quiz">
+
+      <div class="quiz-pregunta" id="q1">
+        <div class="quiz-enun">¿Qué requisito es indispensable para que Documentos de Google genere un índice automático?</div>
+        <div class="quiz-opciones">
+          <label class="quiz-opcion"><input type="radio" name="q1" value="a"> Que el documento tenga al menos diez páginas.</label>
+          <label class="quiz-opcion"><input type="radio" name="q1" value="b"> Que se hayan aplicado estilos de título (Título 1, Título 2) a los encabezados.</label>
+          <label class="quiz-opcion"><input type="radio" name="q1" value="c"> Que el texto de los títulos esté en negrita y con mayor tamaño manual.</label>
+          <label class="quiz-opcion"><input type="radio" name="q1" value="d"> Que el documento esté descargado en el equipo.</label>
+        </div>
+        <div class="quiz-feedback feedback-bien" id="fb1-bien">Correcto. El índice automático se genera a partir de los estilos de título; no reconoce el formato manual (negrita o tamaño).</div>
+        <div class="quiz-feedback feedback-mal" id="fb1-mal">Incorrecto. La respuesta correcta es la segunda opción. El índice automático depende de que se hayan aplicado estilos de título a los encabezados.</div>
+      </div>
+
+      <div class="quiz-pregunta" id="q2">
+        <div class="quiz-enun">Un docente quiere revisar el trabajo de un estudiante y dejar observaciones, sin poder modificar directamente el texto. ¿Qué nivel de permiso debe otorgarle el estudiante?</div>
+        <div class="quiz-opciones">
+          <label class="quiz-opcion"><input type="radio" name="q2" value="a"> Editor.</label>
+          <label class="quiz-opcion"><input type="radio" name="q2" value="b"> Propietario.</label>
+          <label class="quiz-opcion"><input type="radio" name="q2" value="c"> Comentador.</label>
+          <label class="quiz-opcion"><input type="radio" name="q2" value="d"> Lector.</label>
+        </div>
+        <div class="quiz-feedback feedback-bien" id="fb2-bien">Correcto. El permiso de Comentador permite ver el documento y agregar comentarios, sin editar el texto directamente.</div>
+        <div class="quiz-feedback feedback-mal" id="fb2-mal">Incorrecto. La respuesta correcta es Comentador, que permite agregar observaciones sin modificar el texto.</div>
+      </div>
+
+      <div class="quiz-pregunta" id="q3">
+        <div class="quiz-enun">El modo "Sugerencias" de Documentos de Google es equivalente a qué función de los procesadores de texto tradicionales?</div>
+        <div class="quiz-opciones">
+          <label class="quiz-opcion"><input type="radio" name="q3" value="a"> A la numeración automática de páginas.</label>
+          <label class="quiz-opcion"><input type="radio" name="q3" value="b"> Al control de cambios.</label>
+          <label class="quiz-opcion"><input type="radio" name="q3" value="c"> Al corrector ortográfico.</label>
+          <label class="quiz-opcion"><input type="radio" name="q3" value="d"> A la inserción de imágenes.</label>
+        </div>
+        <div class="quiz-feedback feedback-bien" id="fb3-bien">Correcto. El modo Sugerencias equivale al control de cambios: las modificaciones se proponen y pueden aceptarse o rechazarse.</div>
+        <div class="quiz-feedback feedback-mal" id="fb3-mal">Incorrecto. La respuesta correcta es el control de cambios, cuya función replica el modo Sugerencias.</div>
+      </div>
+
+      <div class="quiz-pregunta" id="q4">
+        <div class="quiz-enun">Respecto a la herramienta de generación de citas integrada, ¿cuál es la afirmación correcta?</div>
+        <div class="quiz-opciones">
+          <label class="quiz-opcion"><input type="radio" name="q4" value="a"> Genera citas infalibles que nunca requieren revisión.</label>
+          <label class="quiz-opcion"><input type="radio" name="q4" value="b"> Es un apoyo útil, pero el autor debe verificar siempre que las citas cumplan correctamente con APA.</label>
+          <label class="quiz-opcion"><input type="radio" name="q4" value="c"> Solo funciona con documentos en inglés.</label>
+          <label class="quiz-opcion"><input type="radio" name="q4" value="d"> No permite el estilo APA.</label>
+        </div>
+        <div class="quiz-feedback feedback-bien" id="fb4-bien">Correcto. La herramienta es un apoyo valioso, pero puede contener errores; la verificación final es responsabilidad del autor.</div>
+        <div class="quiz-feedback feedback-mal" id="fb4-mal">Incorrecto. La respuesta correcta es la segunda opción. La herramienta apoya la generación de citas, pero deben verificarse siempre.</div>
+      </div>
+
+      <div class="quiz-pregunta" id="q5">
+        <div class="quiz-enun">¿A través de qué ruta de menú se insertan diagramas simples con la herramienta de dibujo integrada de Documentos de Google?</div>
+        <div class="quiz-opciones">
+          <label class="quiz-opcion"><input type="radio" name="q5" value="a"> Archivo &rsaquo; Descargar.</label>
+          <label class="quiz-opcion"><input type="radio" name="q5" value="b"> Formato &rsaquo; Estilos.</label>
+          <label class="quiz-opcion"><input type="radio" name="q5" value="c"> Insertar &rsaquo; Dibujo &rsaquo; Nuevo.</label>
+          <label class="quiz-opcion"><input type="radio" name="q5" value="d"> Herramientas &rsaquo; Ortografía.</label>
+        </div>
+        <div class="quiz-feedback feedback-bien" id="fb5-bien">Correcto. La herramienta de dibujo se abre desde Insertar &rsaquo; Dibujo &rsaquo; Nuevo, donde pueden crearse diagramas con formas y conectores.</div>
+        <div class="quiz-feedback feedback-mal" id="fb5-mal">Incorrecto. La respuesta correcta es Insertar &rsaquo; Dibujo &rsaquo; Nuevo.</div>
+      </div>
+
+    </div>
+
+    <div class="quiz-controles">
+      <button class="btn btn-primario" onclick="revisarQuiz()">Revisar respuestas y ver puntuación</button>
+      <button class="btn btn-salvia" onclick="reiniciarQuiz()" style="margin-left:0.8rem;">Reiniciar quiz</button>
+    </div>
+
+    <div id="resultado-quiz">
+      <div class="resultado-puntaje" id="puntaje-texto"></div>
+      <div class="resultado-msg" id="resultado-msg-texto"></div>
+      <p id="resultado-detalle" style="margin-top:0.8rem;font-size:0.88rem;color:var(--gris-texto);"></p>
+    </div>
+  </div>
+</section>
+
+
+<!-- REFLEXIÓN -->
+<section id="reflexion">
+  <div class="tarjeta borde-ambar">
+    <div class="seccion-titulo"><span class="num">REF</span> Reflexión y Aplicación</div>
+    <p class="seccion-desc">Planificación de la incorporación de los aprendizajes a la vida académica y profesional.</p>
+
+    <p>Las herramientas colaborativas de Documentos de Google han transformado la producción de documentos en entornos académicos y profesionales. El propósito de esta sección es que planifiques cómo integrar estas competencias en tu trabajo cotidiano.</p>
+
+    <h3>Planificador de incorporación del aprendizaje</h3>
+    <p>Completa los campos y guarda tu reflexión. Puedes copiar el texto generado y pegarlo en la tarea de reflexión en Google Classroom.</p>
+
+    <div class="plan-grid">
+      <div class="plan-area">
+        <label>¿En qué próximo trabajo académico utilizarás el índice automático y los estilos de título?</label>
+        <textarea rows="4" id="plan-indice" placeholder="Por ejemplo: en mi próximo reporte de investigación aplicaré estilos de título desde el inicio para generar el índice automáticamente..."></textarea>
+      </div>
+      <div class="plan-area">
+        <label>¿Cómo organizarás el trabajo colaborativo en tu equipo para aprovechar los permisos, comentarios y sugerencias?</label>
+        <textarea rows="4" id="plan-colaboracion" placeholder="Por ejemplo: acordaremos usar el modo Sugerencias para las revisiones y los comentarios para la retroalimentación, definiendo permisos según el rol..."></textarea>
+      </div>
+      <div class="plan-area">
+        <label>¿Cómo integrarás la herramienta de citas en tu proceso de investigación, y qué verificarás siempre?</label>
+        <textarea rows="4" id="plan-citas" placeholder="Por ejemplo: registraré cada fuente en el panel de citas conforme la consulto, y verificaré siempre el formato APA generado..."></textarea>
+      </div>
+      <div class="plan-area">
+        <label>¿En qué tipo de contenido psicológico te resultará útil insertar diagramas, y con qué propósito?</label>
+        <textarea rows="4" id="plan-diagramas" placeholder="Por ejemplo: usaré diagramas de flujo para representar procesos de evaluación y mapas conceptuales para sintetizar teorías..."></textarea>
+      </div>
+    </div>
+
+    <div class="quiz-controles mt-2">
+      <button class="btn btn-primario" onclick="guardarPlan()">Guardar mi planificación</button>
+      <button class="btn btn-salvia" onclick="copiarPlan()" style="margin-left:0.8rem;">Copiar texto para Classroom</button>
+    </div>
+    <div id="plan-guardado">Tu planificación ha sido guardada. Puedes copiarla y pegarla en la tarea de reflexión de Google Classroom.</div>
+
+    <hr class="divider">
+
+    <h3>Síntesis conceptual de la segunda parte</h3>
+    <div class="concepto-grid">
+      <div class="concepto-card">
+        <div class="concepto-titulo">Estructura automatizada</div>
+        <p class="concepto-def">Los estilos de título habilitan índices automáticos y navegación en documentos extensos, ahorrando tiempo y garantizando consistencia.</p>
+      </div>
+      <div class="concepto-card salvia">
+        <div class="concepto-titulo">Colaboracion en tiempo real</div>
+        <p class="concepto-def">Los permisos, comentarios y modo Sugerencias permiten un trabajo en equipo ordenado, trazable y respetuoso.</p>
+      </div>
+      <div class="concepto-card ambar">
+        <div class="concepto-titulo">Citas asistidas y verificadas</div>
+        <p class="concepto-def">La herramienta de citas agiliza el formato APA, pero la verificación final es siempre responsabilidad del autor.</p>
+      </div>
+      <div class="concepto-card">
+        <div class="concepto-titulo">Comunicacion visual</div>
+        <p class="concepto-def">Los diagramas representan modelos, procesos y conceptos, enriqueciendo la comunicación del conocimiento psicológico.</p>
+      </div>
+    </div>
+
+    <div class="caja caja-logro mt-2">
+      <span class="caja-titulo">Cierre de la segunda parte</span>
+      <p>Con esta segunda parte has completado el estudio del procesador de textos aplicado a la psicología, ahora con dominio de las herramientas colaborativas y avanzadas de Documentos de Google. Junto con los fundamentos y el formato APA de la primera parte, cuentas con un conjunto de competencias sólido para producir documentos académicos y profesionales de calidad, tanto de forma individual como en equipo.</p>
+      <p style="margin-bottom:0;">Recuerda entregar las tres actividades en Google Classroom dentro de los plazos establecidos por tu docente: el foro de mediación (Actividad 1), el proyecto colaborativo (Actividad 2) y la captura del quiz (Actividad 3).</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="footer-linea"><strong>Universidad de Especialidades UNE</strong></div>
+  <div class="footer-linea">Licenciatura en Psicología &nbsp;|&nbsp; Tecnologías de la Información Aplicadas a la Psicología</div>
+  <div class="footer-linea">Procesador de Textos Aplicado a la Psicología (Parte II) &mdash; Documentos de Google</div>
+  <div class="footer-linea" style="margin-top:0.8rem;font-size:0.75rem;">Diseñada con metodología constructivista, pedagogía activa y Aprendizaje Basado en Problemas (ABP)</div>
+</footer>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    document.getElementById('progreso-barra').style.width = pct + '%';
+  });
+
+  function marcarActivo(el) {
+    document.querySelectorAll('nav ul li a').forEach(a => a.classList.remove('activo'));
+    el.classList.add('activo');
+  }
+
+  function toggleAcord(btn) {
+    const body = btn.nextElementSibling;
+    const isOpen = btn.classList.contains('abierto');
+    const parent = btn.closest('.acordeon');
+    parent.querySelectorAll('.acord-btn.abierto').forEach(b => {
+      b.classList.remove('abierto');
+      b.nextElementSibling.classList.remove('visible');
+    });
+    if (!isOpen) { btn.classList.add('abierto'); body.classList.add('visible'); }
+  }
+
+  function mostrarPestana(btn, idPanel) {
+    const contenedor = btn.closest('.pestanas');
+    contenedor.querySelectorAll('.pest-btn').forEach(b => b.classList.remove('activo'));
+    contenedor.querySelectorAll('.pest-panel').forEach(p => p.classList.remove('visible'));
+    btn.classList.add('activo');
+    document.getElementById(idPanel).classList.add('visible');
+  }
+
+  const respuestas = { q1: 'b', q2: 'c', q3: 'b', q4: 'b', q5: 'c' };
+
+  function revisarQuiz() {
+    let correctas = 0;
+    for (const [num, correcta] of Object.entries(respuestas)) {
+      const sel = document.querySelector(`input[name="${num}"]:checked`);
+      const qDiv = document.getElementById(num);
+      const fbBien = document.getElementById('fb' + num.replace('q','') + '-bien');
+      const fbMal  = document.getElementById('fb' + num.replace('q','') + '-mal');
+      fbBien.style.display = 'none'; fbMal.style.display = 'none';
+      qDiv.classList.remove('correcta', 'incorrecta');
+      if (!sel) { qDiv.classList.add('incorrecta'); fbMal.style.display = 'block'; continue; }
+      if (sel.value === correcta) { correctas++; qDiv.classList.add('correcta'); fbBien.style.display = 'block'; }
+      else { qDiv.classList.add('incorrecta'); fbMal.style.display = 'block'; }
+    }
+    const pct = (correctas / 5) * 100;
+    const divRes = document.getElementById('resultado-quiz');
+    const puntajeEl = document.getElementById('puntaje-texto');
+    const msgEl = document.getElementById('resultado-msg-texto');
+    const detEl = document.getElementById('resultado-detalle');
+    divRes.classList.remove('alto','medio','bajo');
+    divRes.style.display = 'block';
+    puntajeEl.textContent = correctas + ' / 5';
+    detEl.textContent = 'Porcentaje de aciertos: ' + pct + '%. Recuerda tomar una captura de pantalla de este resultado para subirla a Google Classroom.';
+    if (pct >= 80) { divRes.classList.add('alto'); msgEl.textContent = 'Excelente desempeño. Demuestras una comprensión sólida del tema.'; }
+    else if (pct >= 60) { divRes.classList.add('medio'); msgEl.textContent = 'Desempeño aceptable. Revisa las preguntas incorrectas antes de tu segundo intento.'; }
+    else { divRes.classList.add('bajo'); msgEl.textContent = 'Es necesario reforzar los contenidos. Revisa las secciones de la guía y vuelve a intentarlo.'; }
+    divRes.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function reiniciarQuiz() {
+    document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
+    document.querySelectorAll('.quiz-pregunta').forEach(q => q.classList.remove('correcta','incorrecta'));
+    document.querySelectorAll('.quiz-feedback').forEach(f => f.style.display = 'none');
+    const divRes = document.getElementById('resultado-quiz');
+    divRes.style.display = 'none'; divRes.classList.remove('alto','medio','bajo');
+  }
+
+  function guardarPlan() {
+    const campos = ['plan-indice','plan-colaboracion','plan-citas','plan-diagramas'];
+    const lleno = campos.some(id => document.getElementById(id).value.trim() !== '');
+    const aviso = document.getElementById('plan-guardado');
+    if (lleno) { aviso.style.display = 'block'; setTimeout(() => aviso.style.display = 'none', 5000); }
+    else { alert('Por favor, completa al menos uno de los campos del planificador antes de guardar.'); }
+  }
+
+  function copiarPlan() {
+    const etiquetas = ['Índice automático y estilos','Organización del trabajo colaborativo','Uso y verificación de citas','Uso de diagramas'];
+    const ids = ['plan-indice','plan-colaboracion','plan-citas','plan-diagramas'];
+    let texto = 'PLANIFICACIÓN DE INCORPORACIÓN DEL APRENDIZAJE\nProcesador de Textos Aplicado a la Psicología (Parte II) - Documentos de Google\n\n';
+    ids.forEach((id, i) => { const val = document.getElementById(id).value.trim(); if (val) texto += etiquetas[i] + ':\n' + val + '\n\n'; });
+    if (texto.length < 130) { alert('Por favor completa al menos un campo antes de copiar.'); return; }
+    navigator.clipboard.writeText(texto)
+      .then(() => alert('Texto copiado al portapapeles. Pégalo en Google Classroom.'))
+      .catch(() => alert('No se pudo copiar automáticamente. Selecciona el texto manualmente.'));
+  }
+</script>
+</body>
+</html>
