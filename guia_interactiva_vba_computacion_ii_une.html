@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Interactiva: Visual Basic para Aplicaciones en Excel - UNE Plantel Centro</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        une: {
+                            blue: '#0F2C59',
+                            navy: '#071931',
+                            red: '#D80027',
+                            redhover: '#B00020',
+                            gray: '#F4F6F9',
+                            card: '#FFFFFF'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8FAFC;
+            color: #1E293B;
+        }
+        .code-block {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .custom-shadow {
+            box-shadow: 0 10px 25px -5px rgba(15, 44, 89, 0.08), 0 8px 10px -6px rgba(15, 44, 89, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-une-blue selection:text-white">
+
+    <!-- Header Institucional -->
+    <header class="bg-une-navy text-white border-b-4 border-une-red sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center space-x-4">
+                    <img src="logoune_2.png" alt="Universidad UNE Plantel Centro" class="h-12 w-auto bg-white p-1 rounded border border-slate-200" onerror="this.src='https://placehold.co/200x80/0F2C59/FFFFFF?text=UNE+Plantel+Centro'">
+                    <div>
+                        <span class="text-xs uppercase tracking-widest text-slate-300 font-semibold block">Universidad UNE - Plantel Centro</span>
+                        <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white">Computación II: Automatización con VBA</h1>
+                    </div>
+                </div>
+                <div class="hidden md:block text-right">
+                    <span class="text-xs text-slate-300 block">Licenciatura en Ingeniería Industrial</span>
+                    <span class="text-xs font-semibold text-une-red bg-white/10 px-2.5 py-1 rounded-full">Modelo ABP & Constructivista</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Bar de Navegación Rápida -->
+    <nav class="bg-white border-b border-slate-200 sticky top-20 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex space-x-1 overflow-x-auto py-2 scrollbar-none text-xs sm:text-sm font-medium text-slate-600">
+                <a href="#introduccion" class="px-3 py-2 rounded-md hover:bg-slate-100 hover:text-une-blue whitespace-nowrap transition-colors">1. Introducción</a>
+                <a href="#diagnostico" class="px-3 py-2 rounded-md hover:bg-slate-100 hover:text-une-blue whitespace-nowrap transition-colors">2. Diagnóstico</a>
+                <a href="#fundamentos" class="px-3 py-2 rounded-md hover:bg-slate-100 hover:text-une-blue whitespace-nowrap transition-colors">3. Fundamentos VBA</a>
+                <a href="#materiales" class="px-3 py-2 rounded-md hover:bg-slate-100 hover:text-une-blue whitespace-nowrap transition-colors">4. Consultas</a>
+                <a href="#actividades" class="px-3 py-2 rounded-md hover:bg-slate-100 hover:text-une-blue whitespace-nowrap transition-colors">5. Actividades Classroom</a>
+                <a href="#proyecto" class="px-3 py-2 rounded-md hover:bg-slate-100 hover:text-une-blue whitespace-nowrap transition-colors">6. Proyecto Guiado</a>
+                <a href="#evaluacion" class="px-3 py-2 rounded-md hover:bg-slate-100 hover:text-une-blue whitespace-nowrap transition-colors">7. Evaluador Quiz</a>
+                <a href="#reflexion" class="px-3 py-2 rounded-md hover:bg-slate-100 hover:text-une-blue whitespace-nowrap transition-colors">8. Reflexión</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+        <!-- SECCIÓN 1: INTRODUCCIÓN Y ENFOQUE PEDAGÓGICO -->
+        <section id="introduccion" class="bg-white rounded-xl p-6 sm:p-8 custom-shadow border border-slate-200">
+            <div class="border-l-4 border-une-blue pl-4 mb-6">
+                <span class="text-xs font-bold uppercase text-une-red tracking-wider">Unidad de Aprendizaje III</span>
+                <h2 class="text-2xl sm:text-3xl font-bold text-une-navy">Diseño y Desarrollo de Formularios Interactivos (UserForms) en Excel con VBA</h2>
+                <p class="text-slate-600 mt-1">Guía didáctica para la optimización de procesos operativos en Ingeniería Industrial</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6 text-slate-700 text-sm leading-relaxed">
+                <div class="bg-slate-50 p-5 rounded-lg border border-slate-200">
+                    <h3 class="font-bold text-une-blue mb-2 text-base">Enfoque Pedagógico Constructivista</h3>
+                    <p>Esta unidad no se limita a la memorización de código. Se estructura para que construya esquemas mentales funcionales conectando la programación lógica con la resolución de cuellos de botella reales en líneas de producción y almacenes.</p>
+                </div>
+                <div class="bg-slate-50 p-5 rounded-lg border border-slate-200">
+                    <h3 class="font-bold text-une-blue mb-2 text-base">Aprendizaje Basado en Problemas (ABP)</h3>
+                    <p>Enfrentará retos de captura errónea de datos, falta de estandarización y descontrol de inventarios. Aprenderá a programar interfaces que restrinjan el error humano y garanticen la integridad de la información.</p>
+                </div>
+                <div class="bg-slate-50 p-5 rounded-lg border border-slate-200">
+                    <h3 class="font-bold text-une-blue mb-2 text-base">Objetivo Profesional</h3>
+                    <p>Al finalizar, el estudiante de Ingeniería Industrial será capaz de diseñar, codificar e implementar un sistema dinámico de gestión de inventarios con entradas, salidas y existencias automatizadas.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: DIAGNÓSTICO DE CONOCIMIENTO PREVIO -->
+        <section id="diagnostico" class="bg-white rounded-xl p-6 sm:p-8 custom-shadow border border-slate-200">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="bg-une-blue text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">1</div>
+                <h2 class="text-xl font-bold text-une-navy">Diagnóstico de Conocimiento Previo</h2>
+            </div>
+            <p class="text-sm text-slate-600 mb-6">Reflexione y responda la siguiente cuestión antes de iniciar la revisión teórica. Esta actividad le permitirá autoevaluar su preparación conceptual respecto a la manipulación de datos en planillas electrónicas.</p>
+
+            <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
+                <h3 class="font-semibold text-slate-800 text-base mb-3">Pregunta de Reflexión Inicial:</h3>
+                <p class="text-sm text-slate-700 italic mb-4">
+                    "En una planta manufacturera, cinco operadores ingresan manualmente datos de producción en la misma hoja de cálculo. Constantemente se presentan errores tipográficos, fechas desalineadas y sobreescritura accidental de fórmulas. ¿Por qué la simple protección de celdas no resuelve el problema de usabilidad y de qué manera una interfaz orientada a eventos (UserForm) transforma este proceso?"
+                </p>
+
+                <button onclick="toggleDiagnostico()" class="bg-une-blue hover:bg-une-navy text-white text-xs sm:text-sm font-medium py-2 px-4 rounded transition-colors focus:outline-none">
+                    Mostrar Análisis Técnico Esperado
+                </button>
+
+                <div id="diagnostico-respuesta" class="hidden mt-4 p-4 bg-blue-50 border-l-4 border-une-blue text-xs sm:text-sm text-slate-700 rounded-r">
+                    <p class="font-bold text-une-navy mb-1">Análisis Técnico:</p>
+
+                    <p>La protección de celdas es una medida pasiva que restringe la edición pero no guía el flujo de datos. Un <strong>UserForm (Formulario de Usuario)</strong> actúa como una capa de abstracción entre el operador y la base de datos de Excel. Permite estandarizar el ingreso mediante controles validados (Listas desplegables, cajas de texto restringidas a números, botones de acción) impidiendo que el usuario final interactúe directamente con la estructura tabular de la hoja.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: CONTENIDO GENERAL DEL TEMA (FUNDAMENTOS DE USERFORMS) -->
+        <section id="fundamentos" class="bg-white rounded-xl p-6 sm:p-8 custom-shadow border border-slate-200 space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+                <span class="text-xs font-bold uppercase text-une-blue tracking-wider">Marco Teórico y Práctico</span>
+                <h2 class="text-2xl font-bold text-une-navy">Fundamentos de Visual Basic para Aplicaciones (VBA) y UserForms</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Columna 1: Arquitectura de un UserForm -->
+                <div class="space-y-4">
+                    <h3 class="font-bold text-slate-800 border-l-2 border-une-red pl-2">1. Componentes del Entorno VBE (Visual Basic Editor)</h3>
+                    <p class="text-xs sm:text-sm text-slate-600 justify-text leading-relaxed">
+                        Para acceder al entorno de desarrollo en Excel, se utiliza la combinación de teclas <code class="bg-slate-100 text-une-red px-1 rounded">ALT + F11</code>. Un UserForm es un objeto contenedor dentro de VBE donde se diseña la interfaz gráfica de usuario (GUI).
+                    </p>
+
+                    <h3 class="font-bold text-slate-800 border-l-2 border-une-red pl-2">2. Controles Primarios y sus Propiedades</h3>
+                    <ul class="text-xs sm:text-sm text-slate-600 space-y-2 list-disc list-inside">
+                        <li><strong>Label (Etiqueta):</strong> Muestra texto no editable por el usuario. Propiedad clave: <code class="bg-slate-100 text-slate-800 px-1">Caption</code>.</li>
+                        <li><strong>TextBox (Caja de Texto):</strong> Permite la entrada de valores alfanuméricos. Propiedad clave: <code class="bg-slate-100 text-slate-800 px-1">Text</code> o <code class="bg-slate-100 text-slate-800 px-1">Value</code>.</li>
+                        <li><strong>ComboBox (Cuadro Combinado):</strong> Lista desplegable para selección estandarizada. Métodos clave: <code class="bg-slate-100 text-slate-800 px-1">AddItem</code>, <code class="bg-slate-100 text-slate-800 px-1">Clear</code>.</li>
+                        <li><strong>CommandButton (Botón de Comando):</strong> Ejecuta rutinas al ser presionado. Evento clave: <code class="bg-slate-100 text-slate-800 px-1">Click()</code>.</li>
+                    </ul>
+                </div>
+
+                <!-- Columna 2: Eventos y Validación -->
+                <div class="space-y-4">
+                    <h3 class="font-bold text-slate-800 border-l-2 border-une-red pl-2">3. Programación Orientada a Eventos</h3>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                        A diferencia de la programación secuencial tradicional, el código en UserForms responde a acciones iniciadas por el usuario (hacer clic, cambiar el foco de un campo, cargar el formulario).
+                    </p>
+
+                    <div class="bg-slate-900 text-slate-200 p-4 rounded-lg text-xs font-mono space-y-1">
+                        <p class="text-slate-400">' Ejemplo de evento al inicializar el formulario</p>
+                        <p class="text-blue-400">Private Sub</p> <p class="text-white">UserForm_Initialize()</p>
+                        <p class="pl-4 text-emerald-400">cboCategoria.AddItem "Materia Prima"</p>
+                        <p class="pl-4 text-emerald-400">cboCategoria.AddItem "Producto Terminado"</p>
+                        <p class="text-blue-400">End Sub</p>
+                    </div>
+
+                    <h3 class="font-bold text-slate-800 border-l-2 border-une-red pl-2">4. Reglas de Validación Industrial</h3>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                        Toda entrada debe ser verificada antes de escribirse en la base de datos. Se deben evaluar tres aspectos: campos vacíos, tipo de dato correcto (numérico/texto) y coherencia lógica (cantidades mayores a cero).
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 4: MATERIALES EXTERNOS DE CONSULTA FORMAL -->
+        <section id="materiales" class="bg-white rounded-xl p-6 sm:p-8 custom-shadow border border-slate-200">
+            <div class="border-l-4 border-une-red pl-4 mb-6">
+                <span class="text-xs font-bold uppercase text-slate-500">Documentación de Apoyo</span>
+                <h2 class="text-xl font-bold text-une-navy">Materiales Académicos y Fuentes de Consulta</h2>
+            </div>
+
+            <div class="grid sm:grid-cols-3 gap-4 text-xs sm:text-sm">
+                <div class="p-4 rounded-lg border border-slate-200 bg-slate-50 flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-une-blue uppercase block mb-1">Documentación Oficial</span>
+                        <h3 class="font-bold text-slate-800 mb-2">Microsoft Learn: Reference VBA Excel UserForms</h3>
+                        <p class="text-slate-600 text-xs mb-4">Manual de referencia técnica para objetos, métodos, propiedades y eventos de UserForms en el entorno Office.</p>
+                    </div>
+                    <a href="https://learn.microsoft.com/es-es/office/vba/language/reference/user-interface-help/userform-object" target="_blank" rel="noopener noreferrer" class="inline-block bg-white text-une-blue border border-une-blue font-semibold text-center py-2 px-3 rounded hover:bg-une-blue hover:text-white transition-colors">
+                        Consultar Referencia
+                    </a>
+                </div>
+
+                <div class="p-4 rounded-lg border border-slate-200 bg-slate-50 flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-une-blue uppercase block mb-1">Texto Académico</span>
+                        <h3 class="font-bold text-slate-800 mb-2">Excel VBA Programming for Dummies / Walkenbach</h3>
+                        <p class="text-slate-600 text-xs mb-4">Texto guía de referencia internacional para la estructuración de algoritmos y diseño de formularios automatizados.</p>
+                    </div>
+                    <a href="https://www.wiley.com" target="_blank" rel="noopener noreferrer" class="inline-block bg-white text-une-blue border border-une-blue font-semibold text-center py-2 px-3 rounded hover:bg-une-blue hover:text-white transition-colors">
+                        Ver Referencia Bibliográfica
+                    </a>
+                </div>
+
+                <div class="p-4 rounded-lg border border-slate-200 bg-slate-50 flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-une-blue uppercase block mb-1">Norma de Gestión</span>
+                        <h3 class="font-bold text-slate-800 mb-2">ISO 9001:2015 - Control de la Información Documentada</h3>
+                        <p class="text-slate-600 text-xs mb-4">Fundamento normativo sobre por qué la captura de datos debe ser estandarizada e inalterable en procesos industriales.</p>
+                    </div>
+                    <a href="https://www.iso.org/iso-9001-quality-management.html" target="_blank" rel="noopener noreferrer" class="inline-block bg-white text-une-blue border border-une-blue font-semibold text-center py-2 px-3 rounded hover:bg-une-blue hover:text-white transition-colors">
+                        Leer Estándar ISO
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 5: ACTIVIDADES PRÁCTICAS PARA GOOGLE CLASSROOM -->
+        <section id="actividades" class="space-y-8">
+            <div class="bg-une-navy text-white p-6 rounded-xl shadow-md">
+                <span class="text-xs font-bold uppercase tracking-widest text-une-red block mb-1">Entregables Académicos</span>
+                <h2 class="text-2xl font-bold">Actividades Evaluables para Google Classroom</h2>
+                <p class="text-xs sm:text-sm text-slate-300 mt-1">Las siguientes tareas deberán desarrollarse de forma individual y colaborativa, subiendo los archivos correspondientes a la plataforma institucional.</p>
+            </div>
+
+            <!-- ACTIVIDAD 1: MEDIACIÓN EN FORO -->
+            <div class="bg-white rounded-xl p-6 sm:p-8 custom-shadow border border-slate-200">
+                <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="bg-une-red text-white text-xs font-bold px-3 py-1 rounded-full">Actividad 1</span>
+                        <h3 class="text-lg font-bold text-une-navy">Foro de Mediación y Reflexión Crítica</h3>
+                    </div>
+                    <span class="text-xs font-semibold bg-slate-100 text-slate-600 px-2.5 py-1 rounded">Ponderación: 15%</span>
+                </div>
+
+                <div class="space-y-4 text-xs sm:text-sm text-slate-700">
+                    <p class="font-semibold text-slate-900">Pregunta Detonadora para el Foro:</p>
+                    <blockquote class="bg-slate-50 border-l-4 border-une-blue p-4 rounded text-slate-800 italic">
+                        "Considerando que el 88% de las hojas de cálculo empresariales contienen errores humanos significativos según estudios de la Universidad de Hawai, ¿hasta qué punto la implementación de UserForms en VBA resuelve el problema de fondo en la toma de decisiones operativas de una planta industrial, y cuáles son las limitaciones de depender de Excel frente a un sistema ERP (como SAP o Oracle)?"
+                    </blockquote>
+
+                    <h4 class="font-bold text-slate-900 mt-4">Instrucciones Paso a Paso:</h4>
+                    <ol class="list-decimal list-inside space-y-2 text-slate-600">
+                        <li>Redacte una intervención inicial de mínimo 250 palabras analizando la pregunta detonadora desde la perspectiva del control de calidad e ingeniería de métodos.</li>
+                        <li>Sustente su respuesta citando al menos un concepto técnico de la unidad (ej. validación en tiempo de ejecución, integridad referencial o interfaz hombre-máquina).</li>
+                        <li>Retroalimente de manera constructiva el aporte de al menos dos compañeros de clase, cuestionando o argumentando sus puntos de vista.</li>
+                    </ol>
+
+                    <div class="bg-slate-50 p-4 rounded border border-slate-200 mt-4">
+                        <p class="font-bold text-slate-800 text-xs mb-1">Ejemplo de Apertura para su Participación:</p>
+                        <p class="text-xs text-slate-600 italic">
+                            "Desde la perspectiva de la Ingeniería Industrial, la vulnerabilidad de las hojas de cálculo estándar radica en la falta de restricción en el punto de entrada de datos... [Desarrolle su argumento comparando la flexibilidad versus la seguridad]"
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTIVIDAD 2: APLICACIÓN ACADÉMICA SIGNIFICATIVA -->
+            <div class="bg-white rounded-xl p-6 sm:p-8 custom-shadow border border-slate-200">
+                <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="bg-une-blue text-white text-xs font-bold px-3 py-1 rounded-full">Actividad 2</span>
+                        <h3 class="text-lg font-bold text-une-navy">Aplicación Académica: Registro Automatizado de Control de Calidad</h3>
+                    </div>
+                    <span class="text-xs font-semibold bg-slate-100 text-slate-600 px-2.5 py-1 rounded">Ponderación: 20%</span>
+                </div>
+
+                <div class="space-y-4 text-xs sm:text-sm text-slate-700">
+                    <p class="text-slate-600">
+                        <strong>Objetivo:</strong> Diseñar un formulario interactivo aplicable a las asignaturas de <em>Control Estadístico de la Calidad</em> o <em>Estudio del Trabajo</em>, automatizando el registro de muestras de inspección.
+                    </p>
+
+                    <h4 class="font-bold text-slate-900">Requerimientos Técnicos:</h4>
+                    <ul class="list-disc list-inside space-y-1 text-slate-600">
+                        <li>Crear un UserForm denominado <code class="bg-slate-100 text-une-navy px-1">frmCalidad</code>.</li>
+                        <li>Incluir campos para: ID Lote (TextBox), Inspector (ComboBox), Piezas Defectuosas (TextBox), Estatus ("Aprobado" / "Rechazado" calculado automáticamente si las piezas defectuosas superan el límite permitido de 5 unidades).</li>
+                        <li>Botón "Registrar" que consolide los datos en una tabla ordenada cronológicamente.</li>
+                    </ul>
+
+                    <h4 class="font-bold text-slate-900 mt-2">Instrucciones de Entrega en Classroom:</h4>
+                    <p class="text-slate-600">Subir el archivo de Excel habilitado para macros (<code class="bg-slate-100 text-slate-800 px-1">.xlsm</code>) adjuntando un documento PDF corto con capturas de pantalla de la interfaz ejecutándose y del código fuente en VBA.</p>
+                </div>
+            </div>
+
+            <!-- ACTIVIDAD 3: CASO PRÁCTICO PARA ANALIZAR -->
+            <div class="bg-white rounded-xl p-6 sm:p-8 custom-shadow border border-slate-200">
+                <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="bg-emerald-700 text-white text-xs font-bold px-3 py-1 rounded-full">Actividad 3</span>
+                        <h3 class="text-lg font-bold text-une-navy">Análisis de Caso Práctico: Bottlenecks en el Almacén Logístico "MetalMecánica del Centro"</h3>
+                    </div>
+                    <span class="text-xs font-semibold bg-slate-100 text-slate-600 px-2.5 py-1 rounded">Ponderación: 20%</span>
+                </div>
+
+                <div class="space-y-4 text-xs sm:text-sm text-slate-700">
+                    <div class="bg-slate-50 p-4 rounded border border-slate-200">
+                        <h4 class="font-bold text-slate-800 mb-2">Descripción del Escenario Real:</h4>
+                        <p class="text-slate-600 leading-relaxed justify-text">
+                            La empresa "MetalMecánica del Centro" presenta diferendos en inventario físico versus teórico del 14% mensual. Los auxiliares de almacén anotan entradas y salidas en bitácoras de papel y, al final del turno, capturan la información en una hoja de Excel compartida. Ocurren duplicidades de códigos, omisión de unidades y discrepancias en fechas. La gerencia requiere una solución inmediata sin incurrir en costos de licencias ERP de alto costo.
+                        </p>
+                    </div>
+
+                    <h4 class="font-bold text-slate-900">Entregable Requerido:</h4>
+                    <p class="text-slate-600">Desarrolle un reporte técnico (Formato PDF, 2 a 3 páginas) abordando los siguientes puntos:</p>
+                    <ol class="list-decimal list-inside space-y-2 text-slate-600">
+                        <li><strong>Diagrama de Flujo:</strong> Dibuje el proceso actual de captura versus el proceso propuesto utilizando un UserForm en VBA.</li>
+                        <li><strong>Diseño de la Solución:</strong> Especifique la estructura de datos requerida (Campos, tipos de variable en VBA, controles visuales necesarios).</li>
+                        <li><strong>Matriz de Riesgos de Captura:</strong> Identifique 3 errores humanos comunes y cómo el código VBA los previene dinámicamente.</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 6: PROYECTO PASO A PASO - GESTIÓN DE INVENTARIOS -->
+        <section id="proyecto" class="bg-white rounded-xl p-6 sm:p-8 custom-shadow border border-slate-200 space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+                <span class="text-xs font-bold uppercase text-une-red tracking-wider">Proyecto Integrador Guiado</span>
+                <h2 class="text-2xl font-bold text-une-navy">Desarrollo Paso a Paso: Sistema de Gestión de Inventarios en VBA</h2>
+                <p class="text-sm text-slate-600 mt-1">Siga las instrucciones detalladas para construir una aplicación funcional con módulos de alta de productos, registro de entradas, registro de salidas y actualización automática de existencias.</p>
+            </div>
+
+            <!-- PASO 1: ESTRUCTURA DE LA HOJA -->
+            <div class="space-y-3">
+                <h3 class="font-bold text-slate-800 text-base flex items-center space-x-2">
+                    <span class="bg-une-navy text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">1</span>
+                    <span>Configuración de las Hojas de Trabajo en Excel</span>
+                </h3>
+                <p class="text-xs sm:text-sm text-slate-600">Abra un libro de Excel nuevo y renómbrelo como <code class="bg-slate-100 text-slate-800 px-1 font-mono">Sistema_Inventario.xlsm</code> (Libro habilitado para macros). Cree tres hojas con los siguientes encabezados exactos en la fila 1:</p>
+
+                <div class="grid sm:grid-cols-3 gap-4 text-xs font-mono">
+                    <div class="bg-slate-50 p-3 rounded border border-slate-200">
+                        <p class="font-bold text-une-blue mb-1 font-sans">Hoja 1: "Productos"</p>
+                        <p class="text-slate-600">A1: ID_Producto</p>
+                        <p class="text-slate-600">B1: Nombre_Producto</p>
+                        <p class="text-slate-600">C1: Categoria</p>
+                        <p class="text-slate-600">D1: Stock_Actual</p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded border border-slate-200">
+                        <p class="font-bold text-une-blue mb-1 font-sans">Hoja 2: "Entradas"</p>
+                        <p class="text-slate-600">A1: Fecha</p>
+                        <p class="text-slate-600">B1: ID_Producto</p>
+                        <p class="text-slate-600">C1: Cantidad</p>
+                        <p class="text-slate-600">D1: Observaciones</p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded border border-slate-200">
+                        <p class="font-bold text-une-blue mb-1 font-sans">Hoja 3: "Salidas"</p>
+                        <p class="text-slate-600">A1: Fecha</p>
+                        <p class="text-slate-600">B1: ID_Producto</p>
+                        <p class="text-slate-600">C1: Cantidad</p>
+                        <p class="text-slate-600">D1: Destino_Area</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASO 2: DISEÑO DE LA INTERFAZ USERFORM -->
+            <div class="space-y-3">
+                <h3 class="font-bold text-slate-800 text-base flex items-center space-x-2">
+                    <span class="bg-une-navy text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">2</span>
+                    <span>Diseño de la Interfaz Visual (UserForm)</span>
+                </h3>
+                <p class="text-xs sm:text-sm text-slate-600">En el editor VBA (<code class="bg-slate-100 text-slate-800 px-1 font-mono">ALT + F11</code>), inserte un nuevo UserForm desde el menú <em>Insertar &gt; UserForm</em>. Ajuste las siguientes propiedades en la ventana de propiedades:</p>
+
+                <div class="bg-slate-50 p-4 rounded border border-slate-200 overflow-x-auto">
+                    <table class="w-full text-left text-xs sm:text-sm border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-300 font-bold text-une-navy">
+                                <th class="p-2">Objeto</th>
+                                <th class="p-2">Propiedad Name</th>
+                                <th class="p-2">Propiedad Caption / Text</th>
+                                <th class="p-2">Función</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 text-slate-700">
+                            <tr>
+                                <td class="p-2">UserForm</td>
+                                <td class="p-2 font-mono">frmInventario</td>
+                                <td class="p-2">Control de Inventario - UNE</td>
+                                <td class="p-2">Contenedor Principal</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2">TextBox</td>
+                                <td class="p-2 font-mono">txtID</td>
+                                <td class="p-2">(Vacío)</td>
+                                <td class="p-2">Captura Código de Producto</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2">TextBox</td>
+                                <td class="p-2 font-mono">txtNombre</td>
+                                <td class="p-2">(Vacío)</td>
+                                <td class="p-2">Nombre del Artículo</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2">ComboBox</td>
+                                <td class="p-2 font-mono">cboCategoria</td>
+                                <td class="p-2">(Vacío)</td>
+                                <td class="p-2">Selección de Categoría</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2">TextBox</td>
+                                <td class="p-2 font-mono">txtCantidad</td>
+                                <td class="p-2">(Vacío)</td>
+                                <td class="p-2">Cantidad Movimiento</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2">ComboBox</td>
+                                <td class="p-2 font-mono">cboTipoMovimiento</td>
+                                <td class="p-2">(Vacío)</td>
+                                <td class="p-2">Entrada o Salida</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2">CommandButton</td>
+                                <td class="p-2 font-mono">btnRegistrar</td>
+                                <td class="p-2">Procesar Movimiento</td>
+                                <td class="p-2">Ejecuta Lógica VBA</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PASO 3: CÓDIGO FUENTE VBA -->
+            <div class="space-y-3">
+                <h3 class="font-bold text-slate-800 text-base flex items-center space-x-2">
+                    <span class="bg-une-navy text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">3</span>
+                    <span>Código Fuente Completo en VBA (Módulo del UserForm)</span>
+                </h3>
+                <p class="text-xs sm:text-sm text-slate-600">Haga doble clic sobre el formulario para abrir su ventana de código y pegue la siguiente estructura lógica debidamente comentada:</p>
+
+                <div class="bg-slate-900 text-slate-100 p-5 rounded-lg code-block text-xs sm:text-sm overflow-x-auto leading-relaxed border border-slate-800">
+<pre><code><span class="text-slate-500">' =================================================================
+' UNIVERSIDAD UNE - PLANTEL CENTRO | COMPUTACIÓN II
+' MODULO: frmInventario - CONTROL INTEGRAL DE INVENTARIO
+' =================================================================</span>
+
+<span class="text-blue-400">Private Sub</span> <span class="text-yellow-300">UserForm_Initialize</span>()
+    <span class="text-slate-500">' Carga inicial de listas desplegables al abrir la interfaz</span>
+    <span class="text-blue-400">With</span> Me.cboCategoria
+        .Clear
+        .AddItem <span class="text-emerald-300">"Materia Prima"</span>
+        .AddItem <span class="text-emerald-300">"Componentes"</span>
+        .AddItem <span class="text-emerald-300">"Empaque"</span>
+        .AddItem <span class="text-emerald-300">"Producto Terminado"</span>
+    <span class="text-blue-400">End With</span>
+    
+    <span class="text-blue-400">With</span> Me.cboTipoMovimiento
+        .Clear
+        .AddItem <span class="text-emerald-300">"Alta Nuevo Producto"</span>
+        .AddItem <span class="text-emerald-300">"Entrada de Stock"</span>
+        .AddItem <span class="text-emerald-300">"Salida de Stock"</span>
+    <span class="text-blue-400">End With</span>
+<span class="text-blue-400">End Sub</span>
+
+<span class="text-blue-400">Private Sub</span> <span class="text-yellow-300">btnRegistrar_Click</span>()
+    <span class="text-blue-400">Dim</span> wsProd <span class="text-blue-400">As</span> Worksheet, wsEnt <span class="text-blue-400">As</span> Worksheet, wsSal <span class="text-blue-400">As</span> Worksheet
+    <span class="text-blue-400">Dim</span> ultimaFila <span class="text-blue-400">As Long</span>, i <span class="text-blue-400">As Long</span>
+    <span class="text-blue-400">Dim</span> encon <span class="text-blue-400">As Boolean</span>
+    <span class="text-blue-400">Dim</span> cant <span class="text-blue-400">As Double</span>
+    
+    <span class="text-slate-500">' Asignacion de objetos de hoja</span>
+    <span class="text-blue-400">Set</span> wsProd = ThisWorkbook.Sheets(<span class="text-emerald-300">"Productos"</span>)
+    <span class="text-blue-400">Set</span> wsEnt = ThisWorkbook.Sheets(<span class="text-emerald-300">"Entradas"</span>)
+    <span class="text-blue-400">Set</span> wsSal = ThisWorkbook.Sheets(<span class="text-emerald-300">"Salidas"</span>)
+    
+    <span class="text-slate-500">' 1. Validacion de Campos Vacios</span>
+    <span class="text-blue-400">If</span> Trim(Me.txtID.Text) = <span class="text-emerald-300">""</span> <span class="text-blue-400">Or</span> Me.cboTipoMovimiento.ListIndex = -1 <span class="text-blue-400">Then</span>
+        MsgBox <span class="text-emerald-300">"Por favor complete el ID del Producto y seleccione el Tipo de Movimiento."</span>, vbExclamation, <span class="text-emerald-300">"Error de Validación"</span>
+        <span class="text-blue-400">Exit Sub</span>
+    <span class="text-blue-400">End If</span>
+    
+    <span class="text-slate-500">' 2. Procesamiento segun Tipo de Movimiento</span>
+    <span class="text-blue-400">Select Case</span> Me.cboTipoMovimiento.Text
+        
+        <span class="text-blue-400">Case</span> <span class="text-emerald-300">"Alta Nuevo Producto"</span>
+            ultimaFila = wsProd.Cells(wsProd.Rows.Count, 1).End(xlUp).Row + 1
+            wsProd.Cells(ultimaFila, 1).Value = Me.txtID.Text
+            wsProd.Cells(ultimaFila, 2).Value = Me.txtNombre.Text
+            wsProd.Cells(ultimaFila, 3).Value = Me.cboCategoria.Text
+            wsProd.Cells(ultimaFila, 4).Value = 0 <span class="text-slate-500">' Stock Inicial en Cero</span>
+            MsgBox <span class="text-emerald-300">"Producto registrado satisfactoriamente en el catálogo."</span>, vbInformation, <span class="text-emerald-300">"Éxito"</span>
+            
+        <span class="text-blue-400">Case</span> <span class="text-emerald-300">"Entrada de Stock"</span>
+            <span class="text-blue-400">If Not</span> IsNumeric(Me.txtCantidad.Text) <span class="text-blue-400">Then</span>
+                MsgBox <span class="text-emerald-300">"Ingrese una cantidad numérica válida."</span>, vbCritical: <span class="text-blue-400">Exit Sub</span>
+            <span class="text-blue-400">End If</span>
+            cant = CDbl(Me.txtCantidad.Text)
+            
+            <span class="text-slate-500">' Buscar producto para actualizar stock</span>
+            encon = <span class="text-blue-400">False</span>
+            ultimaFila = wsProd.Cells(wsProd.Rows.Count, 1).End(xlUp).Row
+            <span class="text-blue-400">For</span> i = 2 <span class="text-blue-400">To</span> ultimaFila
+                <span class="text-blue-400">If</span> CStr(wsProd.Cells(i, 1).Value) = Trim(Me.txtID.Text) <span class="text-blue-400">Then</span>
+                    wsProd.Cells(i, 4).Value = wsProd.Cells(i, 4).Value + cant
+                    encon = <span class="text-blue-400">True</span>
+                    <span class="text-blue-400">Exit For</span>
+                <span class="text-blue-400">End If</span>
+            <span class="text-blue-400">Next</span> i
+            
+            <span class="text-blue-400">If</span> encon <span class="text-blue-400">Then</span>
+                <span class="text-slate-500">' Registrar historial de entrada</span>
+                ultimaFila = wsEnt.Cells(wsEnt.Rows.Count, 1).End(xlUp).Row + 1
+                wsEnt.Cells(ultimaFila, 1).Value = Now
+                wsEnt.Cells(ultimaFila, 2).Value = Me.txtID.Text
+                wsEnt.Cells(ultimaFila, 3).Value = cant
+                wsEnt.Cells(ultimaFila, 4).Value = <span class="text-emerald-300">"Entrada por Formulario"</span>
+                MsgBox <span class="text-emerald-300">"Entrada de stock registrada correctamente."</span>, vbInformation
+            <span class="text-blue-400">Else</span>
+                MsgBox <span class="text-emerald-300">"El ID de producto no existe en el catálogo."</span>, vbCritical
+            <span class="text-blue-400">End If</span>
+            
+        <span class="text-blue-400">Case</span> <span class="text-emerald-300">"Salida de Stock"</span>
+            <span class="text-blue-400">If Not</span> IsNumeric(Me.txtCantidad.Text) <span class="text-blue-400">Then</span>
+                MsgBox <span class="text-emerald-300">"Ingrese una cantidad numérica válida."</span>, vbCritical: <span class="text-blue-400">Exit Sub</span>
+            <span class="text-blue-400">End If</span>
+            cant = CDbl(Me.txtCantidad.Text)
+            
+            encon = <span class="text-blue-400">False</span>
+            ultimaFila = wsProd.Cells(wsProd.Rows.Count, 1).End(xlUp).Row
+            <span class="text-blue-400">For</span> i = 2 <span class="text-blue-400">To</span> ultimaFila
+                <span class="text-blue-400">If</span> CStr(wsProd.Cells(i, 1).Value) = Trim(Me.txtID.Text) <span class="text-blue-400">Then</span>
+                    <span class="text-slate-500">' Validacion de Stock Suficiente</span>
+                    <span class="text-blue-400">If</span> wsProd.Cells(i, 4).Value &lt; cant <span class="text-blue-400">Then</span>
+                        MsgBox <span class="text-emerald-300">"Stock insuficiente. Disponible: "</span> &amp; wsProd.Cells(i, 4).Value, vbCritical
+                        <span class="text-blue-400">Exit Sub</span>
+                    <span class="text-blue-400">End If</span>
+                    
+                    wsProd.Cells(i, 4).Value = wsProd.Cells(i, 4).Value - cant
+                    encon = <span class="text-blue-400">True</span>
+                    <span class="text-blue-400">Exit For</span>
+                <span class="text-blue-400">End If</span>
+            <span class="text-blue-400">Next</span> i
+            
+            <span class="text-blue-400">If</span> encon <span class="text-blue-400">Then</span>
+                <span class="text-slate-500">' Registrar historial de salida</span>
+                ultimaFila = wsSal.Cells(wsSal.Rows.Count, 1).End(xlUp).Row + 1
+                wsSal.Cells(ultimaFila, 1).Value = Now
+                wsSal.Cells(ultimaFila, 2).Value = Me.txtID.Text
+                wsSal.Cells(ultimaFila, 3).Value = cant
+                wsSal.Cells(ultimaFila, 4).Value = <span class="text-emerald-300">"Despacho a Produccion"</span>
+                MsgBox <span class="text-emerald-300">"Salida procesada con éxito."</span>, vbInformation
+            <span class="text-blue-400">Else</span>
+                MsgBox <span class="text-emerald-300">"El ID de producto no existe."</span>, vbCritical
+            <span class="text-blue-400">End If</span>
+            
+    <span class="text-blue-400">End Select</span>
+    
+    <span class="text-slate-500">' Limpiar cajas de texto</span>
+    Me.txtID.Text = <span class="text-emerald-300">""</span>
+    Me.txtNombre.Text = <span class="text-emerald-300">""</span>
+    Me.txtCantidad.Text = <span class="text-emerald-300">""</span>
+<span class="text-blue-400">End Sub</span></code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 7: QUIZ INTERACTIVO DE EVALUACIÓN (5 PREGUNTAS) -->
+        <section id="evaluacion" class="bg-white rounded-xl p-6 sm:p-8 custom-shadow border border-slate-200 space-y-6">
+            <div class="border-b border-slate-200 pb-4 flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-bold uppercase text-une-red tracking-wider">Comprobación de Aprendizaje</span>
+                    <h2 class="text-2xl font-bold text-une-navy">Cuestionario Diagnóstico e Interactivo</h2>
+                </div>
+                <span class="text-xs bg-blue-50 text-une-blue font-bold px-3 py-1.5 rounded-full border border-blue-200">5 Preguntas Lógicas</span>
+            </div>
+
+            <div id="quiz-container" class="space-y-6">
+                <!-- Pregunta 1 -->
+                <div class="p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-2">
+                    <p class="font-bold text-slate-800 text-xs sm:text-sm">1. ¿Qué combinación de teclas permite abrir directamente el Editor de Visual Basic (VBE) en Microsoft Excel?</p>
+                    <div class="space-y-1 text-xs text-slate-700">
+                        <label class="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-slate-100 rounded">
+                            <input type="radio" name="p1" value="0" class="text-une-blue">
+                            <span>CTRL + F11</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-slate-100 rounded">
+                            <input type="radio" name="p1" value="1" class="text-une-blue">
+                            <span>ALT + F11</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-slate-100 rounded">
+                            <input type="radio" name="p1" value="0" class="text-une-blue">
+                            <span>SHIFT + F8</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 2 -->
+                <div class="p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-2">
+                    <p class="font-bold text-slate-800 text-xs sm:text-sm">2. ¿Cuál evento del UserForm debe utilizarse para poblar automáticamente los elementos de un ComboBox al momento de cargar el formulario?</p>
+                    <div class="space-y-1 text-xs text-slate-700">
+                        <label class="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-slate-100 rounded">
+                            <input type="radio" name="p2" value="0" class="text-une-blue">
+                            <span>UserForm_Click()</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-slate-100 rounded">
+                            <input type="radio" name="p2" value="1" class="text-une-blue">
+                            <span>UserForm_Initialize()</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-slate-100 rounded">
+                            <input type="radio" name="p2" value="0" class="text-une-blue">
+                            <span>UserForm_Terminate()</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 3 -->
+                <div class="p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-2">
+                    <p class="font-bold text-slate-800 text-xs sm:text-sm">3. ¿Qué método de VBA permite identificar la última fila con datos ocupada en una columna para evitar sobreescribir información existente?</p>
+                    <div class="space-y-1 text-xs text-slate-700">
+                        <label class="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-slate-100 rounded">
+                            <input type="radio" name="p3" value="1" class="text-une-blue">
+                            <span>Cells(Rows.Count, 1).End(xlUp).Row</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-slate-100 rounded">
+                            <input type="radio" name="p3" value="0" class="text-une-blue">
+                            <span>Range("A1").LastRow</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-slate-100 rounded">
+                            <input type="radio" name="p3" value="0" class="text-une-blue">
+                            <span>ActiveCell.SpecialCells(xlLast)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 4 -->
+                <div class="p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-2">
+                    <p class="font-bold text-slate-800 text-xs sm:text-sm">4. ¿Por qué es fundamental utilizar la función <code class="bg-slate-200 px-1 font-mono">IsNumeric()</code> en la validación de un TextBox antes de realizar cálculos matemáticos de inventario?</p>
+                    <div class="space-y-1 text-xs text-slate-700">
+                        <label class="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-slate-100 rounded">
+                            <input type="radio" name="p4" value="0" class="text-une-blue">
+                            <span>Para cambiar el color de la caja de texto automáticamente.</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-slate-100 rounded">
+                            <input type="radio" name="p4" value="1" class="text-une-blue">
+                            <span>Para prevenir errores de coincidencia de tipos (Type Mismatch Error) si el usuario ingresa caracteres alfabéticos.</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-slate-100 rounded">
+                            <input type="radio" name="p4" value="0" class="text-une-blue">
+                            <span>Para guardar el valor directamente en formato PDF.</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 5 -->
+                <div class="p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-2">
+                    <p class="font-bold text-slate-800 text-xs sm:text-sm">5. En un sistema de inventarios, ¿cuál es la función lógica principal de comparar la existencia actual contra la cantidad solicitada en una Salida de Stock?</p>
+                    <div class="space-y-1 text-xs text-slate-700">
+                        <label class="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-slate-100 rounded">
+                            <input type="radio" name="p5" value="0" class="text-une-blue">
+                            <span>Asegurar que la hoja de cálculo se guarde más rápido.</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-slate-100 rounded">
+                            <input type="radio" name="p5" value="1" class="text-une-blue">
+                            <span>Garantizar la regla de negocio de no generar inventarios negativos en la base de datos.</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-slate-100 rounded">
+                            <input type="radio" name="p5" value="0" class="text-une-blue">
+                            <span>Formatear la celda con borde rojo.</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button onclick="evaluarQuiz()" class="bg-une-red hover:bg-une-redhover text-white font-semibold py-2.5 px-6 rounded text-sm transition-colors shadow">
+                        Calcular Puntaje y Ver Retroalimentación
+                    </button>
+                </div>
+
+                <!-- Resultado del Quiz -->
+                <div id="quiz-resultado" class="hidden p-5 rounded-lg border text-sm space-y-2"></div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 8: REFLEXIÓN Y APLICACIÓN EN LA VIDA ACADÉMICA Y PROFESIONAL -->
+        <section id="reflexion" class="bg-white rounded-xl p-6 sm:p-8 custom-shadow border border-slate-200">
+            <div class="border-l-4 border-une-blue pl-4 mb-6">
+                <span class="text-xs font-bold uppercase text-slate-500">Síntesis Integradora</span>
+                <h2 class="text-xl font-bold text-une-navy">Reflexión y Plan de Transferencia Profesional</h2>
+            </div>
+
+            <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed justify-text">
+                <p>
+                    La automatización mediante <strong>Visual Basic para Aplicaciones y UserForms</strong> en Microsoft Excel constituye una competencia transversal crítica para el Ingeniero Industrial contemporáneo. La capacidad de transformar hojas de trabajo pasivas en herramientas dinámicas de gestión reduce drásticamente los tiempos de ciclo en la captura de información, minimiza la tasa de error operativo y establece estándares de calidad acordes con normativas internacionales.
+                </p>
+
+                <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 space-y-3">
+                    <h3 class="font-bold text-une-navy text-sm">Plan de Acción Personal para la Incorporación Académica y Laboral:</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-600">
+                        <li><strong>Aplicación Académica Inmediata:</strong> Implementar formularios VBA en asignaturas de semestres avanzados como <em>Ingeniería de Planta</em>, <em>Logística y Cadenas de Suministro</em> y <em>Investigación de Operaciones</em> para procesar corridas de simulación y balances de línea.</li>
+                        <li><strong>Transferencia Profesional:</strong> Aplicar el diseño centrado en el usuario en estadías profesionales y prácticas industriales, proponiendo interfaces de captura robustas en áreas de mantenimiento preventivo, control de merma y bitácoras de tiempos muertos.</li>
+                        <li><strong>Mejora Continua:</strong> Evolucionar la lógica de UserForms conectando Excel con bases de datos relacionales externas (como SQL Server o Access) mediante conexiones ADODB.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer Institucional -->
+    <footer class="bg-une-navy text-slate-400 py-8 border-t-4 border-une-red mt-12 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-3">
+            <p class="font-bold text-white text-sm">Universidad UNE - Plantel Centro</p>
+            <p>Coordinación Académica de Ingeniería Industrial | Materia: Computación II</p>
+            <p class="text-slate-500">Diseñado bajo la metodología Constructivista y Aprendizaje Basado en Problemas. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript para Interactividad de la Guía -->
+    <script>
+        function toggleDiagnostico() {
+            var el = document.getElementById("diagnostico-respuesta");
+            if (el.classList.contains("hidden")) {
+                el.classList.remove("hidden");
+            } else {
+                el.classList.add("hidden");
+            }
+        }
+
+        function evaluarQuiz() {
+            var respuestasCorrectas = {
+                p1: "1",
+                p2: "1",
+                p3: "1",
+                p4: "1",
+                p5: "1"
+            };
+
+            var puntaje = 0;
+            var total = 5;
+
+            for (var i = 1; i <= total; i++) {
+                var radios = document.getElementsByName("p" + i);
+                for (var j = 0; j < radios.length; j++) {
+                    if (radios[j].checked && radios[j].value === "1") {
+                        puntaje++;
+                    }
+                }
+            }
+
+            var porcentaje = (puntaje / total) * 100;
+            var divRes = document.getElementById("quiz-resultado");
+            divRes.classList.remove("hidden", "bg-emerald-50", "border-emerald-200", "bg-red-50", "border-red-200", "text-emerald-900", "text-red-900");
+
+            if (porcentaje >= 80) {
+                divRes.classList.add("bg-emerald-50", "border-emerald-200", "text-emerald-900");
+                divRes.innerHTML = "<p class='font-bold text-base'>¡Excelente Resultado! Puntaje Obtención: " + puntaje + " / " + total + " (" + porcentaje + "%)</p>" +
+                    "<p>Ha demostrado un dominio solvente de los conceptos teóricos y lógicos de UserForms en VBA Excel. Puede continuar con el desarrollo de su proyecto integrador en Classroom.</p>";
+            } else {
+                divRes.classList.add("bg-red-50", "border-red-200", "text-red-900");
+                divRes.innerHTML = "<p class='font-bold text-base'>Puntaje Obtenido: " + puntaje + " / " + total + " (" + porcentaje + "%)</p>" +
+                    "<p>Se le recomienda repasar la sección de Fundamentos de VBA e inspeccionar el código del proyecto guiado antes de realizar la entrega final en Classroom.</p>";
+            }
+
+            divRes.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
