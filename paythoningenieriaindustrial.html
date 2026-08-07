@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Computación II | Introducción a Python con Google Colab | UNE</title>
+<style>
+:root{
+  --azul:#22276b;
+  --azul2:#2e3690;
+  --rojo:#e2231a;
+  --rojo2:#c41c14;
+  --gris:#f4f5f9;
+  --gris2:#e7e9f2;
+  --texto:#1c1f33;
+  --tenue:#5a5f7a;
+  --verde:#1f8a53;
+  --amarillo:#f7b500;
+  --sombra:0 8px 28px rgba(34,39,107,.12);
+  --radio:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+  background:var(--gris);
+  color:var(--texto);
+  line-height:1.65;
+}
+a{color:var(--azul2);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ENCABEZADO */
+header.hero{
+  background:linear-gradient(135deg,var(--azul) 0%,var(--azul2) 60%,#3a44b0 100%);
+  color:#fff;
+  padding:2.4rem 1.5rem 2.6rem;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+header.hero::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:6px;
+  background:linear-gradient(90deg,var(--rojo),#fff 50%,var(--azul));
+}
+.hero-logo{
+  width:120px;height:120px;background:#fff;border-radius:50%;
+  padding:14px;display:flex;align-items:center;justify-content:center;
+  margin:0 auto 1rem;box-shadow:0 6px 20px rgba(0,0,0,.25);
+}
+.hero-logo img{width:100%;height:100%;object-fit:contain}
+header.hero h1{font-size:1.9rem;font-weight:700;letter-spacing:.3px;margin-bottom:.4rem}
+header.hero .sub{font-size:1.05rem;opacity:.92;font-weight:300}
+header.hero .badges{margin-top:1.1rem;display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap}
+header.hero .badge{
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);
+  padding:.35rem .9rem;border-radius:30px;font-size:.82rem;font-weight:500;
+}
+
+/* DISPOSICION */
+.layout{display:flex;max-width:1240px;margin:0 auto;gap:1.5rem;padding:1.5rem}
+nav.sidebar{
+  position:sticky;top:1rem;align-self:flex-start;
+  width:260px;flex-shrink:0;background:#fff;border-radius:var(--radio);
+  box-shadow:var(--sombra);padding:1.2rem;max-height:calc(100vh - 2rem);overflow-y:auto;
+}
+nav.sidebar h3{font-size:.78rem;text-transform:uppercase;letter-spacing:1px;color:var(--tenue);margin-bottom:.7rem}
+nav.sidebar a{
+  display:block;padding:.5rem .7rem;border-radius:8px;color:var(--texto);
+  font-size:.9rem;margin-bottom:.15rem;border-left:3px solid transparent;transition:.15s;
+}
+nav.sidebar a:hover{background:var(--gris);text-decoration:none;border-left-color:var(--rojo)}
+nav.sidebar a.sec{font-weight:600;color:var(--azul);margin-top:.6rem}
+main{flex:1;min-width:0}
+
+/* SECCIONES */
+section.card{
+  background:#fff;border-radius:var(--radio);box-shadow:var(--sombra);
+  padding:2rem 2.2rem;margin-bottom:1.6rem;scroll-margin-top:1rem;
+}
+section.card h2{
+  color:var(--azul);font-size:1.5rem;margin-bottom:.4rem;
+  padding-bottom:.6rem;border-bottom:3px solid var(--gris2);display:flex;align-items:center;gap:.6rem;
+}
+section.card h2 .num{
+  background:var(--azul);color:#fff;width:34px;height:34px;border-radius:9px;
+  display:inline-flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;
+}
+section.card h3{color:var(--azul2);font-size:1.15rem;margin:1.3rem 0 .5rem}
+section.card h4{color:var(--rojo2);font-size:1rem;margin:1rem 0 .4rem}
+section.card p{margin-bottom:.8rem}
+section.card ul,section.card ol{margin:.4rem 0 .9rem 1.4rem}
+section.card li{margin-bottom:.4rem}
+.intro-p{font-size:1.05rem;color:var(--tenue)}
+
+/* COMPONENTES */
+.objetivos{background:var(--gris);border-radius:10px;padding:1.1rem 1.3rem;border-left:4px solid var(--azul)}
+.objetivos h4{margin-top:0;color:var(--azul)}
+.nota{background:#fff7e6;border:1px solid #f5d98a;border-left:4px solid var(--amarillo);border-radius:8px;padding:.9rem 1.1rem;margin:1rem 0}
+.nota strong{color:#8a6d00}
+.alerta{background:#fdecec;border:1px solid #f4b6b2;border-left:4px solid var(--rojo);border-radius:8px;padding:.9rem 1.1rem;margin:1rem 0}
+.alerta strong{color:var(--rojo2)}
+.exito{background:#e9f7ef;border:1px solid #a9dcbf;border-left:4px solid var(--verde);border-radius:8px;padding:.9rem 1.1rem;margin:1rem 0}
+.exito strong{color:var(--verde)}
+
+/* CODIGO */
+.code-wrap{position:relative;margin:1rem 0}
+.code-label{
+  background:#151a3a;color:#aeb4e0;font-size:.72rem;font-weight:600;
+  padding:.4rem .9rem;border-radius:8px 8px 0 0;display:flex;justify-content:space-between;align-items:center;
+  font-family:'Consolas','Courier New',monospace;letter-spacing:.5px;
+}
+pre{
+  background:#1b2140;color:#e6e8f5;padding:1.1rem 1.2rem;border-radius:0 0 8px 8px;
+  overflow-x:auto;font-family:'Consolas','Courier New',monospace;font-size:.86rem;line-height:1.6;
+}
+pre code{white-space:pre}
+.tok-kw{color:#ff8fab;font-weight:600}
+.tok-str{color:#a5e8a0}
+.tok-num{color:#ffd479}
+.tok-com{color:#7f86b0;font-style:italic}
+.tok-fn{color:#7cc7ff}
+.tok-out{color:#8a90b8}
+.copy-btn{
+  background:rgba(255,255,255,.1);color:#cdd2f0;border:none;padding:.2rem .6rem;
+  border-radius:5px;font-size:.72rem;cursor:pointer;font-family:inherit;
+}
+.copy-btn:hover{background:rgba(255,255,255,.22)}
+
+/* PASOS */
+.pasos{counter-reset:paso;list-style:none;margin-left:0}
+.pasos>li{
+  counter-increment:paso;position:relative;padding:.9rem 1rem .9rem 3.2rem;
+  background:var(--gris);border-radius:10px;margin-bottom:.7rem;border-left:3px solid var(--azul2);
+}
+.pasos>li::before{
+  content:counter(paso);position:absolute;left:.9rem;top:.85rem;
+  background:var(--azul2);color:#fff;width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;
+}
+
+/* TABLAS */
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem}
+th,td{padding:.65rem .8rem;text-align:left;border:1px solid var(--gris2)}
+th{background:var(--azul);color:#fff;font-weight:600}
+tr:nth-child(even) td{background:var(--gris)}
+
+/* ACTIVIDADES */
+.actividad{border:2px solid var(--gris2);border-radius:12px;overflow:hidden;margin:1.4rem 0}
+.actividad-head{background:linear-gradient(90deg,var(--rojo),var(--rojo2));color:#fff;padding:.8rem 1.2rem;font-weight:600;display:flex;align-items:center;gap:.6rem}
+.actividad-head .tipo{background:rgba(255,255,255,.2);padding:.15rem .7rem;border-radius:20px;font-size:.75rem;margin-left:auto}
+.actividad-body{padding:1.2rem 1.4rem}
+
+/* PLANIFICADOR */
+.planner textarea{width:100%;min-height:90px;border:1px solid var(--gris2);border-radius:8px;padding:.7rem;font-family:inherit;font-size:.92rem;resize:vertical}
+.planner label{display:block;font-weight:600;margin:.7rem 0 .3rem;color:var(--azul)}
+.save-btn{background:var(--azul);color:#fff;border:none;padding:.6rem 1.3rem;border-radius:8px;font-weight:600;cursor:pointer;margin-top:.8rem;font-size:.9rem}
+.save-btn:hover{background:var(--azul2)}
+.save-msg{color:var(--verde);font-weight:600;margin-left:.8rem;font-size:.88rem}
+
+/* QUIZ */
+.quiz .pregunta{margin-bottom:1.3rem;padding:1rem 1.2rem;background:var(--gris);border-radius:10px}
+.quiz .pregunta p{font-weight:600;margin-bottom:.7rem}
+.quiz .opcion{display:block;padding:.6rem .9rem;margin-bottom:.5rem;background:#fff;border:2px solid var(--gris2);border-radius:8px;cursor:pointer;transition:.15s}
+.quiz .opcion:hover{border-color:var(--azul2)}
+.quiz .opcion.correcta{border-color:var(--verde);background:#e9f7ef}
+.quiz .opcion.incorrecta{border-color:var(--rojo);background:#fdecec}
+.quiz-btn{background:var(--rojo);color:#fff;border:none;padding:.7rem 1.6rem;border-radius:8px;font-weight:600;cursor:pointer;font-size:.95rem}
+.quiz-btn:hover{background:var(--rojo2)}
+.quiz-result{margin-top:1rem;padding:1rem;border-radius:10px;font-weight:600;text-align:center;display:none}
+
+/* PROYECTO */
+.fase{background:var(--gris);border-radius:12px;padding:1.2rem 1.4rem;margin:1rem 0;border-top:4px solid var(--rojo)}
+.fase h4{color:var(--azul);margin-top:0;font-size:1.05rem}
+.checklist{list-style:none;margin-left:0}
+.checklist li{padding:.4rem 0 .4rem 2rem;position:relative}
+.checklist li::before{content:"\2713";position:absolute;left:0;color:var(--verde);font-weight:700;background:#e9f7ef;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem}
+
+/* FOOTER */
+footer{background:var(--azul);color:#fff;text-align:center;padding:2rem 1.5rem;margin-top:2rem}
+footer .foot-logo{width:70px;height:70px;background:#fff;border-radius:50%;padding:10px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center}
+footer .foot-logo img{width:100%;height:100%;object-fit:contain}
+footer p{opacity:.85;font-size:.9rem;margin-bottom:.3rem}
+
+@media(max-width:900px){
+  .layout{flex-direction:column;padding:1rem}
+  nav.sidebar{position:static;width:100%;max-height:none}
+  section.card{padding:1.4rem 1.2rem}
+  header.hero h1{font-size:1.5rem}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-logo"><img src="data:image/png;base64,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flrOlIvlVxIvfT/Q8L9DbpR4efnHco7Ep/GPlUNkb4lXDDaQZl8+J4T0O67/Z2eLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAABacu8//T+wJF0i54bpgwAAAABJRU5ErkJggg==" alt="Universidad de Especialidades UNE"></div>
+  <h1>Introducción a Python con Google Colab</h1>
+  <p class="sub">Computación II &nbsp;|&nbsp; Licenciatura en Ingeniería Industrial</p>
+  <div class="badges">
+    <span class="badge">Universidad de Especialidades — UNE</span>
+    <span class="badge">Pedagogía activa</span>
+    <span class="badge">Aprendizaje basado en problemas</span>
+    <span class="badge">Nivel: básico a medio</span>
+  </div>
+</header>
+<div class="layout">
+<nav class="sidebar">
+  <h3>Contenido</h3>
+  <a href="#presentacion" class="sec">Presentación</a>
+  <a href="#objetivos">Objetivos y competencias</a>
+  <a href="#colab" class="sec">1. Entorno: Google Colab</a>
+  <a href="#fundamentos" class="sec">2. Fundamentos de Python</a>
+  <a href="#variables">2.1 Variables y tipos</a>
+  <a href="#operadores">2.2 Operadores y entrada</a>
+  <a href="#control" class="sec">3. Estructuras de control</a>
+  <a href="#condicionales">3.1 Condicionales</a>
+  <a href="#ciclos">3.2 Ciclos</a>
+  <a href="#datos" class="sec">4. Estructuras de datos</a>
+  <a href="#listas">4.1 Listas y diccionarios</a>
+  <a href="#funciones" class="sec">5. Funciones</a>
+  <a href="#archivos" class="sec">6. Datos externos</a>
+  <a href="#pandas">6.1 Pandas y hojas de cálculo</a>
+  <a href="#ejemplo" class="sec">7. Ejercicio integral</a>
+  <a href="#proyecto" class="sec">8. Proyecto final</a>
+  <a href="#autoevaluacion" class="sec">9. Autoevaluación</a>
+</nav>
+<main>
+
+<section class="card" id="presentacion">
+  <h2><span class="num">P</span>Presentación de la guía</h2>
+  <p class="intro-p">Esta guía interactiva acompaña el trabajo del estudiante de Ingeniería Industrial en la construcción progresiva de competencias de programación con Python, empleando Google Colab como entorno de desarrollo en la nube. El material está diseñado bajo un enfoque constructivista y de aprendizaje basado en problemas: cada concepto se introduce, se demuestra con código explicado línea por línea y se consolida mediante una actividad que el estudiante desarrolla por sí mismo.</p>
+  <p>El recorrido está organizado en dos bloques de trabajo. El primero establece los fundamentos del lenguaje y las estructuras esenciales de la programación. El segundo integra el manejo de datos externos con hojas de cálculo y culmina en un proyecto que el estudiante construye desde cero: un <strong>Sistema de Gestión de Inventarios</strong> capaz de leer, actualizar y guardar información en archivos de hoja de cálculo. La orientación del sistema hacia procesos productivos, control de existencias y toma de decisiones vincula directamente la programación con el ejercicio profesional de la ingeniería industrial.</p>
+  <div class="nota"><strong>Cómo utilizar esta guía.</strong> Lea cada sección, reproduzca el código en su propia libreta de Colab y no avance hasta comprender el resultado obtenido. La comprensión se construye escribiendo y ejecutando el código, no solo leyéndolo. Cada actividad marcada requiere una entrega y fomenta la discusión con sus compañeros.</div>
+</section>
+
+<section class="card" id="objetivos">
+  <h2><span class="num">O</span>Objetivos y competencias</h2>
+  <div class="objetivos">
+    <h4>Objetivo general</h4>
+    <p>Que el estudiante desarrolle la capacidad de diseñar, escribir y depurar programas en Python de complejidad básica a media, aplicándolos a la resolución de problemas propios de la ingeniería industrial mediante la automatización del manejo de datos en hojas de cálculo.</p>
+  </div>
+  <h3>Objetivos específicos</h3>
+  <ul>
+    <li>Configurar y utilizar Google Colab como entorno de programación colaborativo.</li>
+    <li>Emplear variables, tipos de datos, operadores y estructuras de control para expresar la lógica de un problema.</li>
+    <li>Organizar información mediante listas y diccionarios, y modularizar soluciones con funciones.</li>
+    <li>Leer y escribir archivos de hoja de cálculo con la biblioteca Pandas.</li>
+    <li>Integrar los conocimientos en un sistema funcional de gestión de inventarios.</li>
+  </ul>
+  <h3>Competencias que se promueven</h3>
+  <table>
+    <tr><th>Ámbito</th><th>Competencia</th></tr>
+    <tr><td>Técnica</td><td>Programación estructurada y manipulación de datos tabulares.</td></tr>
+    <tr><td>Analítica</td><td>Descomposición de problemas y diseño algorítmico.</td></tr>
+    <tr><td>Colaborativa</td><td>Construcción conjunta de soluciones y revisión entre pares.</td></tr>
+    <tr><td>Reflexiva</td><td>Evaluación crítica de resultados y de las decisiones de diseño.</td></tr>
+  </table>
+</section>
+<section class="card" id="colab">
+  <h2><span class="num">1</span>El entorno de trabajo: Google Colab</h2>
+  <p>Google Colab (Colaboratory) es un servicio gratuito que permite escribir y ejecutar código Python directamente en el navegador, sin instalar programas en el equipo. El código se organiza en <strong>celdas</strong> y se ejecuta en servidores de Google, lo que garantiza que todos los estudiantes trabajen en un entorno idéntico.</p>
+  <h3>1.1 Creación de la primera libreta</h3>
+  <ol class="pasos">
+    <li>Ingrese a <a href="https://colab.research.google.com" target="_blank">colab.research.google.com</a> con una cuenta de Google.</li>
+    <li>Seleccione la opción <strong>Archivo &rarr; Nuevo cuaderno</strong>. Se abrirá una libreta con una celda vacía.</li>
+    <li>Asigne un nombre a la libreta en la parte superior izquierda, por ejemplo: <em>Computacion2_Apellido</em>.</li>
+    <li>Escriba dentro de la primera celda la instrucción del ejemplo siguiente y ejecútela con el botón de reproducción o con las teclas <strong>Mayús + Enter</strong>.</li>
+  </ol>
+  <div class="code-wrap">
+    <div class="code-label"><span>Celda de código — Colab</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-fn">print</span>(<span class="tok-str">"Mi primer programa en Python"</span>)</code></pre>
+  </div>
+  <div class="exito"><strong>Resultado esperado.</strong> Debajo de la celda aparece el texto: <em>Mi primer programa en Python</em>. La función <code>print()</code> muestra en pantalla el valor que se le indica entre paréntesis.</div>
+  <h3>1.2 Tipos de celda y buenas prácticas</h3>
+  <ul>
+    <li><strong>Celda de código:</strong> contiene instrucciones de Python que se ejecutan.</li>
+    <li><strong>Celda de texto:</strong> permite documentar el trabajo con explicaciones; se crea con el botón <em>+ Texto</em>.</li>
+    <li>Los comentarios dentro del código se escriben con el símbolo <code>#</code> y sirven para explicar qué hace cada línea. No se ejecutan.</li>
+  </ul>
+  <div class="code-wrap">
+    <div class="code-label"><span>Celda de código — comentarios</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-com"># Esta línea es un comentario y no se ejecuta</span>
+<span class="tok-fn">print</span>(<span class="tok-str">"Ingeniería Industrial - Computación II"</span>)  <span class="tok-com"># comentario al final de línea</span></code></pre>
+  </div>
+  <div class="actividad">
+    <div class="actividad-head">Actividad 1. Primer contacto con Colab<span class="tipo">Individual</span></div>
+    <div class="actividad-body">
+      <p>Cree su libreta personal siguiendo los pasos anteriores. En una celda de texto escriba su nombre, matrícula y grupo. En una celda de código escriba tres instrucciones <code>print()</code> distintas: una con su nombre, otra con el nombre de su carrera y otra con una frase que exprese qué espera aprender en esta materia.</p>
+      <p><strong>Entrega:</strong> comparta el enlace de su libreta (Archivo &rarr; Compartir) en el foro del curso. Comente el aporte de al menos un compañero.</p>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="fundamentos">
+  <h2><span class="num">2</span>Fundamentos de Python</h2>
+  <p>Todo programa manipula información. Antes de resolver problemas complejos, es necesario comprender cómo se representa y se almacena esa información dentro de un programa.</p>
+
+  <h3 id="variables">2.1 Variables y tipos de datos</h3>
+  <p>Una <strong>variable</strong> es un nombre que guarda un valor en la memoria para poder utilizarlo después. Se crea con el signo igual, donde a la izquierda se coloca el nombre y a la derecha el valor.</p>
+  <div class="code-wrap">
+    <div class="code-label"><span>Celda de código — variables</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-com"># Creación de variables de distintos tipos</span>
+producto = <span class="tok-str">"Tornillo hexagonal"</span>   <span class="tok-com"># texto (str)</span>
+cantidad = <span class="tok-num">150</span>                    <span class="tok-com"># número entero (int)</span>
+precio_unitario = <span class="tok-num">2.75</span>           <span class="tok-com"># número decimal (float)</span>
+disponible = <span class="tok-kw">True</span>                <span class="tok-com"># valor lógico (bool)</span>
+
+<span class="tok-fn">print</span>(producto)
+<span class="tok-fn">print</span>(<span class="tok-str">"Cantidad en almacén:"</span>, cantidad)</code></pre>
+  </div>
+  <p>La función <code>type()</code> permite conocer el tipo de dato de una variable, lo cual es útil para verificar que la información se está almacenando correctamente.</p>
+  <div class="code-wrap">
+    <div class="code-label"><span>Celda de código — tipos</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-fn">print</span>(<span class="tok-fn">type</span>(cantidad))          <span class="tok-com"># &lt;class 'int'&gt;</span>
+<span class="tok-fn">print</span>(<span class="tok-fn">type</span>(precio_unitario))   <span class="tok-com"># &lt;class 'float'&gt;</span>
+<span class="tok-fn">print</span>(<span class="tok-fn">type</span>(producto))          <span class="tok-com"># &lt;class 'str'&gt;</span></code></pre>
+  </div>
+  <div class="nota"><strong>Reglas para nombrar variables.</strong> Deben iniciar con letra, no contener espacios (se usa el guion bajo), y conviene que su nombre describa lo que almacenan. Un nombre claro como <code>precio_unitario</code> es preferible a uno ambiguo como <code>p</code>.</div>
+
+  <h3 id="operadores">2.2 Operadores y entrada de datos</h3>
+  <p>Los operadores permiten realizar cálculos y comparaciones. La función <code>input()</code> permite que el programa reciba datos escritos por el usuario.</p>
+  <table>
+    <tr><th>Operador</th><th>Función</th><th>Ejemplo</th><th>Resultado</th></tr>
+    <tr><td>+ &nbsp;-</td><td>Suma y resta</td><td>10 + 5</td><td>15</td></tr>
+    <tr><td>* &nbsp;/</td><td>Multiplicación y división</td><td>10 / 4</td><td>2.5</td></tr>
+    <tr><td>//</td><td>División entera</td><td>10 // 4</td><td>2</td></tr>
+    <tr><td>%</td><td>Residuo (módulo)</td><td>10 % 4</td><td>2</td></tr>
+    <tr><td>**</td><td>Potencia</td><td>2 ** 3</td><td>8</td></tr>
+  </table>
+  <p>El valor que devuelve <code>input()</code> siempre es texto. Para operar con números, se convierte con <code>int()</code> (entero) o <code>float()</code> (decimal).</p>
+  <div class="code-wrap">
+    <div class="code-label"><span>Celda de código — entrada y cálculo</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-com"># Cálculo del valor total de un lote de material</span>
+nombre = <span class="tok-fn">input</span>(<span class="tok-str">"Nombre del material: "</span>)
+unidades = <span class="tok-fn">int</span>(<span class="tok-fn">input</span>(<span class="tok-str">"Número de unidades: "</span>))
+costo = <span class="tok-fn">float</span>(<span class="tok-fn">input</span>(<span class="tok-str">"Costo por unidad: "</span>))
+
+total = unidades * costo
+<span class="tok-fn">print</span>(<span class="tok-str">"El valor total de"</span>, nombre, <span class="tok-str">"es:"</span>, total)</code></pre>
+  </div>
+  <div class="actividad">
+    <div class="actividad-head">Actividad 2. Calculadora de material<span class="tipo">Individual</span></div>
+    <div class="actividad-body">
+      <p>Escriba un programa que solicite al usuario el nombre de una pieza, la cantidad producida por hora y el número de horas de un turno. El programa debe calcular y mostrar la producción total del turno.</p>
+      <p><strong>Reflexión.</strong> En una celda de texto, explique qué ocurriría si se olvidara convertir la entrada con <code>int()</code>. Pruébelo y describa el error observado.</p>
+    </div>
+  </div>
+</section>
+<section class="card" id="control">
+  <h2><span class="num">3</span>Estructuras de control</h2>
+  <p>Las estructuras de control permiten que el programa tome decisiones y repita acciones. Sin ellas, un programa ejecutaría siempre las mismas líneas en el mismo orden.</p>
+
+  <h3 id="condicionales">3.1 Condicionales: if, elif, else</h3>
+  <p>Una condición evalúa si una afirmación es verdadera o falsa y ejecuta un bloque de código según el resultado. En Python, el bloque que depende de la condición se distingue por la <strong>sangría</strong> (indentación).</p>
+  <table>
+    <tr><th>Operador</th><th>Significado</th></tr>
+    <tr><td>==</td><td>Igual a</td></tr>
+    <tr><td>!=</td><td>Distinto de</td></tr>
+    <tr><td>&gt; &nbsp; &lt;</td><td>Mayor que, menor que</td></tr>
+    <tr><td>&gt;= &nbsp; &lt;=</td><td>Mayor o igual, menor o igual</td></tr>
+  </table>
+  <div class="code-wrap">
+    <div class="code-label"><span>Celda de código — condicional</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-com"># Control del nivel de existencias en almacén</span>
+existencias = <span class="tok-num">8</span>
+minimo = <span class="tok-num">10</span>
+
+<span class="tok-kw">if</span> existencias == <span class="tok-num">0</span>:
+    <span class="tok-fn">print</span>(<span class="tok-str">"Sin existencias. Detener línea de producción."</span>)
+<span class="tok-kw">elif</span> existencias &lt; minimo:
+    <span class="tok-fn">print</span>(<span class="tok-str">"Existencias por debajo del mínimo. Generar pedido."</span>)
+<span class="tok-kw">else</span>:
+    <span class="tok-fn">print</span>(<span class="tok-str">"Nivel de inventario adecuado."</span>)</code></pre>
+  </div>
+  <div class="alerta"><strong>Atención a la sangría.</strong> Python exige que las líneas dentro de un <code>if</code> tengan una sangría uniforme (habitualmente cuatro espacios). Una sangría incorrecta produce el error <em>IndentationError</em>.</div>
+
+  <h3 id="ciclos">3.2 Ciclos: for y while</h3>
+  <p>Un ciclo repite un bloque de código. El ciclo <code>for</code> recorre una secuencia de elementos; el ciclo <code>while</code> se repite mientras una condición sea verdadera.</p>
+  <div class="code-wrap">
+    <div class="code-label"><span>Celda de código — ciclo for</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-com"># Recorrer los turnos de producción de una jornada</span>
+<span class="tok-kw">for</span> turno <span class="tok-kw">in</span> <span class="tok-fn">range</span>(<span class="tok-num">1</span>, <span class="tok-num">4</span>):      <span class="tok-com"># genera 1, 2, 3</span>
+    <span class="tok-fn">print</span>(<span class="tok-str">"Registrando producción del turno"</span>, turno)</code></pre>
+  </div>
+  <div class="code-wrap">
+    <div class="code-label"><span>Celda de código — ciclo while</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-com"># Descontar unidades hasta agotar un lote</span>
+unidades = <span class="tok-num">5</span>
+<span class="tok-kw">while</span> unidades &gt; <span class="tok-num">0</span>:
+    <span class="tok-fn">print</span>(<span class="tok-str">"Unidades disponibles:"</span>, unidades)
+    unidades = unidades - <span class="tok-num">1</span>
+<span class="tok-fn">print</span>(<span class="tok-str">"Lote agotado."</span>)</code></pre>
+  </div>
+  <div class="actividad">
+    <div class="actividad-head">Actividad 3. Reporte de producción por turno<span class="tipo">Individual</span></div>
+    <div class="actividad-body">
+      <p>Escriba un programa que recorra cinco turnos con un ciclo <code>for</code>. En cada turno debe solicitar las unidades producidas y, mediante un condicional, indicar si el turno cumplió una meta de 100 unidades. Al finalizar, en una celda de texto explique qué estructura de control empleó y por qué.</p>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="datos">
+  <h2><span class="num">4</span>Estructuras de datos</h2>
+  <p>Para gestionar un inventario no basta con variables individuales: se requiere almacenar conjuntos de datos organizados. Python ofrece las listas y los diccionarios para este propósito.</p>
+
+  <h3 id="listas">4.1 Listas y diccionarios</h3>
+  <p>Una <strong>lista</strong> es una colección ordenada de elementos. Cada elemento tiene una posición o índice que inicia en cero.</p>
+  <div class="code-wrap">
+    <div class="code-label"><span>Celda de código — listas</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-com"># Lista de materiales del almacén</span>
+materiales = [<span class="tok-str">"Tornillos"</span>, <span class="tok-str">"Tuercas"</span>, <span class="tok-str">"Arandelas"</span>, <span class="tok-str">"Remaches"</span>]
+
+<span class="tok-fn">print</span>(materiales[<span class="tok-num">0</span>])          <span class="tok-com"># primer elemento: Tornillos</span>
+<span class="tok-fn">print</span>(<span class="tok-fn">len</span>(materiales))       <span class="tok-com"># número de elementos: 4</span>
+
+materiales.<span class="tok-fn">append</span>(<span class="tok-str">"Clavos"</span>)   <span class="tok-com"># agrega un elemento al final</span>
+
+<span class="tok-kw">for</span> material <span class="tok-kw">in</span> materiales:  <span class="tok-com"># recorre toda la lista</span>
+    <span class="tok-fn">print</span>(<span class="tok-str">"Material en almacén:"</span>, material)</code></pre>
+  </div>
+  <p>Un <strong>diccionario</strong> almacena pares de clave y valor. Es ideal para describir un objeto con varios atributos, como un producto del inventario.</p>
+  <div class="code-wrap">
+    <div class="code-label"><span>Celda de código — diccionario</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-com"># Un producto descrito con un diccionario</span>
+producto = {
+    <span class="tok-str">"nombre"</span>: <span class="tok-str">"Tornillo hexagonal"</span>,
+    <span class="tok-str">"cantidad"</span>: <span class="tok-num">150</span>,
+    <span class="tok-str">"precio"</span>: <span class="tok-num">2.75</span>
+}
+
+<span class="tok-fn">print</span>(producto[<span class="tok-str">"nombre"</span>])     <span class="tok-com"># accede al valor por su clave</span>
+producto[<span class="tok-str">"cantidad"</span>] = <span class="tok-num">130</span>    <span class="tok-com"># modifica un valor existente</span>
+<span class="tok-fn">print</span>(producto)</code></pre>
+  </div>
+  <div class="nota"><strong>Combinación poderosa.</strong> Una lista de diccionarios permite representar un inventario completo: cada diccionario es un producto y la lista los agrupa a todos. Esta estructura será la base del proyecto final.</div>
+  <div class="actividad">
+    <div class="actividad-head">Actividad 4. Modelado de un inventario<span class="tipo">Individual</span></div>
+    <div class="actividad-body">
+      <p>Cree una lista con tres diccionarios, donde cada uno represente un producto con las claves <code>nombre</code>, <code>cantidad</code> y <code>precio</code>. Recorra la lista con un ciclo <code>for</code> y muestre el nombre y la cantidad de cada producto. Agregue un cuarto producto usando <code>append()</code>.</p>
+    </div>
+  </div>
+</section>
+<section class="card" id="funciones">
+  <h2><span class="num">5</span>Funciones</h2>
+  <p>Una <strong>función</strong> es un bloque de código con nombre que realiza una tarea específica y puede reutilizarse. Las funciones permiten organizar el programa, evitar la repetición y facilitar su mantenimiento.</p>
+  <p>Se definen con la palabra <code>def</code>, pueden recibir datos de entrada llamados <strong>parámetros</strong> y devolver un resultado con <code>return</code>.</p>
+  <div class="code-wrap">
+    <div class="code-label"><span>Celda de código — definición de función</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-com"># Función que calcula el valor total de un producto en inventario</span>
+<span class="tok-kw">def</span> <span class="tok-fn">valor_inventario</span>(cantidad, precio):
+    total = cantidad * precio
+    <span class="tok-kw">return</span> total
+
+<span class="tok-com"># Uso de la función con distintos valores</span>
+valor1 = <span class="tok-fn">valor_inventario</span>(<span class="tok-num">150</span>, <span class="tok-num">2.75</span>)
+valor2 = <span class="tok-fn">valor_inventario</span>(<span class="tok-num">80</span>, <span class="tok-num">5.20</span>)
+
+<span class="tok-fn">print</span>(<span class="tok-str">"Valor del producto 1:"</span>, valor1)
+<span class="tok-fn">print</span>(<span class="tok-str">"Valor del producto 2:"</span>, valor2)</code></pre>
+  </div>
+  <div class="exito"><strong>Ventaja.</strong> Una vez definida, la función <code>valor_inventario</code> puede llamarse cuantas veces sea necesario con distintos datos, sin volver a escribir la fórmula.</div>
+  <div class="actividad">
+    <div class="actividad-head">Actividad 5. Funciones para el almacén<span class="tipo">Individual</span></div>
+    <div class="actividad-body">
+      <p>Defina dos funciones: la primera, <code>requiere_pedido(existencias, minimo)</code>, que devuelva <code>True</code> si las existencias están por debajo del mínimo; la segunda, <code>aplicar_descuento(precio, porcentaje)</code>, que devuelva el precio con el descuento aplicado. Pruebe ambas funciones con al menos tres casos distintos y documente los resultados en una celda de texto.</p>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="archivos">
+  <h2><span class="num">6</span>Datos externos: hojas de cálculo con Pandas</h2>
+  <p>Los programas cobran verdadera utilidad cuando trabajan con datos reales almacenados en archivos. <strong>Pandas</strong> es la biblioteca estándar de Python para leer, transformar y escribir datos tabulares, como los de una hoja de cálculo. Su estructura principal es el <strong>DataFrame</strong>, que representa una tabla con filas y columnas.</p>
+
+  <h3 id="pandas">6.1 Lectura y escritura de archivos</h3>
+  <p>Pandas ya viene disponible en Google Colab. Para usarlo, primero se importa. La convención es asignarle el nombre corto <code>pd</code>.</p>
+  <div class="code-wrap">
+    <div class="code-label"><span>Celda de código — crear y guardar una tabla</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-kw">import</span> pandas <span class="tok-kw">as</span> pd
+
+<span class="tok-com"># Se construye una tabla a partir de un diccionario</span>
+datos = {
+    <span class="tok-str">"Producto"</span>: [<span class="tok-str">"Tornillos"</span>, <span class="tok-str">"Tuercas"</span>, <span class="tok-str">"Arandelas"</span>],
+    <span class="tok-str">"Cantidad"</span>: [<span class="tok-num">150</span>, <span class="tok-num">200</span>, <span class="tok-num">90</span>],
+    <span class="tok-str">"Precio"</span>: [<span class="tok-num">2.75</span>, <span class="tok-num">1.50</span>, <span class="tok-num">0.80</span>]
+}
+
+inventario = pd.<span class="tok-fn">DataFrame</span>(datos)   <span class="tok-com"># crea el DataFrame (la tabla)</span>
+<span class="tok-fn">print</span>(inventario)
+
+<span class="tok-com"># Guardar la tabla como archivo de hoja de cálculo</span>
+inventario.<span class="tok-fn">to_excel</span>(<span class="tok-str">"inventario.xlsx"</span>, index=<span class="tok-kw">False</span>)
+<span class="tok-fn">print</span>(<span class="tok-str">"Archivo guardado correctamente."</span>)</code></pre>
+  </div>
+  <div class="nota"><strong>Ubicación del archivo.</strong> El archivo <code>inventario.xlsx</code> se guarda en el panel de archivos de Colab (icono de carpeta a la izquierda). Desde ahí puede descargarse al equipo. También puede subirse un archivo existente para leerlo.</div>
+  <p>Para leer un archivo de hoja de cálculo ya existente se utiliza <code>read_excel</code>:</p>
+  <div class="code-wrap">
+    <div class="code-label"><span>Celda de código — leer una hoja de cálculo</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-com"># Leer el archivo guardado previamente</span>
+inventario = pd.<span class="tok-fn">read_excel</span>(<span class="tok-str">"inventario.xlsx"</span>)
+
+<span class="tok-fn">print</span>(inventario.<span class="tok-fn">head</span>())          <span class="tok-com"># muestra las primeras filas</span>
+<span class="tok-fn">print</span>(<span class="tok-str">"Columnas:"</span>, <span class="tok-fn">list</span>(inventario.columns))</code></pre>
+  </div>
+  <p>Las operaciones más frecuentes sobre un DataFrame son consultar, filtrar y actualizar valores:</p>
+  <div class="code-wrap">
+    <div class="code-label"><span>Celda de código — consultar y actualizar</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-com"># Calcular una nueva columna con el valor total por producto</span>
+inventario[<span class="tok-str">"Valor"</span>] = inventario[<span class="tok-str">"Cantidad"</span>] * inventario[<span class="tok-str">"Precio"</span>]
+
+<span class="tok-com"># Filtrar productos con menos de 100 unidades</span>
+bajo_stock = inventario[inventario[<span class="tok-str">"Cantidad"</span>] &lt; <span class="tok-num">100</span>]
+<span class="tok-fn">print</span>(bajo_stock)
+
+<span class="tok-com"># Guardar los cambios de nuevo en el archivo</span>
+inventario.<span class="tok-fn">to_excel</span>(<span class="tok-str">"inventario.xlsx"</span>, index=<span class="tok-kw">False</span>)</code></pre>
+  </div>
+  <div class="actividad">
+    <div class="actividad-head">Actividad 6. Manipulación de una hoja de cálculo<span class="tipo">Individual</span></div>
+    <div class="actividad-body">
+      <p>Cree un DataFrame con al menos cinco productos. Agregue una columna <code>Valor</code> que multiplique cantidad por precio, filtre los productos cuyo valor supere una cantidad determinada y guarde el resultado en un archivo. Descargue el archivo y ábralo en un programa de hoja de cálculo para verificar el contenido.</p>
+    </div>
+  </div>
+</section>
+<section class="card" id="ejemplo">
+  <h2><span class="num">7</span>Ejercicio integral guiado</h2>
+  <p>Este ejercicio reúne los conceptos estudiados en un solo programa: variables, estructuras de datos, condicionales, ciclos, funciones y manejo de hojas de cálculo. Se construye paso a paso. Reproduzca cada bloque en una celda distinta de Colab y verifique su resultado antes de continuar.</p>
+  <div class="objetivos">
+    <h4>Problema planteado</h4>
+    <p>Un almacén requiere un programa que registre productos, calcule el valor total del inventario, identifique los productos que necesitan reabastecimiento y guarde toda la información en una hoja de cálculo.</p>
+  </div>
+
+  <h3>Paso 1. Preparar el entorno y la estructura de datos</h3>
+  <p>Se importa Pandas y se define el inventario como una lista de diccionarios, donde cada diccionario es un producto.</p>
+  <div class="code-wrap">
+    <div class="code-label"><span>Celda 1 — estructura inicial</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-kw">import</span> pandas <span class="tok-kw">as</span> pd
+
+inventario = [
+    {<span class="tok-str">"nombre"</span>: <span class="tok-str">"Tornillos"</span>,  <span class="tok-str">"cantidad"</span>: <span class="tok-num">150</span>, <span class="tok-str">"precio"</span>: <span class="tok-num">2.75</span>, <span class="tok-str">"minimo"</span>: <span class="tok-num">50</span>},
+    {<span class="tok-str">"nombre"</span>: <span class="tok-str">"Tuercas"</span>,    <span class="tok-str">"cantidad"</span>: <span class="tok-num">40</span>,  <span class="tok-str">"precio"</span>: <span class="tok-num">1.50</span>, <span class="tok-str">"minimo"</span>: <span class="tok-num">60</span>},
+    {<span class="tok-str">"nombre"</span>: <span class="tok-str">"Arandelas"</span>,  <span class="tok-str">"cantidad"</span>: <span class="tok-num">90</span>,  <span class="tok-str">"precio"</span>: <span class="tok-num">0.80</span>, <span class="tok-str">"minimo"</span>: <span class="tok-num">30</span>}
+]
+<span class="tok-fn">print</span>(<span class="tok-str">"Inventario cargado con"</span>, <span class="tok-fn">len</span>(inventario), <span class="tok-str">"productos."</span>)</code></pre>
+  </div>
+
+  <h3>Paso 2. Función para calcular el valor de cada producto</h3>
+  <p>Se define una función que recibe un producto y devuelve el valor de sus existencias.</p>
+  <div class="code-wrap">
+    <div class="code-label"><span>Celda 2 — función de valor</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-kw">def</span> <span class="tok-fn">calcular_valor</span>(producto):
+    <span class="tok-kw">return</span> producto[<span class="tok-str">"cantidad"</span>] * producto[<span class="tok-str">"precio"</span>]
+
+<span class="tok-com"># Prueba con el primer producto de la lista</span>
+<span class="tok-fn">print</span>(<span class="tok-str">"Valor del primer producto:"</span>, <span class="tok-fn">calcular_valor</span>(inventario[<span class="tok-num">0</span>]))</code></pre>
+  </div>
+
+  <h3>Paso 3. Recorrer el inventario y evaluar cada producto</h3>
+  <p>Con un ciclo <code>for</code> se recorre la lista; con un condicional se determina si cada producto requiere reabastecimiento.</p>
+  <div class="code-wrap">
+    <div class="code-label"><span>Celda 3 — recorrido y evaluación</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code>valor_total = <span class="tok-num">0</span>
+
+<span class="tok-kw">for</span> producto <span class="tok-kw">in</span> inventario:
+    valor = <span class="tok-fn">calcular_valor</span>(producto)
+    valor_total = valor_total + valor
+
+    <span class="tok-kw">if</span> producto[<span class="tok-str">"cantidad"</span>] &lt; producto[<span class="tok-str">"minimo"</span>]:
+        estado = <span class="tok-str">"REABASTECER"</span>
+    <span class="tok-kw">else</span>:
+        estado = <span class="tok-str">"Suficiente"</span>
+
+    <span class="tok-fn">print</span>(producto[<span class="tok-str">"nombre"</span>], <span class="tok-str">"- Valor:"</span>, valor, <span class="tok-str">"- Estado:"</span>, estado)
+
+<span class="tok-fn">print</span>(<span class="tok-str">"Valor total del inventario:"</span>, valor_total)</code></pre>
+  </div>
+
+  <h3>Paso 4. Exportar el inventario a una hoja de cálculo</h3>
+  <p>Se convierte la lista de diccionarios en un DataFrame, se agrega la columna de valor y se guarda como archivo de hoja de cálculo.</p>
+  <div class="code-wrap">
+    <div class="code-label"><span>Celda 4 — exportación</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code>tabla = pd.<span class="tok-fn">DataFrame</span>(inventario)
+tabla[<span class="tok-str">"valor"</span>] = tabla[<span class="tok-str">"cantidad"</span>] * tabla[<span class="tok-str">"precio"</span>]
+
+tabla.<span class="tok-fn">to_excel</span>(<span class="tok-str">"inventario_general.xlsx"</span>, index=<span class="tok-kw">False</span>)
+<span class="tok-fn">print</span>(<span class="tok-str">"Inventario exportado a inventario_general.xlsx"</span>)
+<span class="tok-fn">print</span>(tabla)</code></pre>
+  </div>
+  <div class="exito"><strong>Logro alcanzado.</strong> Al completar estos cuatro pasos, el estudiante ha integrado en un solo programa todos los conceptos del primer bloque y ha producido un archivo real de hoja de cálculo. Este ejercicio es el fundamento del proyecto final.</div>
+  <div class="actividad">
+    <div class="actividad-head">Actividad 7. Ampliación del ejercicio integral<span class="tipo">Individual</span></div>
+    <div class="actividad-body">
+      <p>Amplíe el ejercicio anterior para que muestre, al final, únicamente la lista de productos que deben reabastecerse, junto con la cantidad faltante para alcanzar el mínimo. Justifique en una celda de texto qué estructura de control es más adecuada para ello.</p>
+    </div>
+  </div>
+</section>
+<section class="card" id="proyecto">
+  <h2><span class="num">8</span>Proyecto final: Sistema de Gestión de Inventarios</h2>
+  <p class="intro-p">En este proyecto el estudiante construye, desde cero y paso a paso, un sistema funcional que permite registrar productos, consultarlos, actualizar sus existencias y conservar toda la información en un archivo de hoja de cálculo actualizable. El sistema integra la totalidad de los conocimientos de la guía y reproduce una necesidad real de la ingeniería industrial: el control de inventarios.</p>
+  <div class="objetivos">
+    <h4>Requisitos funcionales del sistema</h4>
+    <ul>
+      <li>Cargar el inventario desde un archivo de hoja de cálculo, o crearlo si no existe.</li>
+      <li>Mostrar el inventario completo en pantalla.</li>
+      <li>Registrar un nuevo producto.</li>
+      <li>Actualizar la cantidad de un producto existente (entradas y salidas).</li>
+      <li>Identificar productos por debajo de su nivel mínimo.</li>
+      <li>Guardar todos los cambios en el archivo, de modo que permanezcan disponibles.</li>
+    </ul>
+  </div>
+
+  <div class="fase">
+    <h4>Fase 1. Carga o creación del archivo de inventario</h4>
+    <p>El sistema intenta leer el archivo; si no existe, crea uno nuevo con las columnas necesarias. El bloque <code>try / except</code> gestiona ambos casos.</p>
+    <div class="code-wrap">
+      <div class="code-label"><span>Celda A — carga inicial</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-kw">import</span> pandas <span class="tok-kw">as</span> pd
+
+ARCHIVO = <span class="tok-str">"sistema_inventario.xlsx"</span>
+
+<span class="tok-kw">try</span>:
+    inventario = pd.<span class="tok-fn">read_excel</span>(ARCHIVO)
+    <span class="tok-fn">print</span>(<span class="tok-str">"Inventario cargado desde el archivo."</span>)
+<span class="tok-kw">except</span> <span class="tok-fn">FileNotFoundError</span>:
+    inventario = pd.<span class="tok-fn">DataFrame</span>(columns=[<span class="tok-str">"nombre"</span>, <span class="tok-str">"cantidad"</span>, <span class="tok-str">"precio"</span>, <span class="tok-str">"minimo"</span>])
+    <span class="tok-fn">print</span>(<span class="tok-str">"No se encontró archivo. Se creó un inventario nuevo."</span>)
+
+<span class="tok-fn">print</span>(inventario)</code></pre>
+    </div>
+  </div>
+
+  <div class="fase">
+    <h4>Fase 2. Funciones para mostrar y registrar productos</h4>
+    <p>Se definen funciones independientes para cada operación. Reciben el inventario, lo modifican y lo devuelven actualizado.</p>
+    <div class="code-wrap">
+      <div class="code-label"><span>Celda B — mostrar y registrar</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-kw">def</span> <span class="tok-fn">mostrar_inventario</span>(inv):
+    <span class="tok-kw">if</span> <span class="tok-fn">len</span>(inv) == <span class="tok-num">0</span>:
+        <span class="tok-fn">print</span>(<span class="tok-str">"El inventario está vacío."</span>)
+    <span class="tok-kw">else</span>:
+        <span class="tok-fn">print</span>(inv)
+
+<span class="tok-kw">def</span> <span class="tok-fn">registrar_producto</span>(inv):
+    nombre = <span class="tok-fn">input</span>(<span class="tok-str">"Nombre del producto: "</span>)
+    cantidad = <span class="tok-fn">int</span>(<span class="tok-fn">input</span>(<span class="tok-str">"Cantidad inicial: "</span>))
+    precio = <span class="tok-fn">float</span>(<span class="tok-fn">input</span>(<span class="tok-str">"Precio unitario: "</span>))
+    minimo = <span class="tok-fn">int</span>(<span class="tok-fn">input</span>(<span class="tok-str">"Nivel mínimo: "</span>))
+
+    nuevo = {<span class="tok-str">"nombre"</span>: nombre, <span class="tok-str">"cantidad"</span>: cantidad,
+             <span class="tok-str">"precio"</span>: precio, <span class="tok-str">"minimo"</span>: minimo}
+
+    inv.<span class="tok-fn">loc</span>[<span class="tok-fn">len</span>(inv)] = nuevo   <span class="tok-com"># agrega una fila al final</span>
+    <span class="tok-fn">print</span>(<span class="tok-str">"Producto registrado correctamente."</span>)
+    <span class="tok-kw">return</span> inv</code></pre>
+    </div>
+  </div>
+
+  <div class="fase">
+    <h4>Fase 3. Actualización de existencias</h4>
+    <p>Esta función localiza un producto por su nombre y suma o resta unidades, según se trate de una entrada o una salida de almacén.</p>
+    <div class="code-wrap">
+      <div class="code-label"><span>Celda C — actualizar existencias</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-kw">def</span> <span class="tok-fn">actualizar_existencias</span>(inv):
+    nombre = <span class="tok-fn">input</span>(<span class="tok-str">"Producto a actualizar: "</span>)
+
+    <span class="tok-kw">if</span> nombre <span class="tok-kw">in</span> inv[<span class="tok-str">"nombre"</span>].<span class="tok-fn">values</span>:
+        movimiento = <span class="tok-fn">int</span>(<span class="tok-fn">input</span>(<span class="tok-str">"Unidades (+ entrada / - salida): "</span>))
+        <span class="tok-com"># localiza la fila del producto y modifica su cantidad</span>
+        fila = inv[<span class="tok-str">"nombre"</span>] == nombre
+        inv.<span class="tok-fn">loc</span>[fila, <span class="tok-str">"cantidad"</span>] = inv.<span class="tok-fn">loc</span>[fila, <span class="tok-str">"cantidad"</span>] + movimiento
+        <span class="tok-fn">print</span>(<span class="tok-str">"Existencias actualizadas."</span>)
+    <span class="tok-kw">else</span>:
+        <span class="tok-fn">print</span>(<span class="tok-str">"El producto no existe en el inventario."</span>)
+
+    <span class="tok-kw">return</span> inv</code></pre>
+    </div>
+  </div>
+
+  <div class="fase">
+    <h4>Fase 4. Alertas de reabastecimiento y guardado</h4>
+    <p>Una función revisa qué productos están por debajo del mínimo; otra guarda el inventario en el archivo, garantizando que los datos sean actualizables.</p>
+    <div class="code-wrap">
+      <div class="code-label"><span>Celda D — alertas y guardado</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-kw">def</span> <span class="tok-fn">revisar_minimos</span>(inv):
+    bajos = inv[inv[<span class="tok-str">"cantidad"</span>] &lt; inv[<span class="tok-str">"minimo"</span>]]
+    <span class="tok-kw">if</span> <span class="tok-fn">len</span>(bajos) == <span class="tok-num">0</span>:
+        <span class="tok-fn">print</span>(<span class="tok-str">"Todos los productos tienen existencias suficientes."</span>)
+    <span class="tok-kw">else</span>:
+        <span class="tok-fn">print</span>(<span class="tok-str">"Productos que requieren reabastecimiento:"</span>)
+        <span class="tok-fn">print</span>(bajos[[<span class="tok-str">"nombre"</span>, <span class="tok-str">"cantidad"</span>, <span class="tok-str">"minimo"</span>]])
+
+<span class="tok-kw">def</span> <span class="tok-fn">guardar</span>(inv):
+    <span class="tok-com"># Se calcula la columna "valor" antes de guardar</span>
+    inv[<span class="tok-str">"valor"</span>] = inv[<span class="tok-str">"cantidad"</span>] * inv[<span class="tok-str">"precio"</span>]
+    inv.<span class="tok-fn">to_excel</span>(ARCHIVO, index=<span class="tok-kw">False</span>)
+    <span class="tok-fn">print</span>(<span class="tok-str">"Cambios guardados en"</span>, ARCHIVO)</code></pre>
+    </div>
+  </div>
+
+  <div class="fase">
+    <h4>Fase 5. Menú principal que integra el sistema</h4>
+    <p>Un ciclo <code>while</code> presenta un menú y ejecuta la función correspondiente según la opción elegida. Este bloque conecta todas las funciones anteriores en un programa único y operativo.</p>
+    <div class="code-wrap">
+      <div class="code-label"><span>Celda E — menú principal</span><button class="copy-btn" onclick="copyCode(this)">Copiar</button></div>
+<pre><code><span class="tok-kw">while</span> <span class="tok-kw">True</span>:
+    <span class="tok-fn">print</span>(<span class="tok-str">"\n===== SISTEMA DE GESTIÓN DE INVENTARIOS ====="</span>)
+    <span class="tok-fn">print</span>(<span class="tok-str">"1. Mostrar inventario"</span>)
+    <span class="tok-fn">print</span>(<span class="tok-str">"2. Registrar producto"</span>)
+    <span class="tok-fn">print</span>(<span class="tok-str">"3. Actualizar existencias"</span>)
+    <span class="tok-fn">print</span>(<span class="tok-str">"4. Revisar niveles mínimos"</span>)
+    <span class="tok-fn">print</span>(<span class="tok-str">"5. Guardar y salir"</span>)
+
+    opcion = <span class="tok-fn">input</span>(<span class="tok-str">"Seleccione una opción: "</span>)
+
+    <span class="tok-kw">if</span> opcion == <span class="tok-str">"1"</span>:
+        <span class="tok-fn">mostrar_inventario</span>(inventario)
+    <span class="tok-kw">elif</span> opcion == <span class="tok-str">"2"</span>:
+        inventario = <span class="tok-fn">registrar_producto</span>(inventario)
+    <span class="tok-kw">elif</span> opcion == <span class="tok-str">"3"</span>:
+        inventario = <span class="tok-fn">actualizar_existencias</span>(inventario)
+    <span class="tok-kw">elif</span> opcion == <span class="tok-str">"4"</span>:
+        <span class="tok-fn">revisar_minimos</span>(inventario)
+    <span class="tok-kw">elif</span> opcion == <span class="tok-str">"5"</span>:
+        <span class="tok-fn">guardar</span>(inventario)
+        <span class="tok-fn">print</span>(<span class="tok-str">"Sistema finalizado."</span>)
+        <span class="tok-kw">break</span>
+    <span class="tok-kw">else</span>:
+        <span class="tok-fn">print</span>(<span class="tok-str">"Opción no válida. Intente de nuevo."</span>)</code></pre>
+    </div>
+  </div>
+
+  <h3>Contenido obligatorio del archivo de Excel</h3>
+  <p>El sistema debe generar y mantener actualizado un archivo de hoja de cálculo (<code>sistema_inventario.xlsx</code>). Dicho archivo debe contener, como mínimo, las siguientes columnas, con un registro por cada producto del inventario:</p>
+  <table>
+    <tr><th>Columna</th><th>Descripción</th><th>Ejemplo</th></tr>
+    <tr><td>nombre</td><td>Nombre del producto</td><td>Tornillos</td></tr>
+    <tr><td>cantidad</td><td>Existencias actuales en almacén</td><td>150</td></tr>
+    <tr><td>precio</td><td>Precio unitario del producto</td><td>2.75</td></tr>
+    <tr><td>minimo</td><td>Nivel mínimo antes de reabastecer</td><td>50</td></tr>
+    <tr><td>valor</td><td>Cantidad multiplicada por el precio</td><td>412.50</td></tr>
+  </table>
+  <div class="nota"><strong>Requisito de entrega.</strong> El archivo de Excel debe reflejar el estado real del inventario tras las operaciones realizadas: los productos registrados, las entradas y salidas aplicadas, y la columna <code>valor</code> calculada. Cada estudiante debe abrir el archivo generado en un programa de hoja de cálculo y verificar que su contenido coincida con lo mostrado por el programa.</div>
+
+  <h3>Verificación del proyecto</h3>
+  <ul class="checklist">
+    <li>El sistema carga o crea el archivo de hoja de cálculo sin errores.</li>
+    <li>Es posible registrar productos nuevos y visualizarlos.</li>
+    <li>Las entradas y salidas modifican correctamente las existencias.</li>
+    <li>El sistema identifica los productos por debajo del mínimo.</li>
+    <li>El archivo de Excel contiene las columnas nombre, cantidad, precio, minimo y valor.</li>
+    <li>Al salir, los cambios permanecen guardados y el archivo es actualizable.</li>
+  </ul>
+
+  <div class="actividad">
+    <div class="actividad-head">Entrega y extensión del proyecto<span class="tipo">Equipo</span></div>
+    <div class="actividad-body">
+      <p>Cada equipo debe entregar la libreta de Colab con el sistema en funcionamiento y el archivo de hoja de cálculo generado. Además, deben incorporar <strong>una mejora propia</strong> a elección, por ejemplo: una opción para eliminar productos, el cálculo del valor total del inventario dentro del menú, o una columna que registre la fecha de última actualización.</p>
+      <p><strong>Presentación.</strong> El equipo expondrá su sistema explicando las decisiones de diseño y la mejora incorporada. La reflexión crítica sobre las dificultades encontradas y su resolución forma parte de la evaluación.</p>
+    </div>
+  </div>
+
+  <div class="planner">
+    <h3>Planificador del proyecto</h3>
+    <p>Utilice este espacio para organizar el trabajo de su equipo. La información se guarda en este navegador.</p>
+    <label>Integrantes y reparto de responsabilidades</label>
+    <textarea id="pl1" placeholder="Ejemplo: Ana - funciones de registro; Luis - menú principal; ..."></textarea>
+    <label>Mejora propia que incorporará el equipo</label>
+    <textarea id="pl2" placeholder="Describa la funcionalidad adicional y cómo la implementará."></textarea>
+    <label>Dificultades previstas y estrategia de solución</label>
+    <textarea id="pl3" placeholder="Anote los posibles obstáculos técnicos y cómo piensa abordarlos."></textarea>
+    <button class="save-btn" onclick="guardarPlan()">Guardar planificación</button>
+    <span class="save-msg" id="planMsg"></span>
+  </div>
+</section>
+<section class="card" id="autoevaluacion">
+  <h2><span class="num">9</span>Autoevaluación</h2>
+  <p>Responda las siguientes preguntas para verificar su comprensión. Al finalizar, presione el botón para conocer su resultado y revisar las respuestas correctas.</p>
+  <div class="quiz" id="quiz">
+    <div class="pregunta" data-correcta="b">
+      <p>1. ¿Qué función se utiliza para mostrar información en pantalla en Python?</p>
+      <span class="opcion" data-op="a">show()</span>
+      <span class="opcion" data-op="b">print()</span>
+      <span class="opcion" data-op="c">echo()</span>
+      <span class="opcion" data-op="d">display()</span>
+    </div>
+    <div class="pregunta" data-correcta="c">
+      <p>2. El valor que devuelve la función input() es siempre de tipo:</p>
+      <span class="opcion" data-op="a">Entero (int)</span>
+      <span class="opcion" data-op="b">Decimal (float)</span>
+      <span class="opcion" data-op="c">Texto (str)</span>
+      <span class="opcion" data-op="d">Lógico (bool)</span>
+    </div>
+    <div class="pregunta" data-correcta="b">
+      <p>3. ¿Qué estructura es más adecuada para representar un producto con nombre, cantidad y precio?</p>
+      <span class="opcion" data-op="a">Una variable simple</span>
+      <span class="opcion" data-op="b">Un diccionario</span>
+      <span class="opcion" data-op="c">Un número entero</span>
+      <span class="opcion" data-op="d">Un comentario</span>
+    </div>
+    <div class="pregunta" data-correcta="d">
+      <p>4. En Pandas, ¿qué método guarda un DataFrame como archivo de hoja de cálculo?</p>
+      <span class="opcion" data-op="a">read_excel()</span>
+      <span class="opcion" data-op="b">save_file()</span>
+      <span class="opcion" data-op="c">export()</span>
+      <span class="opcion" data-op="d">to_excel()</span>
+    </div>
+    <div class="pregunta" data-correcta="a">
+      <p>5. ¿Qué estructura de control conviene usar para repetir el menú del sistema hasta que el usuario decida salir?</p>
+      <span class="opcion" data-op="a">Ciclo while</span>
+      <span class="opcion" data-op="b">Condicional if aislado</span>
+      <span class="opcion" data-op="c">Una función sin ciclo</span>
+      <span class="opcion" data-op="d">Una lista</span>
+    </div>
+    <button class="quiz-btn" onclick="calificarQuiz()">Calificar autoevaluación</button>
+    <div class="quiz-result" id="quizResult"></div>
+  </div>
+
+  <h3>Reflexión final</h3>
+  <div class="planner">
+    <label>¿Qué concepto le resultó más significativo y por qué?</label>
+    <textarea id="rf1" placeholder="Escriba su reflexión."></textarea>
+    <label>¿Cómo aplicaría lo aprendido en un problema real de su carrera?</label>
+    <textarea id="rf2" placeholder="Describa una aplicación concreta."></textarea>
+    <button class="save-btn" onclick="guardarReflexion()">Guardar reflexión</button>
+    <span class="save-msg" id="refMsg"></span>
+  </div>
+</section>
+
+</main>
+</div>
+
+<footer>
+  <div class="foot-logo"><img src="data:image/png;base64,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flrOlIvlVxIvfT/Q8L9DbpR4efnHco7Ep/GPlUNkb4lXDDaQZl8+J4T0O67/Z2eLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAADaYosAAKAttggAANpiiwAAoC22CAAA2mKLAACgLbYIAABacu8//T+wJF0i54bpgwAAAABJRU5ErkJggg==" alt="UNE"></div>
+  <p><strong>Universidad de Especialidades — UNE</strong></p>
+  <p>Computación II · Licenciatura en Ingeniería Industrial</p>
+  <p>Introducción a Python con Google Colab · Guía interactiva de aprendizaje</p>
+</footer>
+
+<script>
+function copyCode(btn){
+  var pre=btn.parentElement.nextElementSibling;
+  var texto=pre.innerText;
+  navigator.clipboard.writeText(texto).then(function(){
+    var original=btn.innerText;
+    btn.innerText="Copiado";
+    setTimeout(function(){btn.innerText=original;},1500);
+  });
+}
+
+function guardarPlan(){
+  localStorage.setItem("une_pl1",document.getElementById("pl1").value);
+  localStorage.setItem("une_pl2",document.getElementById("pl2").value);
+  localStorage.setItem("une_pl3",document.getElementById("pl3").value);
+  document.getElementById("planMsg").innerText="Planificación guardada.";
+  setTimeout(function(){document.getElementById("planMsg").innerText="";},2500);
+}
+
+function guardarReflexion(){
+  localStorage.setItem("une_rf1",document.getElementById("rf1").value);
+  localStorage.setItem("une_rf2",document.getElementById("rf2").value);
+  document.getElementById("refMsg").innerText="Reflexión guardada.";
+  setTimeout(function(){document.getElementById("refMsg").innerText="";},2500);
+}
+
+function cargarGuardados(){
+  var campos=["pl1","pl2","pl3","rf1","rf2"];
+  for(var i=0;i<campos.length;i++){
+    var v=localStorage.getItem("une_"+campos[i]);
+    if(v){document.getElementById(campos[i]).value=v;}
+  }
+}
+
+var quizContestado=false;
+document.addEventListener("click",function(e){
+  if(e.target.classList.contains("opcion")){
+    var preg=e.target.parentElement;
+    var ops=preg.getElementsByClassName("opcion");
+    for(var i=0;i<ops.length;i++){ops[i].style.outline="none";}
+    e.target.style.outline="2px solid var(--azul2)";
+    preg.setAttribute("data-elegida",e.target.getAttribute("data-op"));
+  }
+});
+
+function calificarQuiz(){
+  var preguntas=document.querySelectorAll("#quiz .pregunta");
+  var aciertos=0;
+  for(var i=0;i<preguntas.length;i++){
+    var correcta=preguntas[i].getAttribute("data-correcta");
+    var elegida=preguntas[i].getAttribute("data-elegida");
+    var ops=preguntas[i].getElementsByClassName("opcion");
+    for(var j=0;j<ops.length;j++){
+      var op=ops[j].getAttribute("data-op");
+      ops[j].classList.remove("correcta","incorrecta");
+      if(op===correcta){ops[j].classList.add("correcta");}
+      if(op===elegida && elegida!==correcta){ops[j].classList.add("incorrecta");}
+    }
+    if(elegida===correcta){aciertos++;}
+  }
+  var total=preguntas.length;
+  var res=document.getElementById("quizResult");
+  res.style.display="block";
+  var porcentaje=Math.round((aciertos/total)*100);
+  var mensaje="Resultado: "+aciertos+" de "+total+" ("+porcentaje+"%). ";
+  if(porcentaje===100){mensaje+="Dominio completo de los conceptos.";res.style.background="#e9f7ef";res.style.color="#1f8a53";}
+  else if(porcentaje>=60){mensaje+="Buen avance. Repase los temas con respuesta incorrecta.";res.style.background="#fff7e6";res.style.color="#8a6d00";}
+  else{mensaje+="Conviene repasar la guía antes de continuar.";res.style.background="#fdecec";res.style.color="#c41c14";}
+  res.innerText=mensaje;
+}
+
+cargarGuardados();
+</script>
+
+</body>
+</html>
